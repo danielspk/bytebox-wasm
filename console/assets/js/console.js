@@ -153,6 +153,23 @@ export const ByteBox = {
     this.animationId = requestAnimationFrame(gameLoop);
   },
 
+  pause() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+      
+      console.warn('⏸️ game paused');
+    }
+  },
+
+  resume() {
+    if (!this.animationId && this.isReady) {
+      this.run();
+
+      console.warn('▶️ game resumed');
+    }
+  },
+
   updateFPS() {
     const now = performance.now();
 
@@ -214,6 +231,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('drop', async (e) => {
     ByteBox.restart(URL.createObjectURL(e.dataTransfer.files[0]));
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    document.hidden ? ByteBox.pause() : ByteBox.resume();
   });
 
   ByteBox.init(`assets/wasm/game.wasm?t=${Date.now()}`);
