@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="ByteBox - WebAssembly console">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <title>ByteBox - Web Assembly</title>
+  <link rel="stylesheet" href="assets/css/console.css">
+  <link rel="stylesheet" href="assets/css/debugger.css">
+</head>
+<body>
+  <main id="console" class="console">
+
+    <section class="screen">
+      <canvas id="screen-canvas" class="screen-canvas" width="160" height="144"></canvas>
+
+      <div class="screen-info">
+        <span id="i-fps">0</span> FPS |
+        <span id="i-name">---</span> |
+        <span id="i-size">0</span> KB
+      </div>
+    </section>
+
+    <section class="gamepad">
+      <div class="gamepad-dir">
+        <button class="dir-btn btn-up" data-key="ArrowUp">↑</button>
+        <button class="dir-btn btn-left" data-key="ArrowLeft">←</button>
+        <button class="dir-btn btn-right" data-key="ArrowRight">→</button>
+        <button class="dir-btn btn-down" data-key="ArrowDown">↓</button>
+      </div>
+
+      <div class="gamepad-action">
+        <button class="action-btn btn-a" data-key="KeyZ">A</button>
+        <button class="action-btn btn-b" data-key="KeyX">B</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div><strong>ByteBox</strong><br>Web Assembly</div>
+    </footer>
+
+  </main>
+
+  <aside id="debugger">
+    <header class="debugger-header">Memory Viewer</header>
+    <nav class="debugger-shortcuts">
+      <button class="shortcut-btn" data-addr="0040">Flags</button>
+      <button class="shortcut-btn" data-addr="E900">Video</button>
+      <button class="shortcut-btn" data-addr="FF84">Colors</button>
+      <button class="shortcut-btn" data-addr="FF94">Pads</button>
+      <button class="shortcut-btn" data-addr="FF98">Sounds</button>
+      <button class="shortcut-btn btn-resume" data-action="resume">Resume | Halt</button>
+    </nav>
+    <section class="debugger-controls">
+      <label for="memory-input">0x</label>
+      <input id="memory-input" class="input" type="text" value="E900" placeholder="E900">
+    </section>
+    <section class="debugger-memory" id="memory-display"></section>
+  </aside>
+
+  <script type="module" src="assets/js/console.js" defer></script>
+  <script type="module" src="assets/js/debugger.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+html, body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  margin-top: 5vh;
+  font-family: 'Courier New', monospace;
+  color: #333;
+  background: #1b1b1f;
+}
+
+.console {
+  visibility: hidden;
+  max-width: 600px;
+  padding: 12px;
+  border: 4px solid #c49d00;
+  border-radius: 12px;
+  background: #fccf37;
+  box-shadow: 0 0 20px rgba(196, 157, 0, 0.5);
+}
+
+.screen {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 3px solid #c49d00;
+  border-radius: 8px;
+  background: #1a1a1a;
+}
+
+.screen-canvas {
+  display: block;
+  border: 1px solid #c49d00;
+  border-radius: 4px;
+  background: #222;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.screen-info {
+  margin-top: 10px;
+  font-size: 10px;
+  text-align: center;
+  color: #a19e9e;
+  font-weight: bold;
+}
+
+.gamepad {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.gamepad-dir {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  width: 110px;
+  height: 110px;
+  margin-left: 8px;
+}
+
+.dir-btn {
+  border: 2px solid #c49d00;
+  border-radius: 4px;
+  color: #fccf37;
+  font-weight: bold;
+  background: #2c2828;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: all 0.1s;
+}
+
+.dir-btn:hover {
+  opacity: 0.8;
+}
+
+.dir-btn:active {
+  background: #c49d00;
+  color: #2c2c2c;
+}
+
+.dir-btn.btn-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dir-btn.btn-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.dir-btn.btn-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.dir-btn.btn-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.gamepad-action {
+  display: flex;
+  gap: 15px;
+  margin: 0 10px 0 auto;
+}
+
+.action-btn {
+  width: 45px;
+  height: 45px;
+  border: 2px solid #c0392b;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  background: #e74c3c;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: all 0.1s;
+}
+
+.action-btn:hover {
+  opacity: 0.8;
+}
+
+.action-btn:active {
+  color: #2c2c2c;
+}
+
+.action-btn.btn-a {
+  margin-top: 20px;
+}
+
+.action-btn.btn-b {
+  border-color: #2980b9;
+  background: #3498db;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  html, body {
+    margin-top: 1vw;
+  }
+
+  .console {
+    max-width: 90vw;
+    padding: 10px;
+  }
+
+  .gamepad {
+    gap: 15px;
+  }
+
+  .gamepad-action {
+    justify-content: right;
+  }
+}
