@@ -38,7 +38,7 @@ To run any of these examples, copy the example's content into the `src/` folder 
 - 4-color RGB palette.
 - Linear framebuffer (2 bits per pixel).
 - 2 controller pads with 6 buttons each.
-- 3 audio channels.
+- 4 audio channels.
 - Compiled games should not exceed 58KB.
 - No predefined functions for playing sounds or drawing sprites. Only memory read/write operations are available.
 - No reset button.
