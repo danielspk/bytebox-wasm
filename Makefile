@@ -9,7 +9,7 @@ run: check-docker ## Run the console
 
 build-c: check-docker clean ## Build game (in C)
 	docker run --rm -v $(CURDIR):/src -w /src ghcr.io/webassembly/wasi-sdk /opt/wasi-sdk/bin/clang \
-		-std=c23 -pedantic -W -Wall -Wextra -Werror --target=wasm32-wasi -O2 -Wl,--no-entry \
+		-std=c23 -pedantic -W -Wall -Wextra -Werror --target=wasm32-wasi -Oz -Wl,--no-entry \
 		-Wl,--strip-all -Wl,--export-dynamic -nostartfiles -o $(WASM_TARGET) src/*.c
 
 build-go: check-docker clean ## Build game (in Go)
@@ -19,7 +19,9 @@ build-go: check-docker clean ## Build game (in Go)
 build-rust: check-docker clean ## Build game (in Rust)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src rust:1.75 sh -c " \
 		rustup target add wasm32-unknown-unknown && \
+		RUSTFLAGS='-C opt-level=z -C lto=fat -C embed-bitcode=yes -C codegen-units=1 -C strip=symbols' \
 		cargo build --target wasm32-unknown-unknown --release && \
+		command -v wasm-opt > /dev/null && wasm-opt -Oz ../$(WASM_TARGET) -o ../$(WASM_TARGET).tmp && mv ../$(WASM_TARGET).tmp ../$(WASM_TARGET) || true && \
 		cp target/wasm32-unknown-unknown/release/game.wasm ../$(WASM_TARGET)"
 
 check-docker: ## Check Docker installation
