@@ -6,6 +6,7 @@ export const InputMapper = {
   memory: null,
   keydownHandler: null,
   keyupHandler: null,
+  virtualPadHandlers: [],
 
   p1Pad: {
     'ArrowLeft': 7, 'ArrowUp': 6, 'ArrowDown': 5, 'ArrowRight': 4, 'KeyZ': 1, 'KeyX': 0,
@@ -27,10 +28,18 @@ export const InputMapper = {
     if (this.keydownHandler) {
       document.removeEventListener('keydown', this.keydownHandler);
     }
-    
+
     if (this.keyupHandler) {
       document.removeEventListener('keyup', this.keyupHandler);
     }
+
+    this.virtualPadHandlers.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+
+    this.keydownHandler = null;
+    this.keyupHandler = null;
+    this.virtualPadHandlers = [];
   },
 
   handleKeys() {
@@ -69,19 +78,25 @@ export const InputMapper = {
   handleVirtualPad() {
     document.querySelectorAll('[data-key]').forEach(btn => {
       const padBit = this.p1Pad[btn.dataset.key];
-      
+
       ['mousedown', 'touchstart'].forEach(event => {
-        btn.addEventListener(event, (e) => {
+        const handler = (e) => {
           this.memory[ADDR.GAMEPAD] |= (1 << padBit);
           e.preventDefault();
-        }, { passive: false });
+        };
+
+        btn.addEventListener(event, handler, { passive: false });
+        this.virtualPadHandlers.push({ element: btn, event, handler });
       });
 
-      ['mouseup', 'touchend'].forEach(event => { 
-        btn.addEventListener(event, (e) => {
+      ['mouseup', 'touchend'].forEach(event => {
+        const handler = (e) => {
           this.memory[ADDR.GAMEPAD] &= ~(1 << padBit);
           e.preventDefault();
-        }, { passive: false });
+        };
+
+        btn.addEventListener(event, handler, { passive: false });
+        this.virtualPadHandlers.push({ element: btn, event, handler });
       });
     });
   }

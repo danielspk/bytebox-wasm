@@ -13,6 +13,7 @@ const CONST = {
 
 export const ByteBox = {
   memory: null,
+  wasmModule: null,
   isReady: false,
   frames: 0,
   lastUpdateFPS: 0,
@@ -29,6 +30,7 @@ export const ByteBox = {
   setup() {
     this.memory = new Uint8Array(CONST.MEMORY_SIZE);
     this.memory.fill(0);
+    this.wasmModule = null;
     this.isReady = false;
     this.frames = 0;
     this.lastUpdateFPS = 0;
@@ -51,14 +53,6 @@ export const ByteBox = {
 
     const wasmBytes = new Uint8Array(await response.arrayBuffer());
 
-    DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
-
-    if (wasmBytes.length > CONST.RAM_SIZE) {
-      DOM.InfoSize.style = "color: #fc0c0c";
-    } else {
-      this.memory.set(wasmBytes.slice(0, wasmBytes.length), ADDR.RAM);
-    }
-
     try {
       const wasmModule = await WebAssembly.instantiate(wasmBytes, {
         env: {
@@ -79,6 +73,14 @@ export const ByteBox = {
 
       const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24);
       DOM.InfoName.innerHTML = String.fromCharCode(...name);
+      DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
+
+      if (wasmBytes.length > CONST.RAM_SIZE) {
+        DOM.InfoSize.style = "color: #fc0c0c";
+      } else {
+        // emulate "game in RAM" - this really has no effect
+        this.memory.set(wasmBytes, ADDR.RAM);
+      }
 
       console.log('🎮 ByteBox game is running');
     } catch (err) {
