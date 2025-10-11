@@ -132,12 +132,12 @@ html, body {
 }
 
 .action-btn.btn-a {
-  margin-top: 20px;
+  border-color: #2980b9;
+  background: #3498db;
 }
 
 .action-btn.btn-b {
-  border-color: #2980b9;
-  background: #3498db;
+  margin-top: 20px;
 }
 
 .footer {
