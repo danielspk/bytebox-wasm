@@ -69,6 +69,8 @@ export const ByteBox = {
         return this.error('🧩 missing export update function', null);
       }
 
+      this.memory[ADDR.SEED] = Date.now() & 0xFF;
+
       this.wasmModule.exports.init?.();
       this.isReady = true;
 

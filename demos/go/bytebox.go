@@ -24,6 +24,7 @@ const (
 
 const (
 	SYSFLAGS_ADDR  uint32 = 0x0040
+	SEED_ADDR	   uint32 = 0x0041
 	GAMENAME_ADDR  uint32 = 0x0044
 	VIDEO_ADDR     uint32 = 0xE900
 	COLOR1_ADDR    uint32 = 0xFF84

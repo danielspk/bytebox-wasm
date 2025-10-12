@@ -23,6 +23,7 @@ pub const FRAMEBUFFER_SIZE: usize = (SCREEN_WIDTH as usize * SCREEN_HEIGHT as us
 // ----------------------------------------------------------------------------
 
 pub const SYSFLAGS_ADDR: u16 = 0x0040;
+pub const SEED_ADDR: u16 = 0x0041;
 pub const GAMENAME_ADDR: u16 = 0x0044;
 pub const VIDEO_ADDR: u16 = 0xE900;
 pub const COLOR1_ADDR: u16 = 0xFF84;

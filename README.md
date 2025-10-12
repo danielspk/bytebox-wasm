@@ -78,7 +78,8 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 |-------|------|-------------|
 | `0x0000-0x003F` | 64 bytes | Reserved (future use) |
 | `0x0040` | 1 byte | System flags |
-| `0x0041-0x0043` | 3 bytes | Reserved (future use) |
+| `0x0041` | 1 byte | Seed for random numbers |
+| `0x0042-0x0043` | 2 bytes | Reserved (future use) |
 | `0x0044-0x005B` | 24 bytes | Game name |
 | `0x005C-0x00FF` | 191 bytes | Reserved (future use) |
 | `0x0100-0xE8FF` | 59,392 bytes | Game RAM + Stack |
@@ -96,7 +97,7 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 
 ### System Flags
 
-Address `0x0040` (1 byte) sets system flags. Bit representation:
+Address `0x0040` _(1 byte)_ sets system flags. Bit representation:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -106,6 +107,10 @@ Address `0x0040` (1 byte) sets system flags. Bit representation:
 ```
 
 - **Halt/Resume**: when the bit is set to 1, game loop execution stops _(rendering continues)_. When the bit value is 0, the game loop continues executing.
+
+### Seed
+
+Address `0x0041` _(1 byte)_ sets a pseudo-random value. This is useful for generating random numbers.
 
 ### Game Name
 

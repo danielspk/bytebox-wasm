@@ -31,6 +31,7 @@
 // ----------------------------------------------------------------------------
 
 #define SYSFLAGS_ADDR 0x0040
+#define SEED_ADDR 0x0041
 #define GAMENAME_ADDR 0x0044
 #define VIDEO_ADDR 0xE900
 #define COLOR1_ADDR 0xFF84
