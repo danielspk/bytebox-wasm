@@ -9,6 +9,7 @@ const CONST = {
   MEMORY_SIZE: 64 * 1024,   // 64KB
   RAM_SIZE: 58 * 1024,      // 58KB
   GAME_INTERVAL: 1000 / 60, // game loop speed - 60 fps
+  SPLASH_TIME: 1500,        // in milliseconds
 };
 
 export const ByteBox = {
@@ -97,8 +98,14 @@ export const ByteBox = {
   },
 
   start() {
+    const skipSplash = new URLSearchParams(window.location.search).has('nosplash') ;    
+    if (skipSplash) {
+      this.run();
+      return;
+    }
+
     this.splash();
-    setTimeout(() => { this.run(); }, 1500);
+    setTimeout(() => { this.run(); }, CONST.SPLASH_TIME);
   },
 
   splash() {
