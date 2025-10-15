@@ -268,6 +268,12 @@ To compile a game written in _Rust_, run:
 make build-rust
 ```
 
+To compile a game written in _Zig_, run:
+
+```sh
+make build-zig
+```
+
 ### Run the Console on a Local Web Server
 
 ```sh

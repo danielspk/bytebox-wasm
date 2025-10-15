@@ -24,6 +24,11 @@ build-rust: check-docker clean ## Build game (in Rust)
 		command -v wasm-opt > /dev/null && wasm-opt -Oz ../$(WASM_TARGET) -o ../$(WASM_TARGET).tmp && mv ../$(WASM_TARGET).tmp ../$(WASM_TARGET) || true && \
 		cp target/wasm32-unknown-unknown/release/game.wasm ../$(WASM_TARGET)"
 
+build-zig: check-docker clean ## Build game (in Zig)
+	docker run --rm -v $(CURDIR):/workspace -w /workspace/src kassany/alpine-ziglang:0.13.0 zig build-exe \
+		-target wasm32-freestanding -fno-entry -rdynamic -O ReleaseSmall -fstrip --name game game.zig && \
+	mv $(CURDIR)/src/game.wasm $(WASM_TARGET)
+
 check-docker: ## Check Docker installation
 	@command -v docker > /dev/null || (echo "❌ Docker not found" && exit 1)
 
