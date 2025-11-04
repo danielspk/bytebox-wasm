@@ -14,7 +14,7 @@ Developers can create games using languages that are over 50 years old like _C_,
 
 ### Runtime
 
-The runtime uses vanilla _JavaScript_ in less than 750 lines of code. The goal is not extensibility or modularity, but rather a simple, minimalist implementation without overhead.
+The runtime uses vanilla _JavaScript_ in less than 1000 lines of code. The goal is not extensibility or modularity, but rather a simple, minimalist implementation without overhead.
 
 An equally simple memory viewer is also available. Users can access it using the `F8` key.
 
@@ -39,19 +39,21 @@ To run any of these examples, copy the example's content into the `src/` folder 
 - Linear framebuffer (2 bits per pixel).
 - 2 controller pads with 6 buttons each.
 - 4 audio channels.
-- Compiled games should not exceed 58KB.
+- Compiled games should not exceed 56KB.
 - No predefined functions for playing sounds or drawing sprites. Only memory read/write operations are available.
 - No reset button.
 
 ### Notes on Design Decisions
 
-> About the game size limitation: 58KB might seem small, but these constraints enable significant creativity. The limitation is not blocking since young developers might benefit from enabling debugging options that quickly exceed the desired limit. However, games exceeding this size display a red indicator on the screen 🫣.
+> About the game size limitation: 56KB might seem small, but these constraints enable significant creativity. The limitation is not blocking since young developers might benefit from enabling debugging options that quickly exceed the desired limit. However, games exceeding this size display a red indicator on the screen 🫣.
 
 > About the absence of graphics functions: implementing custom sprite movement, gravity, parallax procedures, and similar features provides an excellent learning opportunity 🧠.
 
 > About screen resolution and colors: these values match the Game Boy specifications. However, major differences exist since colors are customizable and the console uses a framebuffer rather than a tile and attribute system.
 
 > About the controller pads: having only two main buttons is one of the most important and deliberate limitations. Some doubts remain about this decision, but fortunately 2 bits are available in case reconsideration becomes necessary in the future.
+
+> About reserving space for RAM and Stack responds to a possible dual use with assembler _(MOS 6502, Zilog 80, etc)_.
 
 ## Functions
 
@@ -82,7 +84,9 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 | `0x0042-0x0043` | 2 bytes | Reserved (future use) |
 | `0x0044-0x005B` | 24 bytes | Game name |
 | `0x005C-0x00FF` | 191 bytes | Reserved (future use) |
-| `0x0100-0xE8FF` | 59,392 bytes | Game RAM + Stack |
+| `0x0100-0xE0FF` | 57,344 bytes | Game ROM |
+| `0xE100-0xE4FF` | 1,024 bytes | Write RAM |
+| `0xE500-0xE8FF` | 1,024 bytes | Reserved for RAM + Stack (future use) |
 | `0xE900-0xFF7F` | 5,760 bytes | Video framebuffer |
 | `0xFF80-0xFF83` | 4 bytes | Reserved (future use) |
 | `0xFF84-0xFF8F` | 12 bytes | Color palette |
@@ -103,10 +107,12 @@ Address `0x0040` _(1 byte)_ sets system flags. Bit representation:
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
 │ │ │ │ │ │ │ └ HALT/RESUME
-└ └ └ └ └ └ └── unused
+│ │ │ │ │ │ └── DUMP WRAM
+└ └ └ └ └ └──── unused
 ```
 
 - **Halt/Resume**: when the bit is set to 1, game loop execution stops _(rendering continues)_. When the bit value is 0, the game loop continues executing.
+- **Dump WRAM**: when the bit is set to 1, WRAM is dumping into the cartridge _(local storage is actually used)_. When the dump is finished, the bit is automatically set to 0.
 
 ### Seed
 
@@ -116,9 +122,19 @@ Address `0x0041` _(1 byte)_ sets a pseudo-random value. This is useful for gener
 
 Addresses from `0x0044` to `0x005B` _(24 bytes)_ store the ASCII game name.
 
+### ROM Game
+
+Addresses from `0x0100` to `0xE0FF` _(57344 bytes)_ stores the read-only ROM game.
+
+### WRAM
+
+Addresses from `0xE100` to `0xE4FF` _(1024 bytes)_ stores writable RAM.
+
+This memory can be dumped into the game cartridge _(see system flags)_. The console automatically reloads it when you start the game.
+
 ### Video Framebuffer
 
-Addresses from `0xE900` to `0xFF7F` _(5760 bytes)_ store the linear video framebuffer. Screen resolution is 160px by 144px and each framebuffer byte represents 4 pixels _(2 bits per pixel)_.
+Addresses from `0xE900` to `0xFF7F` _(5760 bytes)_ stores the linear video framebuffer. Screen resolution is 160px by 144px and each framebuffer byte represents 4 pixels _(2 bits per pixel)_.
 
 Within each byte, pixels are stored in **MSB first** order:
 

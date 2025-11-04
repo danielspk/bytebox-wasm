@@ -4,7 +4,8 @@ export const ADDR = {
   SYSFLAGS: 0x0040,     // system flags address - length 1 byte
   SEED: 0x0041,         // seed for random number address - length 1 byte
   GAME_NAME: 0x0044,    // start game name address - length 24 bytes
-  RAM: 0x0100,          // start ram address - length 59392 bytes
+  ROM: 0x0100,          // start rom address - length 57344 bytes
+  WRAM: 0xE100,         // start write ram address - length 1024 bytes
   VIDEO: 0xE900,        // start video address - length 5760 bytes
   PALETTE: 0xFF84,      // start color palettes - length 12 bytes
   GAMEPAD: 0xFF94,      // start gamepads address - length 2 bytes

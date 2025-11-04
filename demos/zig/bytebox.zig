@@ -37,6 +37,7 @@ pub const SFX_CH4_ADDR: u16 = 0xFFA4;
 // ----------------------------------------------------------------------------
 
 pub const HALT_FLAG: u8 = 0x01;
+pub const DUMP_WRAM_FLAG: u8 = 0x02;
 
 // ----------------------------------------------------------------------------
 // Gamepad Buttons Bits Constants

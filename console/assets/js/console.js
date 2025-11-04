@@ -2,12 +2,13 @@ import { ADDR, DOM } from './config.js';
 import { InputMapper } from './input-mapper.js';
 import { SoundMapper } from './sound-mapper.js';
 import { VideoMapper } from './video-mapper.js';
+import { WRAMMapper } from './wram-mapper.js';
 
 // ByteBox Console ------------------------------------------------------------
 
 const CONST = {
   MEMORY_SIZE: 64 * 1024,   // 64KB
-  RAM_SIZE: 58 * 1024,      // 58KB
+  ROM_SIZE: 56 * 1024,      // 56KB
   GAME_INTERVAL: 1000 / 60, // game loop speed - 60 fps
   SPLASH_TIME: 1500,        // in milliseconds
 };
@@ -40,6 +41,7 @@ export const ByteBox = {
     VideoMapper.init(this.memory);
     InputMapper.init(this.memory);
     SoundMapper.init(this.memory);
+    WRAMMapper.init(this.memory);
   },
 
   async load(wasmUrl) {
@@ -69,8 +71,10 @@ export const ByteBox = {
         return this.error('🧩 missing export update function', null);
       }
 
-      this.memory[ADDR.SEED] = Date.now() & 0xFF;
+      const gameID = btoa(String.fromCharCode(...wasmBytes)).substring(0, 16);
+      WRAMMapper.sync(gameID);
 
+      this.memory[ADDR.SEED] = Date.now() & 0xFF;
       this.wasmModule.exports.init?.();
       this.isReady = true;
 
@@ -78,11 +82,11 @@ export const ByteBox = {
       DOM.InfoName.innerHTML = String.fromCharCode(...name);
       DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
 
-      if (wasmBytes.length > CONST.RAM_SIZE) {
+      if (wasmBytes.length > CONST.ROM_SIZE) {
         DOM.InfoSize.style = "color: #fc0c0c";
       } else {
-        // emulate "game in RAM" - this really has no effect
-        this.memory.set(wasmBytes, ADDR.RAM);
+        // emulate "game ROM" - this really has no effect
+        this.memory.set(wasmBytes, ADDR.ROM);
       }
 
       console.log('🎮 ByteBox game is running');
@@ -150,6 +154,7 @@ export const ByteBox = {
       while (accumulator >= CONST.GAME_INTERVAL) {
         if (!(this.memory[ADDR.SYSFLAGS] & 0x01)) {
           this.wasmModule.exports.update();
+          WRAMMapper.store();
           SoundMapper.play();
         }
 
