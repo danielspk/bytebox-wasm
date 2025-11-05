@@ -126,10 +126,14 @@ export const VideoMapper = {
 
   resize() {
     const maxWidth = Math.min(window.innerWidth * 0.8, 600);
-    const scale = Math.min(maxWidth / CONST.SCREEN_WIDTH, 2.2);
+    const scale = Math.floor(Math.min(maxWidth / CONST.SCREEN_WIDTH, 2));
+    const displayWidth = CONST.SCREEN_WIDTH * scale;
+    const displayHeight = CONST.SCREEN_HEIGHT * scale;
 
-    DOM.ScreenCanvas.style.width = (CONST.SCREEN_WIDTH * scale) + 'px';
-    DOM.ScreenCanvas.style.height = (CONST.SCREEN_HEIGHT * scale) + 'px';
+    this.gl.viewport(0, 0, displayWidth, displayHeight);
+
+    DOM.ScreenCanvas.width = displayWidth;
+    DOM.ScreenCanvas.height = displayHeight;
     DOM.Console.style.visibility = "inherit";
   },
 
