@@ -20,6 +20,7 @@ pub const FRAMEBUFFER_SIZE: u16 = (SCREEN_WIDTH * SCREEN_HEIGHT) / 4;
 pub const SYSFLAGS_ADDR: u16 = 0x0040;
 pub const SEED_ADDR: u16 = 0x0041;
 pub const GAMENAME_ADDR: u16 = 0x0044;
+pub const WRAM_ADDR: u16 = 0xE100;
 pub const VIDEO_ADDR: u16 = 0xE900;
 pub const COLOR1_ADDR: u16 = 0xFF84;
 pub const COLOR2_ADDR: u16 = 0xFF87;
