@@ -6,6 +6,12 @@
 
 The project aims to inspire creativity by interacting with "hardware" (actually virtualized) through memory-mapped communication.
 
+## Directories
+
+- **console**: contains the WASM runtime. It's the "console" that runs in a web browser.
+- **demos**: contains example games and templates from different languages to compile to **WASM**.
+- **src**: optionally contains a game's source code.
+
 ## Platform
 
 The idea behind using **WASM** as the target architecture is that it allows using different programming languages to achieve a common goal: _programming and having fun_.
@@ -20,15 +26,15 @@ An equally simple memory viewer is also available. Users can access it using the
 
 ### Examples
 
-The project provides several simple examples in different programming languages. Additionally, developers can use any language that compiles to standard wasm-wasi _(without runtimes)_.
+#### Games
 
-To run any of these examples, copy the example's content into the `src/` folder and execute the compilation command corresponding to the programming language used _(see Useful Commands)_.
+Along with the project, some simple prototype games already compiled are supplied.
 
-## Directories
+#### Templates
 
-- **console**: contains the WASM runtime. It's the "console" that runs in a web browser.
-- **demos**: contains simple examples in different languages that compile to **WASM**.
-- **src**: optionally contains a game's source code.
+Also, the project provides several simple termplate examples in different programming languages. Additionally, developers can use any language that compiles to standard wasm-wasi _(without runtimes)_.
+
+To run any of these examples, copy the template example's content into the `src/` folder and execute the compilation command corresponding to the programming language used _(see Useful Commands)_.
 
 ## Features/Limitations
 

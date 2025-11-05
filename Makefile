@@ -35,4 +35,4 @@ check-docker: ## Check Docker installation
 clean: ## Clean game file
 	rm -f $(WASM_TARGET)
 
-.PHONY: help run build-c build-go build-rust check-docker clean
+.PHONY: help run build-c build-go build-rust build-zig check-docker clean
