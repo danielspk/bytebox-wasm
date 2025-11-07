@@ -9,8 +9,9 @@ run: check-docker ## Run the console
 
 build-c: check-docker clean ## Build game (in C)
 	docker run --rm -v $(CURDIR):/src -w /src ghcr.io/webassembly/wasi-sdk /opt/wasi-sdk/bin/clang \
-		-std=c23 -pedantic -W -Wall -Wextra -Werror --target=wasm32-wasi -Oz -Wl,--no-entry \
-		-Wl,--strip-all -Wl,--export-dynamic -nostartfiles -o $(WASM_TARGET) src/*.c
+		-std=c23 -pedantic -W -Wall -Wextra -Werror --target=wasm32-unknown-unknown -Oz \
+		-Wl,--no-entry -Wl,--strip-all -Wl,--export-dynamic -nostdlib -nodefaultlibs -nostartfiles \
+		-ffreestanding -o $(WASM_TARGET) src/*.c
 
 build-go: check-docker clean ## Build game (in Go)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src tinygo/tinygo tinygo build \

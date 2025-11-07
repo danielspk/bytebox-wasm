@@ -4,7 +4,7 @@
 
 **ByteBox** is a project based on the idea of a fantasy console designed for creating "old school" video games.
 
-The project aims to inspire creativity by interacting with "hardware" (actually virtualized) through memory-mapped communication.
+The project aims to inspire creativity by interacting with "hardware" _(actually virtualized)_ through memory-mapped communication.
 
 ## Directories
 
@@ -17,6 +17,8 @@ The project aims to inspire creativity by interacting with "hardware" (actually 
 The idea behind using **WASM** as the target architecture is that it allows using different programming languages to achieve a common goal: _programming and having fun_.
 
 Developers can create games using languages that are over 50 years old like _C_, or more modern ones like _Rust_.
+
+> Compilation must use pure **WASM** without **WASI** dependencies.
 
 ### Runtime
 
@@ -32,7 +34,7 @@ Along with the project, some simple prototype games already compiled are supplie
 
 #### Templates
 
-Also, the project provides several simple termplate examples in different programming languages. Additionally, developers can use any language that compiles to standard wasm-wasi _(without runtimes)_.
+Also, the project provides several simple termplate examples in different programming languages. Additionally, developers can use any language that compiles to standard wasm _(without runtimes)_.
 
 To run any of these examples, copy the template example's content into the `src/` folder and execute the compilation command corresponding to the programming language used _(see Useful Commands)_.
 
