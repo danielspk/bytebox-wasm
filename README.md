@@ -42,7 +42,7 @@ To run any of these examples, copy the template example's content into the `src/
 
 - 8-bit architecture - _little endian_.
 - 64KB of memory.
-- 160x144 pixel display.
+- 160x120 pixel display.
 - 4-color RGB palette.
 - Linear framebuffer (2 bits per pixel).
 - 2 controller pads with 6 buttons each.
@@ -57,7 +57,7 @@ To run any of these examples, copy the template example's content into the `src/
 
 > About the absence of graphics functions: implementing custom sprite movement, gravity, parallax procedures, and similar features provides an excellent learning opportunity 🧠.
 
-> About screen resolution and colors: these values match the Game Boy specifications. However, major differences exist since colors are customizable and the console uses a framebuffer rather than a tile and attribute system.
+> About screen resolution and colors: we are looking for a resolution with a classic 4:3 aspect ratio and measurements similar to those of the Game Boy. Likewise, 4 different colors can be represented as in the Game Boy but with important differences since the colors are customizable and the console uses a framebuffer instead of a system of tiles and attributes.
 
 > About the controller pads: having only two main buttons is one of the most important and deliberate limitations. Some doubts remain about this decision, but fortunately 2 bits are available in case reconsideration becomes necessary in the future.
 
@@ -95,8 +95,8 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 | `0x0100-0xE0FF` | 57,344 bytes | Game ROM |
 | `0xE100-0xE4FF` | 1,024 bytes | Write RAM |
 | `0xE500-0xE8FF` | 1,024 bytes | Reserved for RAM + Stack (future use) |
-| `0xE900-0xFF7F` | 5,760 bytes | Video framebuffer |
-| `0xFF80-0xFF83` | 4 bytes | Reserved (future use) |
+| `0xE900-0xFBBF` | 4,800 bytes | Video framebuffer |
+| `0xFBC0-0xFF83` | 964 bytes | Reserved (future use) |
 | `0xFF84-0xFF8F` | 12 bytes | Color palette |
 | `0xFF90-0xFF93` | 4 bytes | Reserved (future use) |
 | `0xFF94-0xFF95` | 2 bytes | Controller pads |
@@ -142,7 +142,7 @@ This memory can be dumped into the game cartridge _(see system flags)_. The cons
 
 ### Video Framebuffer
 
-Addresses from `0xE900` to `0xFF7F` _(5760 bytes)_ stores the linear video framebuffer. Screen resolution is 160px by 144px and each framebuffer byte represents 4 pixels _(2 bits per pixel)_.
+Addresses from `0xE900` to `0xFBBF` _(4800 bytes)_ stores the linear video framebuffer. Screen resolution is 160px by 120px and each framebuffer byte represents 4 pixels _(2 bits per pixel)_.
 
 Within each byte, pixels are stored in **MSB first** order:
 

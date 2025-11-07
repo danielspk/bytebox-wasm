@@ -4,8 +4,8 @@ import { ADDR, DOM } from './config.js';
 
 const CONST = {
   SCREEN_WIDTH: 160,
-  SCREEN_HEIGHT: 144,
-  VIDEO_SIZE: (160 * 144) / 4,
+  SCREEN_HEIGHT: 120,
+  VIDEO_SIZE: (160 * 120) / 4,
 
   VERTEX_SHADER_SOURCE: `
     attribute vec2 a_position;

@@ -22,7 +22,7 @@
 // ----------------------------------------------------------------------------
 
 #define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 144
+#define SCREEN_HEIGHT 120
 #define MEMORY_SIZE (64 * 1024)
 #define FRAMEBUFFER_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 4)
 

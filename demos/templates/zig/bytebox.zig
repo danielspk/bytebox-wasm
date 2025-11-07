@@ -9,7 +9,7 @@
 // ----------------------------------------------------------------------------
 
 pub const SCREEN_WIDTH: u16 = 160;
-pub const SCREEN_HEIGHT: u16 = 144;
+pub const SCREEN_HEIGHT: u16 = 120;
 pub const MEMORY_SIZE: u32 = 64 * 1024;
 pub const FRAMEBUFFER_SIZE: u16 = (SCREEN_WIDTH * SCREEN_HEIGHT) / 4;
 

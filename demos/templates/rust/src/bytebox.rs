@@ -15,7 +15,7 @@ use core::ffi::c_char;
 // ----------------------------------------------------------------------------
 
 pub const SCREEN_WIDTH: u8 = 160;
-pub const SCREEN_HEIGHT: u8 = 144;
+pub const SCREEN_HEIGHT: u8 = 120;
 pub const FRAMEBUFFER_SIZE: usize = (SCREEN_WIDTH as usize * SCREEN_HEIGHT as usize) / 4;
 
 // ----------------------------------------------------------------------------

@@ -14,7 +14,7 @@ package main
 
 const (
 	SCREEN_WIDTH     uint32 = 160
-	SCREEN_HEIGHT    uint32 = 144
+	SCREEN_HEIGHT    uint32 = 120
 	FRAMEBUFFER_SIZE uint32 = (SCREEN_WIDTH * SCREEN_HEIGHT / 4)
 )
 
