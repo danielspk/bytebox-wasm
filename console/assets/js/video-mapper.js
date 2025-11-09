@@ -40,7 +40,7 @@ export const VideoMapper = {
     this.memory = memory;
 
     this.gl = DOM.ScreenCanvas.getContext('webgl');
-    this.videoBuffer = new Uint8Array(CONST.SCREEN_WIDTH * CONST.SCREEN_HEIGHT * 4); // 23040 pixels * 4 bytes per pixel (RGBA)
+    this.videoBuffer = new Uint8Array(CONST.SCREEN_WIDTH * CONST.SCREEN_HEIGHT * 4); // 19200 pixels * 4 bytes per pixel (RGBA) = 76800 bytes
     this.vertexBuffer = null;
     this.attributes = {
       position: null,
