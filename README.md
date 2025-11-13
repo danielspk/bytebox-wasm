@@ -322,8 +322,6 @@ PORT=8080 make run
 
 The decision for the memory map layout and reserving certain addresses for future use considers compatibility with 3 classic processors from the _70s/80s_: the **MOS 6502**, **Intel 8080**, and **Zilog Z80**. Eventually in the future, the runtime could also process assembly code for any of these processors.
 
-An interesting cartridge project could support embedded languages like **lua** by including its virtual machine within the cartridge. A game that allows running games?
-
 ## License
 
 This project is distributed under the following [license](LICENSE).
