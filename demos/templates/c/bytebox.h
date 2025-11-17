@@ -76,6 +76,10 @@ uint8_t peek(uint16_t addr);
 BYTE_BOX_IMPORT("poke")
 void poke(uint16_t addr, uint8_t value);
 
+/* Writes multiple bytes into memory */
+BYTE_BOX_IMPORT("spoke")
+void spoke(uint16_t start_addr, uint16_t length, const uint8_t *data);
+
 /* Puts trace information to the console */
 BYTE_BOX_IMPORT("trace")
 void trace(const char *str, int len);

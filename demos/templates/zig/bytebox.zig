@@ -61,6 +61,9 @@ pub extern "env" fn peek(addr: u16) u8;
 /// Sets a value into a memory address
 pub extern "env" fn poke(addr: u16, value: u8) void;
 
+/// Writes multiple bytes into memory
+pub extern "env" fn spoke(start_addr: u16, length: u16, data: [*]const u8) void;
+
 /// Puts trace information to the console
 pub extern "env" fn trace(str: [*]const u8, len: i32) void;
 

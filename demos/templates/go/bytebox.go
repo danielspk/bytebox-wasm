@@ -74,6 +74,11 @@ func peek(addr uint32) uint32
 //go:wasmimport env poke
 func poke(addr uint32, value uint32)
 
+// Writes multiple bytes into memory
+//
+//go:wasmimport env spoke
+func spoke(startAddr uint32, length uint32, dataPtr *byte)
+
 // Puts trace information to the console
 //
 //go:wasmimport env trace

@@ -10,10 +10,9 @@ var player_x: u8 = undefined;
 var player_y: u8 = undefined;
 
 fn clearScreen() void {
-    var i: u16 = 0;
-    while (i < bb.FRAMEBUFFER_SIZE) : (i += 1) {
-        bb.poke(bb.VIDEO_ADDR + i, 0x00);
-    }
+    const clear_buffer = [_]u8{0} ** bb.FRAMEBUFFER_SIZE;
+
+    bb.spoke(bb.VIDEO_ADDR, bb.FRAMEBUFFER_SIZE, &clear_buffer);
 }
 
 fn updatePlayer() void {

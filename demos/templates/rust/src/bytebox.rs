@@ -69,6 +69,10 @@ extern "C" {
     #[link_name = "poke"]
     pub fn poke(addr: u16, value: u8);
 
+    /// Writes multiple bytes into memory
+    #[link_name = "spoke"]
+    pub fn spoke(start_addr: u16, length: u16, data: *const u8);
+
     /// Puts trace information to the console
     #[link_name = "trace"]
     pub fn trace(str_ptr: *const c_char, len: i32);

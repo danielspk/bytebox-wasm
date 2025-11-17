@@ -14,9 +14,9 @@ var (
 )
 
 func clearScreen() {
-	for i := uint32(0); i < FRAMEBUFFER_SIZE; i++ {
-		poke(VIDEO_ADDR+i, 0x00)
-	}
+	var clearBuffer [FRAMEBUFFER_SIZE]byte
+
+	spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE, &clearBuffer[0])
 }
 
 func updatePlayer() {

@@ -61,6 +61,7 @@ export const ByteBox = {
         env: {
           peek: this.peek.bind(this),
           poke: this.poke.bind(this),
+          spoke: this.spoke.bind(this),
           trace: this.trace.bind(this)
         }
       });
@@ -225,6 +226,21 @@ export const ByteBox = {
     }
 
     this.memory[addr] = value;
+  },
+
+  spoke(startAddr, len, ptr) {
+    if (startAddr < 0 || startAddr >= CONST.MEMORY_SIZE) {
+      console.warn(`⚠️ start address ${ startAddr } is out of range`);
+      return;
+    }
+    if (startAddr + len > CONST.MEMORY_SIZE) {
+      console.warn(`⚠️ start address ${ startAddr } + ${ len } exceeds memory bounds`);
+      return;
+    }
+
+    const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
+
+    this.memory.set(bytes, startAddr);
   },
 
   trace(ptr, len) {

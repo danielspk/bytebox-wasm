@@ -13,9 +13,9 @@ static mut PLAYER_Y: u8 = 0;
 
 fn clear_screen() {
     unsafe {
-        for i in 0..FRAMEBUFFER_SIZE {
-            poke(VIDEO_ADDR + i as u16, 0x00);
-        }
+        static mut CLEAR_BUFFER: [u8; FRAMEBUFFER_SIZE] = [0; FRAMEBUFFER_SIZE];
+
+        spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE as u16, CLEAR_BUFFER.as_ptr());
     }
 }
 

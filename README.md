@@ -65,7 +65,7 @@ To run any of these examples, copy the template example's content into the `src/
 
 ## Functions
 
-The **WASM** interaction _API_ is minimal and consists of 2 exportable functions and 3 importable functions.
+The **WASM** interaction _API_ is minimal and consists of 2 exportable functions and 4 importable functions.
 
 ### Exportable
 
@@ -76,7 +76,8 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 
 - `peek(addr) -> value`: Retrieves the value from a memory address.
 - `poke(addr, value)`: Sets a value at a memory address.
-- `trace(str, len)`: Outputs a log message. Since WASM shares memory to work with complex data types (like strings), the message length must be specified.
+- `spoke(start_addr, length, data)`: _super poke_ writes multiple bytes to memory in a single call.
+- `trace(str, len)`: Outputs a log message. Since WASM shares memory to work with complex data types _(like strings)_, the message length must be specified.
 
 ## Memory Map
 

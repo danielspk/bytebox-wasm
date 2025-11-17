@@ -14,9 +14,9 @@ static uint8_t player_y;
 
 void clear_screen()
 {
-    for (int i = 0; i < FRAMEBUFFER_SIZE; i++) {
-        poke(VIDEO_ADDR + i, 0x00);
-    }
+    static uint8_t clear_buffer[FRAMEBUFFER_SIZE] = {0};
+
+    spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE, clear_buffer);
 }
 
 void update_player(void)
