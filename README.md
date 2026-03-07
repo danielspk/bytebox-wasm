@@ -102,9 +102,12 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 | `0xFF90-0xFF93` | 4 bytes | Reserved (future use) |
 | `0xFF94-0xFF95` | 2 bytes | Controller pads |
 | `0xFF96` | 1 byte | Reserved (future use) |
-| `0xFF97` | 1 byte | Audio channel status |
-| `0xFF98-0xFFA7` | 16 bytes | SFX Audio channels |
-| `0xFFA8-0xFFFF` | 88 bytes | Reserved (future use) |
+| `0xFF97` | 1 byte | SFX channel status |
+| `0xFF98-0xFFA7` | 16 bytes | SFX channels |
+| `0xFFA8` | 1 byte | Melody attributes |
+| `0xFFA9-0xFFE8` | 64 bytes | Melody ring buffer |
+| `0xFFE9-0xFFEA` | 2 bytes | Melody pointers |
+| `0xFFEB-0xFFFF` | 21 bytes | Reserved (future use) |
 
 > The design deliberately avoids direct memory sharing with **WASM** in favor of peek/poke functions. This abstraction layer provides better encapsulation, allows for memory access logging and validation, prevents potential buffer overflows, and gives the runtime more flexibility in memory management without exposing low-level implementation details to the game code.
 
@@ -194,7 +197,7 @@ Controller keys:
   - Button A: `K` key.
   - Button B: `L` key.
 
-### SFX Channel Status
+### Sound Effects Channel Status
 
 Address `0xFF97` _(1 byte)_ provides read-only status of all sound channels. Bit representation:
 
@@ -210,11 +213,11 @@ Address `0xFF97` _(1 byte)_ provides read-only status of all sound channels. Bit
 
 Bit 1 = channel playing, bit 0 = channel free.
 
-### Sound and Effects
+### Sound Effects Channels
 
 Addresses from `0xFF98` to `0xFFA7` _(16 bytes)_ handle the 4 available sound effects channels. Each channel uses 4 bytes for sound effect generation.
 
-#### Sound Data Structure
+#### Data Structure
 
 Each 4-byte sound effect is structured as follows:
 
@@ -266,6 +269,68 @@ A channel cannot play a new sound while a previous sound is still playing on tha
 - **1**: sawtooth.
 - **2**: squeare.
 - **3**: triangle.
+
+### Melody Attributes
+
+Address `0xFFA8` _(1 byte)_ sets the master volume for the melody audio. Bit representation:
+
+```txt
+7 6 5 4 3 2 1 0
+│ │ │ │ │ │ │ │
+│ │ │ │ └ └ └ └ VOLUME: (0-15)
+└ └ └ └──────── unused
+```
+
+### Melody Buffer
+
+Addresses from `0xFFA9` to `0xFFE8` _(64 bytes)_ store the melody audio ring buffer.
+
+#### FAB-4 Protocol
+
+Each 4-byte entry represents a note event:
+
+- **Byte 0**:
+
+```txt
+7 6 5 4 3 2 1 0
+│ │ │ │ │ │ │ │
+└ └ └ └ └ └ └ └ DELTA_HI: (ms)
+```
+
+- **Byte 1**:
+
+```txt
+7 6 5 4 3 2 1 0
+│ │ │ │ │ │ │ │
+└ └ └ └ └ └ └ └ DELTA_LO: (ms)
+```
+
+- **Byte 2**:
+
+```txt
+7 6 5 4 3 2 1 0
+│ │ │ │ │ │ │ │
+│ │ │ │ └ └ └ └ NOTE (0-127)
+└ └ └ └──────── unused
+```
+
+- **Byte 3**:
+
+```txt
+7 6 5 4 3 2 1 0
+│ │ │ │ │ │ │ │
+│ │ │ │ └ └ └ └ VOLUME: (0-15)
+│ └ └ └──────── CHANNEL: (0-7)
+└────────────── STATUS: (1: ON, 0: OFF)
+```
+
+### Melody Pointers
+
+Address `0xFFE9` _(1 byte)_ sets the head _(producer)_ of the melody audio ring buffer.
+
+Address `0xFFEA` _(1 byte)_ provides read-only access to the tail _(consumer)_ of the melody audio ring buffer.
+
+Both addresses implement a _producer-consumer_ pattern: write to `0xFFE9` to queue new melody entries; the APU advances `0xFFEA` as it consumes them.
 
 ## Useful Commands
 

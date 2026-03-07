@@ -1,6 +1,9 @@
 import { ADDR } from './config.js';
+import { AudioBus } from './audio-bus.js';
 
 // IO Sound Mapper ------------------------------------------------------------
+
+const TIMBRES = ['sine', 'sawtooth', 'square', 'triangle'];
 
 const CONST = {
   NUM_CHANNELS: 4,
@@ -9,37 +12,18 @@ const CONST = {
 
 export const SoundMapper = {
   memory: null,
-  audioContext: null,
-  masterGain: null,
   audioChannels: [],
 
   init(memory) {
     this.memory = memory;
 
-    this.setup();
-  },
-
-  setup() {
-    const initAudioContext = () => {
-      if (this.audioContext) return;
-
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      this.masterGain = this.audioContext.createGain();
-      this.masterGain.gain.value = 0.3;
-      this.masterGain.connect(this.audioContext.destination);
-
-      for (let i = 0; i < CONST.NUM_CHANNELS; i++) {
-        this.audioChannels[i] = {
-          oscillator: null,
-          gainNode: null,
-          isPlaying: false
-        };
-      }
-    };
-
-    ['click', 'keydown', 'mousedown', 'touchstart'].forEach(e => {
-      document.addEventListener(e, initAudioContext, { once: true });
-    });
+    for (let i = 0; i < CONST.NUM_CHANNELS; i++) {
+      this.audioChannels[i] = {
+        oscillator: null,
+        gainNode: null,
+        isPlaying: false
+      };
+    }
   },
 
   play() {
@@ -64,23 +48,22 @@ export const SoundMapper = {
   },
 
   effect(freqStart, freqEnd, duration, volume, vibrato, waveType, channel) {
-    if (!this.audioContext) return;
+    if (!AudioBus.audioContext) return;
     if (this.audioChannels[channel].isPlaying) return;
 
-    const waveTypes = ['sine', 'sawtooth', 'square', 'triangle'];
     const audioChannel = this.audioChannels[channel];
-    const now = this.audioContext.currentTime;
+    const now = AudioBus.audioContext.currentTime;
 
-    audioChannel.oscillator = this.audioContext.createOscillator();
-    audioChannel.gainNode = this.audioContext.createGain();
+    audioChannel.oscillator = AudioBus.audioContext.createOscillator();
+    audioChannel.gainNode = AudioBus.audioContext.createGain();
 
-    audioChannel.oscillator.type = waveTypes[waveType];
+    audioChannel.oscillator.type = TIMBRES[waveType];
     audioChannel.oscillator.frequency.setValueAtTime(freqStart, now);
     audioChannel.oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd), now + duration);
 
     if (vibrato > 0) {
-      const lfo = this.audioContext.createOscillator();
-      const lfoGain = this.audioContext.createGain();
+      const lfo = AudioBus.audioContext.createOscillator();
+      const lfoGain = AudioBus.audioContext.createGain();
 
       lfo.type = 'sine';
       lfo.frequency.value = 8 + (vibrato * 2);
@@ -95,7 +78,7 @@ export const SoundMapper = {
     audioChannel.gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
     audioChannel.oscillator.connect(audioChannel.gainNode);
-    audioChannel.gainNode.connect(this.masterGain);
+    audioChannel.gainNode.connect(AudioBus.masterGain);
     audioChannel.oscillator.start(now);
     audioChannel.oscillator.stop(now + duration);
     audioChannel.isPlaying = true;

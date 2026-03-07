@@ -25,7 +25,7 @@ pub const FRAMEBUFFER_SIZE: usize = (SCREEN_WIDTH as usize * SCREEN_HEIGHT as us
 pub const SYSFLAGS_ADDR: u16 = 0x0040;
 pub const SEED_ADDR: u16 = 0x0041;
 pub const GAMENAME_ADDR: u16 = 0x0044;
-pub const WRAM_ADDR: u16 0xE100;
+pub const WRAM_ADDR: u16 = 0xE100;
 pub const VIDEO_ADDR: u16 = 0xE900;
 pub const COLOR1_ADDR: u16 = 0xFF84;
 pub const COLOR2_ADDR: u16 = 0xFF87;
@@ -37,6 +37,10 @@ pub const SFX_CH1_ADDR: u16 = 0xFF98;
 pub const SFX_CH2_ADDR: u16 = 0xFF9C;
 pub const SFX_CH3_ADDR: u16 = 0xFFA0;
 pub const SFX_CH4_ADDR: u16 = 0xFFA4;
+pub const MELODY_ATTR_ADDR: u16 = 0xFFA8;
+pub const MELODY_ADDR: u16 = 0xFFA9;
+pub const MELODY_HEAD_ADDR: u16 = 0xFFE9;
+pub const MELODY_TAIL_ADDR: u16 = 0xFFEA;
 
 // ----------------------------------------------------------------------------
 // System Flags Bits Constants

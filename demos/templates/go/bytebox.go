@@ -23,21 +23,25 @@ const (
 // ----------------------------------------------------------------------------
 
 const (
-	SYSFLAGS_ADDR  uint32 = 0x0040
-	SEED_ADDR	   uint32 = 0x0041
-	GAMENAME_ADDR  uint32 = 0x0044
-	WRAM_ADDR      uint32 = 0xE100
-	VIDEO_ADDR     uint32 = 0xE900
-	COLOR1_ADDR    uint32 = 0xFF84
-	COLOR2_ADDR    uint32 = 0xFF87
-	COLOR3_ADDR    uint32 = 0xFF8A
-	COLOR4_ADDR    uint32 = 0xFF8D
-	GAMEPAD1_ADDR  uint32 = 0xFF94
-	GAMEPAD2_ADDR  uint32 = 0xFF95
-	SFX_CH1_ADDR   uint32 = 0xFF98
-	SFX_CH2_ADDR   uint32 = 0xFF9C
-	SFX_CH3_ADDR   uint32 = 0xFFA0
-	SFX_CH4_ADDR   uint32 = 0xFFA4
+	SYSFLAGS_ADDR    uint32 = 0x0040
+	SEED_ADDR        uint32 = 0x0041
+	GAMENAME_ADDR    uint32 = 0x0044
+	WRAM_ADDR        uint32 = 0xE100
+	VIDEO_ADDR       uint32 = 0xE900
+	COLOR1_ADDR      uint32 = 0xFF84
+	COLOR2_ADDR      uint32 = 0xFF87
+	COLOR3_ADDR      uint32 = 0xFF8A
+	COLOR4_ADDR      uint32 = 0xFF8D
+	GAMEPAD1_ADDR    uint32 = 0xFF94
+	GAMEPAD2_ADDR    uint32 = 0xFF95
+	SFX_CH1_ADDR     uint32 = 0xFF98
+	SFX_CH2_ADDR     uint32 = 0xFF9C
+	SFX_CH3_ADDR     uint32 = 0xFFA0
+	SFX_CH4_ADDR     uint32 = 0xFFA4
+	MELODY_ATTR_ADDR uint32 = 0xFFA8
+	MELODY_ADDR      uint32 = 0xFFA9
+	MELODY_HEAD_ADDR uint32 = 0xFFE9
+	MELODY_TAIL_ADDR uint32 = 0xFFEA
 )
 
 // ----------------------------------------------------------------------------

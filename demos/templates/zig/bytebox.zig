@@ -32,6 +32,10 @@ pub const SFX_CH1_ADDR: u16 = 0xFF98;
 pub const SFX_CH2_ADDR: u16 = 0xFF9C;
 pub const SFX_CH3_ADDR: u16 = 0xFFA0;
 pub const SFX_CH4_ADDR: u16 = 0xFFA4;
+pub const MELODY_ATTR_ADDR: u16 = 0xFFA8;
+pub const MELODY_ADDR: u16 = 0xFFA9;
+pub const MELODY_HEAD_ADDR: u16 = 0xFFE9;
+pub const MELODY_TAIL_ADDR: u16 = 0xFFEA;
 
 // ----------------------------------------------------------------------------
 // System Flags Bits Constants

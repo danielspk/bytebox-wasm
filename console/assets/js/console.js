@@ -1,5 +1,7 @@
 import { ADDR, DOM } from './config.js';
+import { AudioBus } from './audio-bus.js';
 import { InputMapper } from './input-mapper.js';
+import { MelodyMapper } from './melody-mapper.js';
 import { SoundMapper } from './sound-mapper.js';
 import { VideoMapper } from './video-mapper.js';
 import { WRAMMapper } from './wram-mapper.js';
@@ -38,9 +40,11 @@ export const ByteBox = {
     this.lastUpdateFPS = 0;
     this.animationId = null;
 
+    AudioBus.setup();
     VideoMapper.init(this.memory);
     InputMapper.init(this.memory);
     SoundMapper.init(this.memory);
+    MelodyMapper.init(this.memory);
     WRAMMapper.init(this.memory);
   },
 
@@ -163,6 +167,8 @@ export const ByteBox = {
       }
 
       VideoMapper.render();
+      MelodyMapper.tick();
+
       this.updateFPS();
       this.animationId = requestAnimationFrame(gameLoop);
     };

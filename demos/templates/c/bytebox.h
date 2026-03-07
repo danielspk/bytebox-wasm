@@ -45,6 +45,10 @@
 #define SFX_CH2_ADDR 0xFF9C
 #define SFX_CH3_ADDR 0xFFA0
 #define SFX_CH4_ADDR 0xFFA4
+#define MELODY_ATTR_ADDR 0xFFA8
+#define MELODY_ADDR 0xFFA9
+#define MELODY_HEAD_ADDR 0xFFE9
+#define MELODY_TAIL_ADDR 0xFFEA
 
 // ----------------------------------------------------------------------------
 // System Flags Bits Constants
