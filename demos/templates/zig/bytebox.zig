@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Contributors to the bytebox-wasm project
+// Copyright (c) 2025-2026 Contributors to the bytebox-wasm project
 //
 // Part of the bytebox-wasm project - https://github.com/danielspk/bytebox-wasm
 // See LICENSE file for full license details.

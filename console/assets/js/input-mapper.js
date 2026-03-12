@@ -80,22 +80,20 @@ export const InputMapper = {
       const padBit = this.p1Pad[btn.dataset.key];
 
       ['mousedown', 'touchstart'].forEach(event => {
-        const handler = (e) => {
+        const handler = () => {
           this.memory[ADDR.GAMEPAD] |= (1 << padBit);
-          e.preventDefault();
         };
 
-        btn.addEventListener(event, handler, { passive: false });
+        btn.addEventListener(event, handler, { passive: true });
         this.virtualPadHandlers.push({ element: btn, event, handler });
       });
 
       ['mouseup', 'touchend'].forEach(event => {
-        const handler = (e) => {
+        const handler = () => {
           this.memory[ADDR.GAMEPAD] &= ~(1 << padBit);
-          e.preventDefault();
         };
 
-        btn.addEventListener(event, handler, { passive: false });
+        btn.addEventListener(event, handler, { passive: true });
         this.virtualPadHandlers.push({ element: btn, event, handler });
       });
     });
