@@ -15,7 +15,7 @@ build-c: check-docker clean ## Build game (in C)
 
 build-go: check-docker clean ## Build game (in Go)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src tinygo/tinygo tinygo build \
-		-target=wasm-unknown -panic=trap -opt=z -scheduler=none -gc=leaking -no-debug -o ../$(WASM_TARGET) .
+		-target=wasm-unknown -panic=trap -opt=z -scheduler=none -gc=none -no-debug -o ../$(WASM_TARGET) .
 
 build-rust: check-docker clean ## Build game (in Rust)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src rust:1.75 sh -c " \
