@@ -6,8 +6,12 @@ import { AudioBus } from './audio-bus.js';
 const TIMBRES = ['sine', 'sawtooth', 'square', 'triangle'];
 
 const CONST = {
-  NUM_CHANNELS: 4,
-  CHANNEL_SIZE: 4,
+  CHANNELS: 4,
+  REG_SIZE: 4,
+  FREQ_MIN: 20,
+  FREQ_STEP: 3.84,
+  DUR_STEP: 0.032,
+  MASTER_VOL: 0.5
 };
 
 export const SoundMapper = {
@@ -17,7 +21,7 @@ export const SoundMapper = {
   init(memory) {
     this.memory = memory;
 
-    for (let i = 0; i < CONST.NUM_CHANNELS; i++) {
+    for (let i = 0; i < CONST.CHANNELS; i++) {
       this.audioChannels[i] = {
         oscillator: null,
         gainNode: null,
@@ -27,70 +31,70 @@ export const SoundMapper = {
   },
 
   play() {
-    for (let chan = 0; chan < CONST.NUM_CHANNELS; chan++) {
-      let addr = ADDR.SOUND_SFX + (chan * CONST.CHANNEL_SIZE);
+    for (let chan = 0; chan < CONST.CHANNELS; chan++) {
+      const addr = ADDR.SOUND_SFX + (chan * CONST.REG_SIZE);
+      const reg3 = this.memory[addr + 3];
 
-      // check trigger
-      if ((this.memory[addr + 3] & 0x01) === 0) continue;
+      if (!(reg3 & 0x01)) continue;
 
-      const freqStart = 20 + (this.memory[addr] * 3.84);
-      const freqEnd = 20 + (this.memory[addr + 1] * 3.84);
-      const duration = ((this.memory[addr + 2] >> 3) & 0x1F) * 0.032;
-      const volume = (this.memory[addr + 2] & 0x07) / 7 * 0.5;
-      const vibrato = (this.memory[addr + 3] >> 4) & 0x07;
-      const waveType = (this.memory[addr + 3] >> 1) & 0x03;
+      const reg2 = this.memory[addr + 2];
+      const sfx = {
+        freqStart: CONST.FREQ_MIN + (this.memory[addr] * CONST.FREQ_STEP),
+        freqEnd:   CONST.FREQ_MIN + (this.memory[addr + 1] * CONST.FREQ_STEP),
+        duration:  ((reg2 >> 3) & 0x1F) * CONST.DUR_STEP,
+        volume:    (reg2 & 0x07) / 7 * CONST.MASTER_VOL,
+        vibrato:   (reg3 >> 4) & 0x07,
+        waveType:  TIMBRES[(reg3 >> 1) & 0x03]
+      };
 
-      this.effect(freqStart, freqEnd, duration, volume, vibrato, waveType, chan);
-
-      // clear trigger
-      this.memory[addr + 3] = this.memory[addr + 3] & 0xFE;
+      this.trigger(chan, sfx);
+      this.memory[addr + 3] &= 0xFE;
     }
   },
 
-  effect(freqStart, freqEnd, duration, volume, vibrato, waveType, channel) {
-    if (!AudioBus.audioContext) return;
-    if (this.audioChannels[channel].isPlaying) return;
+  trigger(chan, sfx) {
+    const channel = this.audioChannels[chan];
+    if (!AudioBus.audioContext || channel.isPlaying) return;
 
-    const audioChannel = this.audioChannels[channel];
-    const now = AudioBus.audioContext.currentTime;
+    const ctx = AudioBus.audioContext;
+    const now = ctx.currentTime;
 
-    audioChannel.oscillator = AudioBus.audioContext.createOscillator();
-    audioChannel.gainNode = AudioBus.audioContext.createGain();
+    channel.oscillator = ctx.createOscillator();
+    channel.gainNode = ctx.createGain();
 
-    audioChannel.oscillator.type = TIMBRES[waveType];
-    audioChannel.oscillator.frequency.setValueAtTime(freqStart, now);
-    audioChannel.oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd), now + duration);
+    channel.oscillator.type = sfx.waveType;
+    channel.oscillator.frequency.setValueAtTime(sfx.freqStart, now);
+    channel.oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, sfx.freqEnd), now + sfx.duration);
 
-    if (vibrato > 0) {
-      const lfo = AudioBus.audioContext.createOscillator();
-      const lfoGain = AudioBus.audioContext.createGain();
+    if (sfx.vibrato > 0) {
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
 
       lfo.type = 'sine';
-      lfo.frequency.value = 8 + (vibrato * 2);
-      lfoGain.gain.value = 10 + (vibrato * 15);
-      lfo.connect(lfoGain);
-      lfoGain.connect(audioChannel.oscillator.frequency);
+      lfo.frequency.value = 8 + (sfx.vibrato * 2);
+      lfoGain.gain.value = 10 + (sfx.vibrato * 15);
+
+      lfo.connect(lfoGain).connect(channel.oscillator.frequency);
       lfo.start(now);
-      lfo.stop(now + duration);
+      lfo.stop(now + sfx.duration);
     }
 
-    audioChannel.gainNode.gain.setValueAtTime(volume, now);
-    audioChannel.gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    channel.gainNode.gain.setValueAtTime(sfx.volume, now);
+    channel.gainNode.gain.exponentialRampToValueAtTime(0.001, now + sfx.duration);
 
-    audioChannel.oscillator.connect(audioChannel.gainNode);
-    audioChannel.gainNode.connect(AudioBus.masterGain);
-    audioChannel.oscillator.start(now);
-    audioChannel.oscillator.stop(now + duration);
-    audioChannel.isPlaying = true;
+    channel.oscillator.connect(channel.gainNode).connect(AudioBus.masterGain);
+    channel.oscillator.start(now);
+    channel.oscillator.stop(now + sfx.duration);
 
-    this.memory[ADDR.SOUND_STATUS] |= (1 << channel);
+    channel.isPlaying = true;
+    this.memory[ADDR.SOUND_STATUS] |= (1 << chan);
 
-    audioChannel.oscillator.onended = () => {
-      audioChannel.oscillator = null;
-      audioChannel.gainNode = null;
-      audioChannel.isPlaying = false;
+    channel.oscillator.onended = () => {
+      channel.oscillator = null;
+      channel.gainNode = null;
+      channel.isPlaying = false;
 
-      this.memory[ADDR.SOUND_STATUS] &= ~(1 << channel);
+      this.memory[ADDR.SOUND_STATUS] &= ~(1 << chan);
     };
   }
 };

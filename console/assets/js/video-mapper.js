@@ -167,27 +167,23 @@ export const VideoMapper = {
     let idx = 0;
     
     for (let byteIdx = 0; byteIdx < CONST.VIDEO_SIZE; byteIdx++) {
-      // process four pixel with byte
-
       const byteColors = this.memory[ADDR.VIDEO + byteIdx];
-      const colors = [
-        (byteColors >> 6) & 0x03,
-        (byteColors >> 4) & 0x03,
-        (byteColors >> 2) & 0x03,
-        (byteColors >> 0) & 0x03
-      ];
       
-      for (let i = 0; i < 4; i++) {
-        const colorAddr = ADDR.PALETTE + (colors[i] * 3);
-
-        this.videoBuffer[idx] = this.memory[colorAddr];         // red
-        this.videoBuffer[idx + 1] = this.memory[colorAddr + 1]; // green
-        this.videoBuffer[idx + 2] = this.memory[colorAddr + 2]; // blue
-        this.videoBuffer[idx + 3] = 255;                        // alpha
-
-        idx += 4;
-      }
+      // process four pixel with byte
+      this.drawPixel(idx, (byteColors >> 6) & 0x03); idx += 4;
+      this.drawPixel(idx, (byteColors >> 4) & 0x03); idx += 4;
+      this.drawPixel(idx, (byteColors >> 2) & 0x03); idx += 4;
+      this.drawPixel(idx, byteColors & 0x03); idx += 4;
     }
+  },
+
+  drawPixel(idx, colorIdx) {
+    const addr = ADDR.PALETTE + (colorIdx * 3);
+
+    this.videoBuffer[idx] = this.memory[addr];         // red
+    this.videoBuffer[idx + 1] = this.memory[addr + 1]; // green
+    this.videoBuffer[idx + 2] = this.memory[addr + 2]; // blue
+    this.videoBuffer[idx + 3] = 255;                   // alpha
   },
 
   render() {

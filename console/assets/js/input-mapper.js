@@ -2,19 +2,24 @@ import { ADDR } from './config.js';
 
 // IO Input Mapper ------------------------------------------------------------
 
+const KEY_MAP = {
+  // pad 1
+  'ArrowLeft':      [ADDR.GAMEPAD, 7], 'ArrowUp':    [ADDR.GAMEPAD, 6],
+  'ArrowDown':      [ADDR.GAMEPAD, 5], 'ArrowRight': [ADDR.GAMEPAD, 4],
+  'KeyZ':           [ADDR.GAMEPAD, 1], 'KeyX':       [ADDR.GAMEPAD, 0],
+  'NumpadMultiply': [ADDR.GAMEPAD, 1], 'NumpadSubtract': [ADDR.GAMEPAD, 0], // alternative buttons
+
+  // pad 2
+  'KeyA':           [ADDR.GAMEPAD + 1, 7], 'KeyW':   [ADDR.GAMEPAD + 1, 6],
+  'KeyS':           [ADDR.GAMEPAD + 1, 5], 'KeyD':   [ADDR.GAMEPAD + 1, 4],
+  'KeyK':           [ADDR.GAMEPAD + 1, 1], 'KeyL':   [ADDR.GAMEPAD + 1, 0]
+};
+
 export const InputMapper = {
   memory: null,
   keydownHandler: null,
   keyupHandler: null,
   virtualPadHandlers: [],
-
-  p1Pad: {
-    'ArrowLeft': 7, 'ArrowUp': 6, 'ArrowDown': 5, 'ArrowRight': 4, 'KeyZ': 1, 'KeyX': 0,
-    'NumpadMultiply': 1, 'NumpadSubtract': 0 // alternative buttons
-  },
-  p2Pad: {
-    'KeyA': 7, 'KeyW': 6, 'KeyS': 5, 'KeyD': 4, 'KeyK': 1, 'KeyL': 0
-  },
 
   init(memory) {
     this.memory = memory;
@@ -42,33 +47,27 @@ export const InputMapper = {
     this.virtualPadHandlers = [];
   },
 
+  updateKey(code, isPressed) {
+    const mapping = KEY_MAP[code];
+    if (!mapping) return false;
+
+    const [addr, bit] = mapping;
+    if (isPressed) {
+      this.memory[addr] |= (1 << bit);
+    } else {
+      this.memory[addr] &= ~(1 << bit);
+    }
+
+    return true;
+  },
+
   handleKeys() {
     this.keydownHandler = (e) => {
-      const p1Bit = this.p1Pad[e.code];
-      const p2Bit = this.p2Pad[e.code];
-
-      if (p1Bit !== undefined) {
-        this.memory[ADDR.GAMEPAD] |= (1 << p1Bit);
-      }
-      if (p2Bit !== undefined) {
-        this.memory[ADDR.GAMEPAD + 1] |= (1 << p2Bit);
-      }
-
-      if (p1Bit !== undefined || p2Bit !== undefined) e.preventDefault();
+      if (this.updateKey(e.code, true)) e.preventDefault();
     };
 
     this.keyupHandler = (e) => {
-      const p1Bit = this.p1Pad[e.code];
-      const p2Bit = this.p2Pad[e.code];
-
-      if (p1Bit !== undefined) {
-        this.memory[ADDR.GAMEPAD] &= ~(1 << p1Bit);
-      }
-      if (p2Bit !== undefined) {
-        this.memory[ADDR.GAMEPAD + 1] &= ~(1 << p2Bit);
-      }
-
-      if (p1Bit !== undefined || p2Bit !== undefined) e.preventDefault();
+      if (this.updateKey(e.code, false)) e.preventDefault();
     };
 
     document.addEventListener('keydown', this.keydownHandler);
@@ -77,20 +76,20 @@ export const InputMapper = {
 
   handleVirtualPad() {
     document.querySelectorAll('[data-key]').forEach(btn => {
-      const padBit = this.p1Pad[btn.dataset.key];
+      const key = btn.dataset.key;
 
       ['mousedown', 'touchstart'].forEach(event => {
         const handler = () => {
-          this.memory[ADDR.GAMEPAD] |= (1 << padBit);
+          this.updateKey(key, true);
         };
 
         btn.addEventListener(event, handler, { passive: true });
         this.virtualPadHandlers.push({ element: btn, event, handler });
       });
 
-      ['mouseup', 'touchend'].forEach(event => {
+      ['mouseup', 'touchend', 'mouseleave', 'touchcancel'].forEach(event => {
         const handler = () => {
-          this.memory[ADDR.GAMEPAD] &= ~(1 << padBit);
+          this.updateKey(key, false);
         };
 
         btn.addEventListener(event, handler, { passive: true });
