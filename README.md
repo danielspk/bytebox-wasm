@@ -268,7 +268,7 @@ A channel cannot play a new sound while a previous sound is still playing on tha
 
 - **0**: sine.
 - **1**: sawtooth.
-- **2**: squeare.
+- **2**: square.
 - **3**: triangle.
 
 ### Melody Attributes
