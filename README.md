@@ -120,7 +120,7 @@ Address `0x0040` _(1 byte)_ sets system flags. Bit representation:
 │ │ │ │ │ │ │ │
 │ │ │ │ │ │ │ └ HALT/RESUME
 │ │ │ │ │ │ └── DUMP WRAM
-└ └ └ └ └ └──── unused
+└─└─└─└─└─└──── unused
 ```
 
 - **Halt/Resume**: when the bit is set to 1, game loop execution stops _(rendering continues)_. When the bit value is 0, the game loop continues executing.
@@ -153,10 +153,10 @@ Within each byte, pixels are stored in **MSB first** order:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ │ │ └ └ PIXEL 4
-│ │ │ │ └ └──── PIXEL 3
-│ │ └ └──────── PIXEL 2
-└ └──────────── PIXEL 1
+│ │ │ │ │ │ └─└ PIXEL 4
+│ │ │ │ └─└──── PIXEL 3
+│ │ └─└──────── PIXEL 2
+└─└──────────── PIXEL 1
 ```
 
 ### Color Palette
@@ -179,7 +179,7 @@ Addresses `0xFF94` and `0xFF95` _(2 bytes)_ provide read-only access to controll
 │ │ │ │ │ │ │ │
 │ │ │ │ │ │ │ └ BUTTON B
 │ │ │ │ │ │ └── BUTTON A
-│ │ │ │ └ └──── unused
+│ │ │ │ └─└──── unused
 │ │ │ └──────── RIGHT
 │ │ └────────── DOWN
 │ └──────────── UP
@@ -208,7 +208,7 @@ Address `0xFF97` _(1 byte)_ provides read-only status of all sound channels. Bit
 │ │ │ │ │ │ └── SFX CHANNEL 1
 │ │ │ │ │ └──── SFX CHANNEL 2
 │ │ │ │ └────── SFX CHANNEL 3
-└ └ └ └──────── unused
+└─└─└─└──────── unused
 ```
 
 Bit 1 = channel playing, bit 0 = channel free.
@@ -226,7 +226,7 @@ Each 4-byte sound effect is structured as follows:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-└ └ └ └ └ └ └ └ INITIAL FREQUENCY: (0-255 -> 20-1000 Hz)
+└─└─└─└─└─└─└─└ INITIAL FREQUENCY: (0-255 -> 20-1000 Hz)
 ```
 
 - **Byte 1**:
@@ -234,7 +234,7 @@ Each 4-byte sound effect is structured as follows:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-└ └ └ └ └ └ └ └ ENDING FREQUENCY: (0-255 -> 20-1000 Hz)
+└─└─└─└─└─└─└─└ ENDING FREQUENCY: (0-255 -> 20-1000 Hz)
 ```
 
 - **Byte 2**:
@@ -242,8 +242,8 @@ Each 4-byte sound effect is structured as follows:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │ 
-│ │ │ │ │ └ └ └ VOLUME: (0-7)
-└ └ └ └ └────── DURATION: (0-31 -> 0.03s 0.99s)
+│ │ │ │ │ └─└─└ VOLUME: (0-7)
+└─└─└─└─└────── DURATION: (0-31 -> 0.03s 0.99s)
 ```
 
 - **Byte 3**:
@@ -252,9 +252,10 @@ Each 4-byte sound effect is structured as follows:
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
 │ │ │ │ │ │ │ └ TRIGGER: set 1 to start play
-│ │ │ │ │ └ └── unused
-│ │ │ └ └────── WAVEFORM: (0-3)
-└ └ └────────── VIBRATO: (0-7)
+│ │ │ │ │ └─└── WAVEFORM: (0-3)
+│ │ │ │ └────── unused
+│ └─└─└──────── VIBRATO: (0-7)
+└────────────── unused
 ```
 
 **Important**: The runtime automatically clears the `trigger` bit after reading it.
@@ -277,8 +278,8 @@ Address `0xFFA8` _(1 byte)_ sets the master volume for the melody audio. Bit rep
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ └ └ └ └ VOLUME: (0-15)
-└ └ └ └──────── unused
+│ │ │ │ └─└─└─└ VOLUME: (0-15)
+└─└─└─└──────── unused
 ```
 
 ### Melody Buffer
@@ -294,7 +295,7 @@ Each 4-byte entry represents a note event:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-└ └ └ └ └ └ └ └ DELTA_HI: (ms)
+└─└─└─└─└─└─└─└ DELTA_HI: (ms)
 ```
 
 - **Byte 1**:
@@ -302,7 +303,7 @@ Each 4-byte entry represents a note event:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-└ └ └ └ └ └ └ └ DELTA_LO: (ms)
+└─└─└─└─└─└─└─└ DELTA_LO: (ms)
 ```
 
 - **Byte 2**:
@@ -310,8 +311,8 @@ Each 4-byte entry represents a note event:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ └ └ └ └ NOTE (0-127)
-└ └ └ └──────── unused
+│ │ │ │ └─└─└─└ NOTE (0-127)
+└─└─└─└──────── unused
 ```
 
 - **Byte 3**:
@@ -319,8 +320,8 @@ Each 4-byte entry represents a note event:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ └ └ └ └ VOLUME: (0-15)
-│ └ └ └──────── CHANNEL: (0-7)
+│ │ │ │ └─└─└─└ VOLUME: (0-15)
+│ └─└─└──────── CHANNEL: (0-7)
 └────────────── STATUS: (1: ON, 0: OFF)
 ```
 
