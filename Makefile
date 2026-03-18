@@ -17,6 +17,10 @@ build-go: check-docker clean ## Build game (in Go)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src tinygo/tinygo tinygo build \
 		-target=wasm-unknown -panic=trap -opt=z -scheduler=none -gc=none -no-debug -o ../$(WASM_TARGET) .
 
+build-odin: check-docker clean ## Build game (in Odin)
+	docker run --rm -v $(CURDIR):/workspace -w /workspace/src snappybeebit/odin odin build . \
+		-target:freestanding_wasm32 -no-entry-point -o:size -out:../$(WASM_TARGET)
+
 build-rust: check-docker clean ## Build game (in Rust)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src rust:1.75 sh -c " \
 		rustup target add wasm32-unknown-unknown && \
@@ -36,4 +40,4 @@ check-docker: ## Check Docker installation
 clean: ## Clean game file
 	rm -f $(WASM_TARGET)
 
-.PHONY: help run build-c build-go build-rust build-zig check-docker clean
+.PHONY: help run build-c build-go build-odin build-rust build-zig check-docker clean

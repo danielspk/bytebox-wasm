@@ -353,6 +353,12 @@ To compile a game written in _Go_, run:
 make build-go
 ```
 
+To compile a game written in _Odin_, run:
+
+```sh
+make build-odin
+```
+
 To compile a game written in _Rust_, run:
 
 ```sh
