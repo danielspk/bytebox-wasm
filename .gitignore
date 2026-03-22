@@ -1,3 +1,6 @@
 # generated web assembly files
 console/assets/wasm/
 !console/assets/wasm/.gitkeep
+
+# distribution files
+*zip

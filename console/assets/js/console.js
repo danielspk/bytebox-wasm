@@ -31,6 +31,20 @@ export const ByteBox = {
     window.memoryMap = this.memory;
   },
 
+  applyFrameColor() {
+    const color = new URLSearchParams(window.location.search).get('color');
+    if (!color || !/^[0-9a-fA-F]{6}$/.test(color)) return;
+
+    const r = parseInt(color.slice(0, 2), 16);
+    const g = parseInt(color.slice(2, 4), 16);
+    const b = parseInt(color.slice(4, 6), 16);
+    const root = document.documentElement.style;
+
+    root.setProperty('--frame-bg', `#${color}`);
+    root.setProperty('--frame-border', `rgb(${r * 0.75}, ${g * 0.75}, ${b * 0.75})`);
+    root.setProperty('--frame-shadow', `rgba(${r}, ${g}, ${b}, 0.5)`);
+  },
+
   setup() {
     this.memory = new Uint8Array(CONST.MEMORY_SIZE);
     this.memory.fill(0);
@@ -260,6 +274,8 @@ export const ByteBox = {
 // Initialization -------------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
+  ByteBox.applyFrameColor();
+
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
     document.addEventListener(event, (e) => {
       e.preventDefault();

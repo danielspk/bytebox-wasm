@@ -132,8 +132,12 @@ export const VideoMapper = {
     if (isLandscapeMobile) {
       scale = Math.max(1, Math.floor(window.innerHeight / CONST.SCREEN_HEIGHT));
     } else {
-      const maxWidth = Math.min(window.innerWidth * 0.8, 600);
-      scale = Math.floor(Math.min(maxWidth / CONST.SCREEN_WIDTH, 2));
+      const maxWidth = window.innerWidth * 0.9;
+      const maxHeight = window.innerHeight * 0.65;
+      const scaleByWidth = Math.floor(maxWidth / CONST.SCREEN_WIDTH);
+      const scaleByHeight = Math.floor(maxHeight / CONST.SCREEN_HEIGHT);
+
+      scale = Math.max(1, Math.min(scaleByWidth, scaleByHeight));
     }
 
     const displayWidth = CONST.SCREEN_WIDTH * scale;

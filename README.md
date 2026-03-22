@@ -333,6 +333,17 @@ Address `0xFFEA` _(1 byte)_ provides read-only access to the tail _(consumer)_ o
 
 Both addresses implement a _producer-consumer_ pattern: write to `0xFFE9` to queue new melody entries; the APU advances `0xFFEA` as it consumes them.
 
+## URL Parameters
+
+The console supports optional query parameters:
+
+| Parameter | Example | Description |
+|-----------|---------|-------------|
+| `color` | `?color=e74c3c` | Custom frame color (6-digit hex, without `#`) |
+| `nosplash` | `?nosplash` | Skip the splash screen on startup |
+
+Usage: `http://localhost:3000?color=3498db&nosplash`
+
 ## Useful Commands
 
 Only **Docker** and **make** need to be installed to run any command.

@@ -1,5 +1,6 @@
 PORT ?= 3000
 WASM_TARGET = console/assets/wasm/game.wasm
+ZIP_TARGET = game.zip
 
 help: ## Show help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -34,10 +35,13 @@ build-zig: check-docker clean ## Build game (in Zig)
 		-target wasm32-freestanding -fno-entry -rdynamic -O ReleaseSmall -fstrip --name game game.zig && \
 	mv $(CURDIR)/src/game.wasm $(WASM_TARGET)
 
+package: ## Package game (zip)
+	cd console && zip -r ../$(ZIP_TARGET) . -x "*.gitkeep"
+
 check-docker: ## Check Docker installation
 	@command -v docker > /dev/null || (echo "❌ Docker not found" && exit 1)
 
 clean: ## Clean game file
-	rm -f $(WASM_TARGET)
+	rm -f $(WASM_TARGET) $(ZIP_TARGET)
 
-.PHONY: help run build-c build-go build-odin build-rust build-zig check-docker clean
+.PHONY: help run build-c build-go build-odin build-rust build-zig package check-docker clean

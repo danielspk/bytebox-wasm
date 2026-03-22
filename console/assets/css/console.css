@@ -2,15 +2,11 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
   margin: 0;
-  margin-top: 5vh;
   font-family: 'Courier New', monospace;
   color: #333;
   background: #1b1b1f;
-
-  @media (max-width: 600px) {
-    margin-top: 1vw;
-  }
 
   @media (orientation: landscape) and (max-height: 550px) {
     padding: 0;
@@ -20,16 +16,22 @@ html, body {
 
 .console {
   visibility: hidden;
-  max-width: 600px;
+  width: fit-content;
+  max-width: 95vw;
   padding: 12px;
-  border: 4px solid #c49d00;
+  border: 4px solid var(--frame-border, #c49d00);
   border-radius: 12px;
-  background: #fccf37;
-  box-shadow: 0 0 20px rgba(196, 157, 0, 0.5);
+  background: var(--frame-bg, #fccf37);
+  box-shadow: 0 0 20px var(--frame-shadow, rgba(196, 157, 0, 0.5));
 
   @media (max-width: 600px) {
-    max-width: 90vw;
-    padding: 10px;
+    width: auto;
+    max-width: none;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   @media (orientation: landscape) and (max-height: 550px) {
@@ -38,6 +40,7 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: auto;
     max-width: none;
     padding: 0;
     border: none;
@@ -50,9 +53,15 @@ html, body {
 .screen {
   margin-bottom: 20px;
   padding: 10px;
-  border: 3px solid #c49d00;
+  border: 3px solid var(--frame-border, #c49d00);
   border-radius: 8px;
   background: #1a1a1a;
+
+  @media (max-width: 600px) {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
 
   @media (orientation: landscape) and (max-height: 550px) {
     display: flex;
@@ -69,12 +78,17 @@ html, body {
 
 .screen-canvas {
   display: block;
-  border: 1px solid #c49d00;
+  border: 1px solid var(--frame-border, #c49d00);
   border-radius: 4px;
   background: #222;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+
+  @media (max-width: 600px) {
+    border: none;
+    border-radius: 0;
+  }
 
   @media (orientation: landscape) and (max-height: 550px) {
     border: none;
@@ -88,6 +102,10 @@ html, body {
   font-size: 10px;
   font-weight: bold;
   text-align: center;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 
   @media (orientation: landscape) and (max-height: 550px) {
     display: none;
@@ -136,10 +154,10 @@ html, body {
 }
 
 .dir-btn {
-  border: 2px solid #c49d00;
+  border: 2px solid var(--frame-border, #c49d00);
   border-radius: 4px;
   background: #2c2828;
-  color: #fccf37;
+  color: var(--frame-bg, #fccf37);
   font-weight: bold;
   cursor: pointer;
   user-select: none;
@@ -151,7 +169,7 @@ html, body {
   }
 
   &:active {
-    background: #c49d00;
+    background: var(--frame-border, #c49d00);
     color: #2c2c2c;
   }
 
@@ -270,6 +288,10 @@ html, body {
   font-size: 12px;
   opacity: 0.7;
   text-align: center;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 
   @media (orientation: landscape) and (max-height: 550px) {
     display: none;
