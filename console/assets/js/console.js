@@ -161,6 +161,7 @@ export const ByteBox = {
 
     let accumulator = 0;
     let lastTime = performance.now();
+    this.lastUpdateFPS = lastTime;
 
     const gameLoop = (currentTime) => {
       accumulator += currentTime - lastTime;
@@ -183,7 +184,7 @@ export const ByteBox = {
       VideoMapper.render();
       MelodyMapper.tick();
 
-      this.updateFPS();
+      this.updateFPS(currentTime);
       this.animationId = requestAnimationFrame(gameLoop);
     };
 
@@ -207,13 +208,13 @@ export const ByteBox = {
     }
   },
 
-  updateFPS() {
-    const now = performance.now();
+  updateFPS(now) {
+    const elapsed = now - this.lastUpdateFPS;
 
     this.frames++;
 
-    if (now - this.lastUpdateFPS >= 1000) {
-      DOM.InfoFPS.textContent = this.frames;
+    if (elapsed >= 1000) {
+      DOM.InfoFPS.textContent = Math.round(this.frames * 1000 / elapsed);
 
       this.frames = 0;
       this.lastUpdateFPS = now;
