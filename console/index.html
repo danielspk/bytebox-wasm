@@ -50,11 +50,14 @@
       <button class="shortcut-btn" data-addr="FF84">Colors</button>
       <button class="shortcut-btn" data-addr="FF94">Pads</button>
       <button class="shortcut-btn" data-addr="FF98">Sounds</button>
+      <input id="memory-input" class="input input-nav" type="text" value="E900" placeholder="E900">
       <button class="shortcut-btn btn-resume" data-action="resume">Resume | Halt</button>
     </nav>
     <section class="debugger-controls">
-      <label for="memory-input">0x</label>
-      <input id="memory-input" class="input" type="text" value="E900" placeholder="E900">
+      <label for="memory-address">0x</label>
+      <input id="memory-address" class="input" type="text" placeholder="FFFF" maxlength="4">
+      <label for="memory-value">=</label>
+      <input id="memory-value" class="input input-sm" type="text" placeholder="FF" maxlength="2">
     </section>
     <section class="debugger-memory" id="memory-display"></section>
   </aside>

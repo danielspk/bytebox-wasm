@@ -15,14 +15,14 @@ export const MemoryViewer = {
 
     for (let row = 0; row < 16; row++) {
       const addr = this.baseAddr + (row * 16);
-      
+
       if (addr > 0xFFFF) break;
 
       let hexBytes = '';
 
       for (let col = 0; col < 16; col++) {
         const byteAddr = addr + col;
-        
+
         if (byteAddr > 0xFFFF) break;
 
         const value = window.memoryMap[byteAddr] || 0;
@@ -38,7 +38,7 @@ export const MemoryViewer = {
           classes += ' zero-byte';
         }
 
-        hexBytes += `<span class="${classes}">${hexStr}</span>`;
+        hexBytes += `<span class="${classes}" data-addr="${byteAddr}">${hexStr}</span>`;
         this.lastMemory[row * 16 + col] = value;
       }
 
@@ -66,6 +66,24 @@ export const MemoryViewer = {
 
     this.baseAddr = parseInt(hexAddr, 16);
     this.update();
+  },
+
+  writeMemoryByte() {
+    if (!window.memoryMap) return;
+
+    const addr = parseInt(DOM.MemoryAddress.value, 16);
+    const val = parseInt(DOM.MemoryValue.value, 16);
+
+    if (isNaN(addr) || isNaN(val) || addr > 0xFFFF) return;
+
+    window.memoryMap[addr] = val & 0xFF;
+  },
+
+  selectByte(addr) {
+    DOM.MemoryAddress.value = addr.toString(16).toUpperCase().padStart(4, '0');
+    DOM.MemoryValue.value = window.memoryMap[addr].toString(16).toUpperCase().padStart(2, '0');
+    DOM.MemoryValue.focus();
+    DOM.MemoryValue.select();
   },
 
   resumeHalt() {
@@ -102,7 +120,24 @@ export const MemoryViewer = {
 document.addEventListener('DOMContentLoaded', () => {
   DOM.MemoryInput.addEventListener('input', (e) => MemoryViewer.inputMemoryAddr(e.target.value));
 
-  document.querySelectorAll('[data-addr]').forEach(btn => {
+  DOM.Debugger.querySelectorAll('input').forEach(input => {
+    const stop = (e) => { if (e.key.length === 1) e.stopPropagation(); };
+    input.addEventListener('keydown', stop);
+    input.addEventListener('keyup', stop);
+  });
+
+  DOM.MemoryDisplay.addEventListener('mousedown', (e) => {
+    const span = e.target.closest('.memory-byte');
+    if (!span || !window.memoryMap) return;
+
+    MemoryViewer.selectByte(Number(span.dataset.addr));
+  });
+
+  DOM.MemoryValue.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') MemoryViewer.writeMemoryByte();
+  });
+
+  document.querySelectorAll('.shortcut-btn[data-addr]').forEach(btn => {
     btn.addEventListener('click', () => MemoryViewer.setMemoryAddr(btn.dataset.addr));
   });
 

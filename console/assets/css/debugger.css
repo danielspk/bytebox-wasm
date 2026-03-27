@@ -71,6 +71,14 @@
   font-size: 11px;
 }
 
+.input-nav {
+  width: 50px;
+}
+
+.input-sm {
+  width: 30px;
+}
+
 .debugger-memory {
   overflow-y: auto;
   overflow-x: hidden;
@@ -106,6 +114,11 @@
   padding: 1px 4px;
   border-radius: 2px;
   text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(252, 207, 55, 0.15);
+  }
 }
 
 .changed-byte {
