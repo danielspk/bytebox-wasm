@@ -18,7 +18,7 @@ export const MemoryViewer = {
 
       if (addr > 0xFFFF) break;
 
-      let hexBytes = '';
+      const hexBytes = [];
 
       for (let col = 0; col < 16; col++) {
         const byteAddr = addr + col;
@@ -38,14 +38,14 @@ export const MemoryViewer = {
           classes += ' zero-byte';
         }
 
-        hexBytes += `<span class="${classes}" data-addr="${byteAddr}">${hexStr}</span>`;
+        hexBytes.push(`<span class="${classes}" data-addr="${byteAddr}">${hexStr}</span>`);
         this.lastMemory[row * 16 + col] = value;
       }
 
       html += `
         <div class="memory-row">
           <div class="memory-addr">${addr.toString(16).toUpperCase().padStart(4, '0')}</div>
-          <div class="memory-hex">${hexBytes}</div>
+          <div class="memory-hex">${hexBytes.join('')}</div>
         </div>
       `;
     }
@@ -55,8 +55,11 @@ export const MemoryViewer = {
 
   inputMemoryAddr(hexAddr) {
     const hex = hexAddr.replace(/[^0-9A-Fa-f]/g, '');
+
     if (hex.length === 4) {
-      this.baseAddr = parseInt(hex || '0', 16);
+      this.baseAddr = parseInt(hex, 16);
+      this.lastMemory.fill(0);
+      this.lastMemory.set(window.memoryMap.subarray(this.baseAddr, this.baseAddr + this.lastMemory.length));
       this.update();
     }
   },
@@ -64,8 +67,7 @@ export const MemoryViewer = {
   setMemoryAddr(hexAddr) {
     DOM.MemoryInput.value = hexAddr;
 
-    this.baseAddr = parseInt(hexAddr, 16);
-    this.update();
+    this.inputMemoryAddr(hexAddr);
   },
 
   writeMemoryByte() {
@@ -96,8 +98,13 @@ export const MemoryViewer = {
     this.isRunning = true;
     DOM.Debugger.style.display = 'block';
 
+    let frameCount = 0;
+
     const debugLoop = () => {
-      this.update();
+      if (frameCount++ % 4 === 0) {
+        this.update();
+      }
+
       this.animationId = requestAnimationFrame(debugLoop);
     };
 

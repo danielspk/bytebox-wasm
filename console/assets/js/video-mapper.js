@@ -31,6 +31,7 @@ export const VideoMapper = {
   memory: null,
   gl: null,
   videoBuffer: null,
+  palette: null,
   vertexBuffer: null,
   attributes: {},
   uniforms: {},
@@ -38,6 +39,8 @@ export const VideoMapper = {
 
   init(memory) {
     this.memory = memory;
+
+    if (this.gl) return;
 
     this.gl = DOM.ScreenCanvas.getContext('webgl');
     this.videoBuffer = new Uint8Array(CONST.SCREEN_WIDTH * CONST.SCREEN_HEIGHT * 4); // 19200 pixels * 4 bytes per pixel (RGBA) = 76800 bytes
@@ -169,6 +172,8 @@ export const VideoMapper = {
   },
 
   updateVideoBuffer() {
+    this.palette = this.memory.subarray(ADDR.PALETTE, ADDR.PALETTE + 12);
+
     let idx = 0;
     
     for (let byteIdx = 0; byteIdx < CONST.VIDEO_SIZE; byteIdx++) {
@@ -178,17 +183,17 @@ export const VideoMapper = {
       this.drawPixel(idx, (byteColors >> 6) & 0x03); idx += 4;
       this.drawPixel(idx, (byteColors >> 4) & 0x03); idx += 4;
       this.drawPixel(idx, (byteColors >> 2) & 0x03); idx += 4;
-      this.drawPixel(idx, byteColors & 0x03); idx += 4;
+      this.drawPixel(idx, byteColors & 0x03);        idx += 4;
     }
   },
 
   drawPixel(idx, colorIdx) {
-    const addr = ADDR.PALETTE + (colorIdx * 3);
+    const c = colorIdx * 3;
 
-    this.videoBuffer[idx] = this.memory[addr];         // red
-    this.videoBuffer[idx + 1] = this.memory[addr + 1]; // green
-    this.videoBuffer[idx + 2] = this.memory[addr + 2]; // blue
-    this.videoBuffer[idx + 3] = 255;                   // alpha
+    this.videoBuffer[idx]     = this.palette[c];     // red
+    this.videoBuffer[idx + 1] = this.palette[c + 1]; // green
+    this.videoBuffer[idx + 2] = this.palette[c + 2]; // blue
+    this.videoBuffer[idx + 3] = 255;                 // alpha
   },
 
   render() {

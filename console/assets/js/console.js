@@ -90,7 +90,7 @@ export const ByteBox = {
         return this.error('🧩 missing export update function', null);
       }
 
-      const gameID = btoa(String.fromCharCode(...wasmBytes)).substring(0, 16);
+      const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
       WRAMMapper.sync(gameID);
 
       this.memory[ADDR.SEED] = Date.now() & 0xFF;
@@ -230,7 +230,7 @@ export const ByteBox = {
   peek(addr) {
     if (addr < 0 || addr >= CONST.MEMORY_SIZE) {
       console.warn(`⚠️ address ${ addr } is out of range`);
-      return;
+      return 0;
     }
 
     return this.memory[addr];

@@ -67,7 +67,7 @@ export const MelodyMapper = {
 
   processSignal(note, isOn, ch, vol, time) {
     const audioCtx = AudioBus.audioContext;
-    const voiceId  = `${ch}_${note}`;
+    const voiceId = (ch << 8) | note;
 
     if (!isOn) {
       if (this.activeVoices.has(voiceId)) {
