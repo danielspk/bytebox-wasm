@@ -92,7 +92,7 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 | `0x0041` | 1 byte | Seed for random numbers |
 | `0x0042-0x0043` | 2 bytes | Reserved (future use) |
 | `0x0044-0x005B` | 24 bytes | Game name |
-| `0x005C-0x00FF` | 191 bytes | Reserved (future use) |
+| `0x005C-0x00FF` | 164 bytes | Reserved (future use) |
 | `0x0100-0xE0FF` | 57,344 bytes | Game ROM |
 | `0xE100-0xE4FF` | 1,024 bytes | Write RAM |
 | `0xE500-0xE8FF` | 1,024 bytes | Reserved for RAM + Stack (future use) |
