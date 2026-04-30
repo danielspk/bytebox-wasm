@@ -8,6 +8,17 @@ export const MemoryViewer = {
   isRunning: false,
   animationId: null,
 
+  isProtectedWrite(addr) {
+    const protected = [
+      [0x0100, 0xE0FF], // ROM
+      [0xFF94, 0xFF95], // gamepads
+      [0xFF97, 0xFF97], // sound status
+      [0xFFEA, 0xFFEA]  // melody tail
+    ];
+
+    return protected.some(([start, end]) => addr >= start && addr <= end);
+  },
+
   update() {
     if (!this.isRunning || !window.memoryMap) return;
 
@@ -76,7 +87,12 @@ export const MemoryViewer = {
     const addr = parseInt(DOM.MemoryAddress.value, 16);
     const val = parseInt(DOM.MemoryValue.value, 16);
 
-    if (isNaN(addr) || isNaN(val) || addr > 0xFFFF) return;
+    if (isNaN(addr) || isNaN(val) || addr < 0 || addr > 0xFFFF) return;
+
+    if (this.isProtectedWrite(addr)) {
+      console.warn(`⚠️ cannot write to protected address 0x${addr.toString(16).toUpperCase()}`);
+      return;
+    }
 
     window.memoryMap[addr] = val & 0xFF;
   },
