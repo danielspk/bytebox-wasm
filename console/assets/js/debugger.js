@@ -9,14 +9,14 @@ export const MemoryViewer = {
   animationId: null,
 
   isProtectedWrite(addr) {
-    const protected = [
+    const ranges = [
       [0x0100, 0xE0FF], // ROM
       [0xFF94, 0xFF95], // gamepads
       [0xFF97, 0xFF97], // sound status
       [0xFFEA, 0xFFEA]  // melody tail
     ];
 
-    return protected.some(([start, end]) => addr >= start && addr <= end);
+    return ranges.some(([start, end]) => addr >= start && addr <= end);
   },
 
   update() {

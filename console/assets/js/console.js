@@ -13,6 +13,7 @@ const CONST = {
   ROM_SIZE: 56 * 1024,      // 56KB
   GAME_INTERVAL: 1000 / 60, // game loop speed - 60 fps
   SPLASH_TIME: 1500,        // in milliseconds
+  CHIME_DELAY: 800,         // in milliseconds
 };
 
 export const ByteBox = {
@@ -154,6 +155,21 @@ export const ByteBox = {
     }
 
     VideoMapper.render();
+    setTimeout(() => this.chime(), CONST.CHIME_DELAY);
+  },
+
+  chime() {
+    const notes = [[109, 53, 0], [71, 133, 250]];
+
+    notes.forEach(([freq, dur, delay]) => {
+      setTimeout(() => {
+        this.memory[ADDR.SOUND_SFX + 0] = freq;
+        this.memory[ADDR.SOUND_SFX + 1] = freq;
+        this.memory[ADDR.SOUND_SFX + 2] = dur;
+        this.memory[ADDR.SOUND_SFX + 3] = 5;
+        SoundMapper.play();
+      }, delay);
+    });
   },
 
   run() {
