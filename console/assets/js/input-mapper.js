@@ -61,6 +61,11 @@ export const InputMapper = {
     return true;
   },
 
+  reset() {
+    this.memory[ADDR.GAMEPAD] = 0;
+    this.memory[ADDR.GAMEPAD + 1] = 0;
+  },
+
   handleKeys() {
     this.keydownHandler = (e) => {
       if (this.updateKey(e.code, true)) e.preventDefault();

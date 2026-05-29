@@ -14,6 +14,7 @@ const CONST = {
   GAME_INTERVAL: 1000 / 60, // game loop speed - 60 fps
   SPLASH_TIME: 1500,        // in milliseconds
   CHIME_DELAY: 800,         // in milliseconds
+  GUARD_THRESHOLD: 200,     // spiral of death guard - max frame time in milliseconds
 };
 
 export const ByteBox = {
@@ -183,8 +184,13 @@ export const ByteBox = {
       accumulator += currentTime - lastTime;
       lastTime = currentTime;
 
-      if (accumulator > 200) {
+      if (accumulator > CONST.GUARD_THRESHOLD) {
+        accumulator = CONST.GAME_INTERVAL;
         console.warn('⚠️ performance degradation detected');
+      }
+
+      if (!document.hasFocus()) {
+        InputMapper.reset();
       }
 
       while (accumulator >= CONST.GAME_INTERVAL) {
