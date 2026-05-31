@@ -364,6 +364,12 @@ To compile a game written in _C_, run:
 make build-c
 ```
 
+To compile a game written in _D_, run:
+
+```sh
+make build-d
+```
+
 To compile a game written in _Go_, run:
 
 ```sh

@@ -19,6 +19,12 @@ build-c: check-docker clean ## Build game (in C)
 		-Wl,--no-entry -Wl,--strip-all -Wl,--export-dynamic -nostdlib -nodefaultlibs -nostartfiles \
 		-ffreestanding -o $(WASM_TARGET) src/*.c
 
+build-d: check-docker clean ## Build game (in D)
+	docker run --rm -v $(CURDIR):/src -w /src nonanonno/ldc:1.29.0 ldc2 \
+		-betterC -mtriple=wasm32-unknown-unknown -Oz --fvisibility=hidden \
+		-of=$(WASM_TARGET) -L-allow-undefined -L-no-entry -L-strip-all \
+		src/*.d
+
 build-go: check-docker clean ## Build game (in Go)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src tinygo/tinygo tinygo build \
 		-target=wasm-unknown -panic=trap -opt=z -scheduler=none -gc=none -no-debug -o ../$(WASM_TARGET) .
@@ -49,4 +55,4 @@ check-docker: ## Check Docker installation
 clean: ## Clean game file
 	rm -f $(WASM_TARGET) $(ZIP_TARGET)
 
-.PHONY: help run build-assemblyscript build-c build-go build-odin build-rust build-zig package check-docker clean
+.PHONY: help run build-assemblyscript build-c build-d build-go build-odin build-rust build-zig package check-docker clean

@@ -9,6 +9,7 @@ make run                  # Start console on local webserver (default port 3000)
 PORT=8080 make run        # Run on a custom port
 make build-assemblyscript # Compile game in src/ (AssemblyScript)
 make build-c              # Compile game in src/ (C)
+make build-d              # Compile game in src/ (D)
 make build-go             # Compile game in src/ (Go/TinyGo)
 make build-odin           # Compile game in src/ (Odin)
 make build-rust           # Compile game in src/ (Rust)
