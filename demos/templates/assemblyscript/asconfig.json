@@ -1,0 +1,15 @@
+{
+  "entries": [
+    "./game.ts"
+  ],
+  "targets": {
+    "release": {
+      "outFile": "../../console/assets/wasm/game.wasm",
+      "optimize": true,
+      "noAssert": true,
+      "runtime": "stub",
+      "initialMemory": 2,
+      "noExportMemory": false
+    }
+  }
+}

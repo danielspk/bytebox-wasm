@@ -8,28 +8,27 @@ const bb = @import("bytebox.zig");
 
 var player_x: u8 = undefined;
 var player_y: u8 = undefined;
+var clear_buffer: [bb.FRAMEBUFFER_SIZE]u8 = [_]u8{0} ** bb.FRAMEBUFFER_SIZE;
 
 fn clearScreen() void {
-    const clear_buffer = [_]u8{0} ** bb.FRAMEBUFFER_SIZE;
-
     bb.spoke(bb.VIDEO_ADDR, bb.FRAMEBUFFER_SIZE, &clear_buffer);
 }
 
 fn updatePlayer() void {
     const pad = bb.peek(bb.GAMEPAD1_ADDR);
     
-    var new_x: i16 = player_x;
+    var new_x = player_x;
     
     if (pad & bb.BUTTON_LEFT != 0) {
-        new_x -= 2;
+        new_x -%= 2;
     }
     
     if (pad & bb.BUTTON_RIGHT != 0) {
-        new_x += 2;
+        new_x +%= 2;
     }
     
-    if (new_x >= 0 and new_x < bb.SCREEN_WIDTH) {
-        player_x = @intCast(new_x);
+    if (new_x < bb.SCREEN_WIDTH) {
+        player_x = new_x;
     }
     
     if (pad & bb.BUTTON_1 != 0) {
@@ -49,7 +48,7 @@ fn updatePlayer() void {
 fn drawPlayer() void {
     var y: u8 = 0;
     while (y < 4) : (y += 1) {
-        const address = bb.VIDEO_ADDR + ((@as(u16, player_y + y) * bb.SCREEN_WIDTH) + player_x) / 4;
+        const address = bb.VIDEO_ADDR + (((@as(u16, player_y) + @as(u16, y)) * bb.SCREEN_WIDTH) + @as(u16, player_x)) / 4;
         bb.poke(address, 0xFF);
     }
 }

@@ -34,7 +34,7 @@ Along with the project, some simple prototype games already compiled are supplie
 
 #### Templates
 
-Also, the project provides several simple termplate examples in different programming languages. Additionally, developers can use any language that compiles to standard wasm _(without runtimes)_.
+Also, the project provides several simple template examples in different programming languages. Additionally, developers can use any language that compiles to standard wasm _(without runtimes)_.
 
 To run any of these examples, copy the template example's content into the `src/` folder and execute the compilation command corresponding to the programming language used _(see Useful Commands)_.
 
@@ -351,6 +351,12 @@ Only **Docker** and **make** need to be installed to run any command.
 ### Compile a Game
 
 Game source files must be located inside `src/` folder.
+
+To compile a game written in _AssemblyScript_, run:
+
+```sh
+make build-assemblyscript
+```
 
 To compile a game written in _C_, run:
 

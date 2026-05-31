@@ -8,6 +8,11 @@ help: ## Show help
 run: check-docker ## Run the console
 	docker run --rm -p $(PORT):80 -v $(CURDIR)/console:/usr/share/nginx/html nginx:alpine
 
+build-assemblyscript: check-docker clean ## Build game (in AssemblyScript)
+	docker run --rm -v $(CURDIR):/workspace -w /workspace/src node:22-alpine sh -c " \
+		npm install --silent && \
+		npx asc game.ts --outFile ../$(WASM_TARGET) --runtime stub --noAssert --optimize --initialMemory 2"
+
 build-c: check-docker clean ## Build game (in C)
 	docker run --rm -v $(CURDIR):/src -w /src ghcr.io/webassembly/wasi-sdk /opt/wasi-sdk/bin/clang \
 		-std=c23 -pedantic -W -Wall -Wextra -Werror --target=wasm32-unknown-unknown -Oz \
@@ -44,4 +49,4 @@ check-docker: ## Check Docker installation
 clean: ## Clean game file
 	rm -f $(WASM_TARGET) $(ZIP_TARGET)
 
-.PHONY: help run build-c build-go build-odin build-rust build-zig package check-docker clean
+.PHONY: help run build-assemblyscript build-c build-go build-odin build-rust build-zig package check-docker clean

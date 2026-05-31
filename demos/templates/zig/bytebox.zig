@@ -70,13 +70,3 @@ pub extern "env" fn spoke(start_addr: u16, length: u16, data: [*]const u8) void;
 
 /// Puts trace information to the console
 pub extern "env" fn trace(str: [*]const u8, len: i32) void;
-
-// ----------------------------------------------------------------------------
-// Exported functions
-// ----------------------------------------------------------------------------
-
-/// Initializes the game
-pub extern fn init() void;
-
-/// Updates the game within the gameloop
-pub extern fn update() void;

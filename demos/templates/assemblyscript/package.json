@@ -1,0 +1,11 @@
+{
+  "name": "bytebox-assemblyscript-demo",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "assemblyscript": "^0.28.0"
+  },
+  "scripts": {
+    "build": "asc game.ts --config asconfig.json --target release"
+  }
+}

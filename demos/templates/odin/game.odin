@@ -6,18 +6,18 @@
 
 package main
 
-player_x: u32
-player_y: u32
+player_x: u8
+player_y: u8
+clear_buffer: [FRAMEBUFFER_SIZE]u8
 
 clear_screen :: proc "c" () {
-    clear_buffer: [FRAMEBUFFER_SIZE]u8
     spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE, &clear_buffer[0])
 }
 
 update_player :: proc "c" () {
     pad := peek(GAMEPAD1_ADDR)
 
-    new_x := i32(player_x)
+    new_x := player_x
 
     if pad & u32(BUTTON_LEFT) != 0 {
         new_x -= 2
@@ -27,8 +27,8 @@ update_player :: proc "c" () {
         new_x += 2
     }
 
-    if new_x >= 0 && u32(new_x) < SCREEN_WIDTH {
-        player_x = u32(new_x)
+    if u32(new_x) < SCREEN_WIDTH {
+        player_x = new_x
     }
 
     if pad & u32(BUTTON_1) != 0 {
@@ -48,7 +48,7 @@ update_player :: proc "c" () {
 
 draw_player :: proc "c" () {
     for y := u32(0); y < 4; y += 1 {
-        address := VIDEO_ADDR + ((player_y + y) * SCREEN_WIDTH + player_x) / 4
+        address := VIDEO_ADDR + ((u32(player_y) + y) * SCREEN_WIDTH + u32(player_x)) / 4
 
         poke(address, 0xFF)
     }
@@ -57,8 +57,8 @@ draw_player :: proc "c" () {
 /// Initializes the game
 @(export)
 init :: proc "c" () {
-    player_x = SCREEN_WIDTH / 2
-    player_y = SCREEN_HEIGHT - 20
+    player_x = u8(SCREEN_WIDTH / 2)
+    player_y = u8(SCREEN_HEIGHT - 20)
 }
 
 /// Updates the game within the gameloop

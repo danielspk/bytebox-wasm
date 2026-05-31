@@ -33,7 +33,7 @@ void update_player(void)
         new_x += 2;
     }
 
-    if (new_x >= 0 && new_x < SCREEN_WIDTH) {
+    if (new_x < SCREEN_WIDTH) {
         player_x = new_x;
     }
 

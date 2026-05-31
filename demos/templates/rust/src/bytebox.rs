@@ -14,8 +14,8 @@ use core::ffi::c_char;
 // Console Constants
 // ----------------------------------------------------------------------------
 
-pub const SCREEN_WIDTH: u8 = 160;
-pub const SCREEN_HEIGHT: u8 = 120;
+pub const SCREEN_WIDTH: u16 = 160;
+pub const SCREEN_HEIGHT: u16 = 120;
 pub const FRAMEBUFFER_SIZE: usize = (SCREEN_WIDTH as usize * SCREEN_HEIGHT as usize) / 4;
 
 // ----------------------------------------------------------------------------
@@ -67,17 +67,41 @@ pub const BUTTON_LEFT: u8 = 0x80;
 extern "C" {
     /// Gets the value of a memory address
     #[link_name = "peek"]
-    pub fn peek(addr: u16) -> u8;
+    fn sys_peek(addr: u16) -> u8;
 
     /// Sets a value into a memory address
     #[link_name = "poke"]
-    pub fn poke(addr: u16, value: u8);
+    fn sys_poke(addr: u16, value: u8);
 
     /// Writes multiple bytes into memory
     #[link_name = "spoke"]
-    pub fn spoke(start_addr: u16, length: u16, data: *const u8);
+    fn sys_spoke(start_addr: u16, length: u16, data: *const u8);
 
     /// Puts trace information to the console
     #[link_name = "trace"]
-    pub fn trace(str_ptr: *const c_char, len: i32);
+    fn sys_trace(str_ptr: *const c_char, len: i32);
+}
+
+// ----------------------------------------------------------------------------
+// Inline functions
+// ----------------------------------------------------------------------------
+
+#[inline]
+pub fn peek(addr: u16) -> u8 {
+    unsafe { sys_peek(addr) }
+}
+
+#[inline]
+pub fn poke(addr: u16, value: u8) {
+    unsafe { sys_poke(addr, value) }
+}
+
+#[inline]
+pub fn spoke(start_addr: u16, length: u16, data: *const u8) {
+    unsafe { sys_spoke(start_addr, length, data) }
+}
+
+#[inline]
+pub fn trace(str_ptr: *const c_char, len: i32) {
+    unsafe { sys_trace(str_ptr, len) }
 }

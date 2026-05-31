@@ -5,15 +5,16 @@
 All builds require Docker only — no local toolchain needed.
 
 ```sh
-make run              # Start console on local webserver (default port 3000)
-PORT=8080 make run    # Run on a custom port
-make build-c          # Compile game in src/ (C)
-make build-go         # Compile game in src/ (Go/TinyGo)
-make build-odin       # Compile game in src/ (Odin)
-make build-rust       # Compile game in src/ (Rust)
-make build-zig        # Compile game in src/ (Zig)
-make package          # Package game as zip
-make clean            # Remove game.wasm and game.zip
+make run                  # Start console on local webserver (default port 3000)
+PORT=8080 make run        # Run on a custom port
+make build-assemblyscript # Compile game in src/ (AssemblyScript)
+make build-c              # Compile game in src/ (C)
+make build-go             # Compile game in src/ (Go/TinyGo)
+make build-odin           # Compile game in src/ (Odin)
+make build-rust           # Compile game in src/ (Rust)
+make build-zig            # Compile game in src/ (Zig)
+make package              # Package game as zip
+make clean                # Remove game.wasm and game.zip
 ```
 
 Compiled output is always `console/assets/wasm/game.wasm`. Game source must live in `src/`.

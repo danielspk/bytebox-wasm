@@ -1,0 +1,3 @@
+# Game in AssemblyScript
+
+**WARN**: The `--runtime stub` flag is required to avoid pulling in the GC runtime. The `--noAssert` flag disables runtime bounds checks for smaller output.

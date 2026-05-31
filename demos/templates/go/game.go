@@ -9,13 +9,12 @@
 package main
 
 var (
-	playerX uint32
-	playerY uint32
+	playerX      uint8
+	playerY      uint8
+	clearBuffer  [FRAMEBUFFER_SIZE]byte
 )
 
 func clearScreen() {
-	var clearBuffer [FRAMEBUFFER_SIZE]byte
-
 	spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE, &clearBuffer[0])
 }
 
@@ -31,7 +30,7 @@ func updatePlayer() {
 		newX += 2
 	}
 
-	if newX >= 0 && newX < SCREEN_WIDTH {
+	if newX < SCREEN_WIDTH {
 		playerX = newX
 	}
 
@@ -44,11 +43,7 @@ func updatePlayer() {
 
 	if pad&BUTTON_2 != 0 {
 		address := COLOR4_ADDR + 2
-		newBlue := peek(address) + 0x0A
-
-		if newBlue > 255 {
-			newBlue = 0
-		}
+		newBlue := (peek(address) + 0x0A) & 0xFF
 
 		poke(address, newBlue)
 	}
@@ -56,7 +51,7 @@ func updatePlayer() {
 
 func drawPlayer() {
 	for y := uint32(0); y < 4; y++ {
-		address := VIDEO_ADDR + (((playerY+y)*SCREEN_WIDTH)+playerX)/4
+		address := VIDEO_ADDR + ((uint32(playerY)+y)*uint32(SCREEN_WIDTH)+uint32(playerX))/4
 
 		poke(address, 0xFF)
 	}
