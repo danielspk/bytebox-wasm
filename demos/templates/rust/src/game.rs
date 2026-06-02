@@ -7,9 +7,10 @@
  */
 
 use crate::bytebox::*;
+use core::sync::atomic::{AtomicU8, Ordering::Relaxed};
 
-static mut PLAYER_X: u8 = 0;
-static mut PLAYER_Y: u8 = 0;
+static PLAYER_X: AtomicU8 = AtomicU8::new(0);
+static PLAYER_Y: AtomicU8 = AtomicU8::new(0);
 
 fn clear_screen() {
     static mut CLEAR_BUFFER: [u8; FRAMEBUFFER_SIZE] = [0; FRAMEBUFFER_SIZE];
@@ -22,7 +23,7 @@ fn clear_screen() {
 fn update_player() {
     let pad = peek(GAMEPAD1_ADDR);
 
-    let mut new_x = unsafe { PLAYER_X };
+    let mut new_x = PLAYER_X.load(Relaxed);
 
     if pad & BUTTON_LEFT != 0 {
         new_x = new_x.wrapping_sub(2);
@@ -33,7 +34,7 @@ fn update_player() {
     }
 
     if (new_x as u16) < SCREEN_WIDTH {
-        unsafe { PLAYER_X = new_x };
+        PLAYER_X.store(new_x, Relaxed);
     }
 
     if pad & BUTTON_1 != 0 {
@@ -52,8 +53,8 @@ fn update_player() {
 }
 
 fn draw_player() {
-    let player_x = unsafe { PLAYER_X as u16 };
-    let player_y = unsafe { PLAYER_Y as u16 };
+    let player_x = PLAYER_X.load(Relaxed) as u16;
+    let player_y = PLAYER_Y.load(Relaxed) as u16;
 
     for y in 0..4u16 {
         let address = VIDEO_ADDR + ((player_y + y) * SCREEN_WIDTH + player_x) / 4;
@@ -65,10 +66,8 @@ fn draw_player() {
 /// Initializes the game
 #[no_mangle]
 pub extern "C" fn init() {
-    unsafe {
-        PLAYER_X = (SCREEN_WIDTH / 2) as u8;
-        PLAYER_Y = (SCREEN_HEIGHT - 20) as u8;
-    }
+    PLAYER_X.store((SCREEN_WIDTH / 2) as u8, Relaxed);
+    PLAYER_Y.store((SCREEN_HEIGHT - 20) as u8, Relaxed);
 }
 
 /// Updates the game within the gameloop
