@@ -1,6 +1,6 @@
 ---
 name: bytebox-wasm
-description: Use when developing on, extending, or debugging the ByteBox fantasy console — its JavaScript runtime, memory map, WASM game contract, audio/video subsystems, input handling, persistence, and debugger.
+description: Use when developing on, extending, or viewing memory in the ByteBox fantasy console — its JavaScript runtime, memory map, WASM game contract, audio/video subsystems, input handling, persistence, and memory viewer.
 ---
 
 # ByteBox Console — Technical Reference
@@ -23,7 +23,7 @@ All runtime code lives in `console/assets/js/`. Each module owns one concern:
 | MelodyMapper | `melody-mapper.js` | Music playback via FAB-4 ring buffer protocol |
 | AudioBus | `audio-bus.js` | Shared `AudioContext` and master gain node |
 | WRAMMapper | `wram-mapper.js` | Persists 1KB WRAM to `localStorage`, keyed by game ID |
-| MemoryViewer | `debugger.js` | Hex memory viewer (toggle with F8), reads/writes `window.memoryMap` |
+| MemoryViewer | `memory-viewer.js` | Hex memory viewer (toggle with F8), reads/writes `window.memoryMap` |
 
 ### Initialization order (DOMContentLoaded)
 
@@ -69,7 +69,7 @@ requestAnimationFrame(gameLoop)
 
 Key behavior: rendering and melody continue while the game is halted. A warning logs if the accumulator exceeds 200ms.
 
-The `memory` array is exposed as `window.memoryMap` for the debugger.
+The `memory` array is exposed as `window.memoryMap` for the memory viewer.
 
 ---
 
@@ -284,7 +284,7 @@ Virtual pad buttons use `data-key` HTML attributes, handled via `mousedown`/`tou
 
 ---
 
-## Debugger (`debugger.js`)
+## Memory Viewer (`memory-viewer.js`)
 
 Toggle with **F8**. Displays 16 rows × 16 columns = 256 bytes starting at a configurable base address (default: `0xE900` = video framebuffer).
 

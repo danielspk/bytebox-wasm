@@ -1,6 +1,6 @@
 import { ADDR, DOM } from './config.js';
 
-// Memory viewer Debugger -----------------------------------------------------
+// Memory Viewer --------------------------------------------------------------
 
 export const MemoryViewer = {
   baseAddr: ADDR.VIDEO,
@@ -112,24 +112,24 @@ export const MemoryViewer = {
     if (!window.memoryMap) return;
 
     this.isRunning = true;
-    DOM.Debugger.style.display = 'block';
+    DOM.MemoryViewer.style.display = 'block';
 
     let frameCount = 0;
 
-    const debugLoop = () => {
+    const memoryViewerLoop = () => {
       if (frameCount++ % 4 === 0) {
         this.update();
       }
 
-      this.animationId = requestAnimationFrame(debugLoop);
+      this.animationId = requestAnimationFrame(memoryViewerLoop);
     };
 
-    this.animationId = requestAnimationFrame(debugLoop);
+    this.animationId = requestAnimationFrame(memoryViewerLoop);
   },
 
   hideMemory() {
     this.isRunning = false;
-    DOM.Debugger.style.display = 'none';
+    DOM.MemoryViewer.style.display = 'none';
 
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
@@ -143,7 +143,7 @@ export const MemoryViewer = {
 document.addEventListener('DOMContentLoaded', () => {
   DOM.MemoryInput.addEventListener('input', (e) => MemoryViewer.inputMemoryAddr(e.target.value));
 
-  DOM.Debugger.querySelectorAll('input').forEach(input => {
+  DOM.MemoryViewer.querySelectorAll('input').forEach(input => {
     const stop = (e) => { if (e.key.length === 1) e.stopPropagation(); };
     input.addEventListener('keydown', stop);
     input.addEventListener('keyup', stop);

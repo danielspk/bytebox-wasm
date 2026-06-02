@@ -25,7 +25,7 @@ export const DOM = {
   InfoName: document.getElementById('i-name'),
   InfoSize: document.getElementById('i-size'),
   ScreenCanvas: document.getElementById('screen-canvas'),
-  Debugger: document.getElementById('debugger'),
+  MemoryViewer: document.getElementById('memory-viewer'),
   MemoryInput: document.getElementById('memory-input'),
   MemoryDisplay: document.getElementById('memory-display'),
   MemoryAddress: document.getElementById('memory-address'),

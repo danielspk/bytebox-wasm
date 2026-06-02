@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
   <title>ByteBox - Web Assembly</title>
   <link rel="stylesheet" href="assets/css/console.css">
-  <link rel="stylesheet" href="assets/css/debugger.css">
+  <link rel="stylesheet" href="assets/css/memory-viewer.css">
 </head>
 <body>
   <main id="console" class="console">
@@ -42,9 +42,9 @@
 
   </main>
 
-  <aside id="debugger">
-    <header class="debugger-header">Memory Viewer</header>
-    <nav class="debugger-shortcuts">
+  <aside id="memory-viewer">
+    <header class="memory-viewer-header">Memory Viewer</header>
+    <nav class="memory-viewer-shortcuts">
       <button class="shortcut-btn" data-addr="0040">Flags</button>
       <button class="shortcut-btn" data-addr="E900">Video</button>
       <button class="shortcut-btn" data-addr="FF84">Colors</button>
@@ -53,16 +53,16 @@
       <input id="memory-input" class="input input-nav" type="text" value="E900" placeholder="E900">
       <button class="shortcut-btn btn-resume" data-action="resume">Resume | Halt</button>
     </nav>
-    <section class="debugger-controls">
+    <section class="memory-viewer-controls">
       <label for="memory-address">0x</label>
       <input id="memory-address" class="input" type="text" placeholder="FFFF" maxlength="4">
       <label for="memory-value">=</label>
       <input id="memory-value" class="input input-sm" type="text" placeholder="FF" maxlength="2">
     </section>
-    <section class="debugger-memory" id="memory-display"></section>
+    <section class="memory-viewer-display" id="memory-display"></section>
   </aside>
 
   <script type="module" src="assets/js/console.js" defer></script>
-  <script type="module" src="assets/js/debugger.js" defer></script>
+  <script type="module" src="assets/js/memory-viewer.js" defer></script>
 </body>
 </html>
