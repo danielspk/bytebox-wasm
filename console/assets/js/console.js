@@ -17,6 +17,8 @@ const CONST = {
   GUARD_THRESHOLD: 200,     // spiral of death guard - max frame time in milliseconds
 };
 
+const TEXT_DECODER = new TextDecoder();
+
 export const ByteBox = {
   memory: null,
   wasmModule: null,
@@ -29,8 +31,10 @@ export const ByteBox = {
     this.setup();
     await this.load(wasmUrl);
     this.start();
+  },
 
-    window.memoryMap = this.memory;
+  getMemory() {
+    return this.memory;
   },
 
   applyFrameColor() {
@@ -288,9 +292,8 @@ export const ByteBox = {
 
   trace(ptr, len) {
     const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
-    const str = new TextDecoder().decode(bytes);
 
-    console.log('🔵 WASM TRACE:', str);
+    console.log('🔵 WASM TRACE:', TEXT_DECODER.decode(bytes));
   }
 }
 

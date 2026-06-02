@@ -1,4 +1,5 @@
 import { ADDR, DOM } from './config.js';
+import { ByteBox } from './console.js';
 
 // Memory Viewer --------------------------------------------------------------
 
@@ -20,7 +21,9 @@ export const MemoryViewer = {
   },
 
   update() {
-    if (!this.isRunning || !window.memoryMap) return;
+    const memory = ByteBox.getMemory();
+
+    if (!this.isRunning || !memory) return;
 
     let html = '';
 
@@ -36,7 +39,7 @@ export const MemoryViewer = {
 
         if (byteAddr > 0xFFFF) break;
 
-        const value = window.memoryMap[byteAddr] || 0;
+        const value = memory[byteAddr] || 0;
         const oldValue = this.lastMemory[row * 16 + col] || 0;
 
         const hexStr = value.toString(16).toUpperCase().padStart(2, '0');
@@ -68,9 +71,11 @@ export const MemoryViewer = {
     const hex = hexAddr.replace(/[^0-9A-Fa-f]/g, '');
 
     if (hex.length === 4) {
+      const memory = ByteBox.getMemory();
+
       this.baseAddr = parseInt(hex, 16);
       this.lastMemory.fill(0);
-      this.lastMemory.set(window.memoryMap.subarray(this.baseAddr, this.baseAddr + this.lastMemory.length));
+      this.lastMemory.set(memory.subarray(this.baseAddr, this.baseAddr + this.lastMemory.length));
       this.update();
     }
   },
@@ -82,7 +87,9 @@ export const MemoryViewer = {
   },
 
   writeMemoryByte() {
-    if (!window.memoryMap) return;
+    const memory = ByteBox.getMemory();
+
+    if (!memory) return;
 
     const addr = parseInt(DOM.MemoryAddress.value, 16);
     const val = parseInt(DOM.MemoryValue.value, 16);
@@ -94,22 +101,30 @@ export const MemoryViewer = {
       return;
     }
 
-    window.memoryMap[addr] = val & 0xFF;
+    memory[addr] = val & 0xFF;
   },
 
   selectByte(addr) {
+    const memory = ByteBox.getMemory();
+
     DOM.MemoryAddress.value = addr.toString(16).toUpperCase().padStart(4, '0');
-    DOM.MemoryValue.value = window.memoryMap[addr].toString(16).toUpperCase().padStart(2, '0');
+    DOM.MemoryValue.value = memory[addr].toString(16).toUpperCase().padStart(2, '0');
     DOM.MemoryValue.focus();
     DOM.MemoryValue.select();
   },
 
   resumeHalt() {
-    window.memoryMap[0x0040] ^= 0x01;
+    const memory = ByteBox.getMemory();
+
+    if (!memory) return;
+
+    memory[ADDR.SYSFLAGS] ^= 0x01;
   },
 
   showMemory() {
-    if (!window.memoryMap) return;
+    const memory = ByteBox.getMemory();
+
+    if (!memory) return;
 
     this.isRunning = true;
     DOM.MemoryViewer.style.display = 'block';
@@ -151,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   DOM.MemoryDisplay.addEventListener('mousedown', (e) => {
     const span = e.target.closest('.memory-byte');
-    if (!span || !window.memoryMap) return;
+    if (!span || !ByteBox.getMemory()) return;
 
     MemoryViewer.selectByte(Number(span.dataset.addr));
   });
@@ -169,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'F8' && window.memoryMap) {
+    if (e.key === 'F8' && ByteBox.getMemory()) {
       if (!MemoryViewer.isRunning) {
         MemoryViewer.showMemory();
       } else {

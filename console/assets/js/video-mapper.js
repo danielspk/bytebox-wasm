@@ -39,6 +39,7 @@ export const VideoMapper = {
 
   init(memory) {
     this.memory = memory;
+    this.setupColors();
 
     if (this.gl) return;
 
@@ -54,7 +55,6 @@ export const VideoMapper = {
     };
 
     this.setupVideo();
-    this.setupColors();
     this.setupResize();
     this.resize();
   },

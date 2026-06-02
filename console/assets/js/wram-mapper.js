@@ -15,7 +15,7 @@ export const WRAMMapper = {
   sync(gameID) {
     this.gameID = `bytebox_${gameID}`;
 
-    if (!localStorage.hasOwnProperty(this.gameID)) return;
+    if (localStorage.getItem(this.gameID) === null) return;
 
     try {
       const wramArray = JSON.parse(localStorage.getItem(this.gameID));

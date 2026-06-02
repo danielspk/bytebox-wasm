@@ -23,7 +23,7 @@ All runtime code lives in `console/assets/js/`. Each module owns one concern:
 | MelodyMapper | `melody-mapper.js` | Music playback via FAB-4 ring buffer protocol |
 | AudioBus | `audio-bus.js` | Shared `AudioContext` and master gain node |
 | WRAMMapper | `wram-mapper.js` | Persists 1KB WRAM to `localStorage`, keyed by game ID |
-| MemoryViewer | `memory-viewer.js` | Hex memory viewer (toggle with F8), reads/writes `window.memoryMap` |
+| MemoryViewer | `memory-viewer.js` | Hex memory viewer (toggle with F8), reads/writes memory via `ByteBox.getMemory()` |
 
 ### Initialization order (DOMContentLoaded)
 
@@ -68,8 +68,6 @@ requestAnimationFrame(gameLoop)
 ```
 
 Key behavior: rendering and melody continue while the game is halted. A warning logs if the accumulator exceeds 200ms.
-
-The `memory` array is exposed as `window.memoryMap` for the memory viewer.
 
 ---
 
@@ -291,7 +289,7 @@ Toggle with **F8**. Displays 16 rows × 16 columns = 256 bytes starting at a con
 **Features:**
 - Navigate to any address by typing a 4-digit hex value
 - Click any byte to select it for editing
-- Type a hex value + Enter to write it directly to `window.memoryMap`
+- Type a hex value + Enter to write it directly to memory via `ByteBox.getMemory()`
 - Shortcut buttons for quick navigation to key memory regions
 - Resume/Halt toggle (XOR bit 0 of `0x0040`)
 - Updates every 4 animation frames (~15 FPS)
