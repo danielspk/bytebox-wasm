@@ -2,5 +2,9 @@
 console/assets/wasm/
 !console/assets/wasm/.gitkeep
 
+# game source files
+src/
+!src/.gitkeep
+
 # distribution files
 *zip

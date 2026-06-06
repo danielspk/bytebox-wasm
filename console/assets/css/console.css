@@ -84,6 +84,7 @@ html, body {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+  will-change: transform;
 
   @media (max-width: 600px) {
     border: none;

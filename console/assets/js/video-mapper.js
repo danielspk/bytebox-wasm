@@ -6,6 +6,7 @@ const CONST = {
   SCREEN_WIDTH: 160,
   SCREEN_HEIGHT: 120,
   VIDEO_SIZE: (160 * 120) / 4,
+  CAPTURE_SCALE: 8,
 
   VERTEX_SHADER_SOURCE: `
     attribute vec2 a_position;
@@ -212,5 +213,39 @@ export const VideoMapper = {
     );
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+  },
+
+  capture() {
+    this.render();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = CONST.SCREEN_WIDTH * CONST.CAPTURE_SCALE;
+    canvas.height = CONST.SCREEN_HEIGHT * CONST.CAPTURE_SCALE;
+
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(DOM.ScreenCanvas, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+
+      a.href = url;
+      a.download = 'bytebox.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   }
 };
+
+// Initialization -------------------------------------------------------------
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'F9') {
+      VideoMapper.capture();
+
+      e.preventDefault();
+    }
+  });
+});

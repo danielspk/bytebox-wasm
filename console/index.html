@@ -50,14 +50,14 @@
       <button class="shortcut-btn" data-addr="FF84">Colors</button>
       <button class="shortcut-btn" data-addr="FF94">Pads</button>
       <button class="shortcut-btn" data-addr="FF98">Sounds</button>
-      <input id="memory-input" class="input input-nav" type="text" value="E900" placeholder="E900">
+      <input id="memory-input" class="input input-nav" type="text" value="E900" placeholder="E900" inputmode="none">
       <button class="shortcut-btn btn-resume" data-action="resume">Resume | Halt</button>
     </nav>
     <section class="memory-viewer-controls">
       <label for="memory-address">0x</label>
-      <input id="memory-address" class="input" type="text" placeholder="FFFF" maxlength="4">
+      <input id="memory-address" class="input" type="text" placeholder="FFFF" maxlength="4" inputmode="none">
       <label for="memory-value">=</label>
-      <input id="memory-value" class="input input-sm" type="text" placeholder="FF" maxlength="2">
+      <input id="memory-value" class="input input-sm" type="text" placeholder="FF" maxlength="2" inputmode="none">
     </section>
     <section class="memory-viewer-display" id="memory-display"></section>
   </aside>

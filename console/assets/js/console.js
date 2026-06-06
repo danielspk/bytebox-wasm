@@ -99,7 +99,7 @@ export const ByteBox = {
       const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
       WRAMMapper.sync(gameID);
 
-      this.memory[ADDR.SEED] = Date.now() & 0xFF;
+      this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
       this.wasmModule.exports.init?.();
       this.isReady = true;
 

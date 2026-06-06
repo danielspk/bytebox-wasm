@@ -19,6 +19,13 @@ build-c: check-docker clean ## Build game (in C)
 		-Wl,--no-entry -Wl,--strip-all -Wl,--export-dynamic -nostdlib -nodefaultlibs -nostartfiles \
 		-ffreestanding -o $(WASM_TARGET) src/*.c
 
+build-c3: check-docker clean ## Build game (in C3)
+	@docker image inspect bytebox-c3:latest > /dev/null 2>&1 || \
+		docker build -t bytebox-c3:latest $(CURDIR)/demos/templates/c3
+	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-c3:latest \
+		sh -c "c3c compile *.c3 --target wasm32 --use-stdlib=no --link-libc=no \
+		--memory-env=none --no-entry -Oz -o ../$(WASM_TARGET)"
+
 build-d: check-docker clean ## Build game (in D)
 	docker run --rm -v $(CURDIR):/src -w /src nonanonno/ldc:1.29.0 ldc2 \
 		-betterC -mtriple=wasm32-unknown-unknown -Oz --fvisibility=hidden \
@@ -55,4 +62,4 @@ check-docker: ## Check Docker installation
 clean: ## Clean game file
 	rm -f $(WASM_TARGET) $(ZIP_TARGET)
 
-.PHONY: help run build-assemblyscript build-c build-d build-go build-odin build-rust build-zig package check-docker clean
+.PHONY: help run build-assemblyscript build-c build-c3 build-d build-go build-odin build-rust build-zig package check-docker clean

@@ -306,6 +306,15 @@ Toggle with **F8**. Displays 16 rows × 16 columns = 256 bytes starting at a con
 
 ---
 
+## Keyboard Shortcuts
+
+| Key | Action |
+|---|---|
+| F8 | Toggle memory viewer |
+| F9 | Capture screenshot |
+
+---
+
 ## Loading a Game
 
 The console loads `assets/wasm/game.wasm` by default (with cache-busting `?t=<timestamp>`). Games can also be loaded by **drag-and-drop**: dropping a `.wasm` file onto the browser window calls `ByteBox.restart(objectURL)`, which cancels the current animation frame and re-runs the full init sequence.
