@@ -36,6 +36,15 @@ build-go: check-docker clean ## Build game (in Go)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src tinygo/tinygo tinygo build \
 		-target=wasm-unknown -panic=trap -opt=z -scheduler=none -gc=none -no-debug -o ../$(WASM_TARGET) .
 
+build-nelua: check-docker clean ## Build game (in Nelua)
+	@docker image inspect bytebox-nelua:latest > /dev/null 2>&1 || \
+		docker build -t bytebox-nelua:latest $(CURDIR)/demos/templates/nelua
+	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-nelua:latest \
+		nelua --cc="/opt/wasi-sdk/bin/clang" \
+		--cflags="--target=wasm32-unknown-unknown -Oz -ffreestanding -nostdlib" \
+		--ldflags="-Wl,--no-entry -Wl,--strip-all -Wl,--export-dynamic -Wl,--allow-undefined -nostdlib" \
+		--release --no-cache game.nelua --output ../$(WASM_TARGET)
+
 build-odin: check-docker clean ## Build game (in Odin)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src snappybeebit/odin odin build . \
 		-target:freestanding_wasm32 -no-entry-point -o:size -out:../$(WASM_TARGET)
@@ -47,6 +56,12 @@ build-rust: check-docker clean ## Build game (in Rust)
 		cargo build --target wasm32-unknown-unknown --release && \
 		command -v wasm-opt > /dev/null && wasm-opt -Oz ../$(WASM_TARGET) -o ../$(WASM_TARGET).tmp && mv ../$(WASM_TARGET).tmp ../$(WASM_TARGET) || true && \
 		cp target/wasm32-unknown-unknown/release/game.wasm ../$(WASM_TARGET)"
+
+build-wat: check-docker clean ## Build game (in WebAssembly Text)
+	@docker image inspect bytebox-wat:latest > /dev/null 2>&1 || \
+		docker build -t bytebox-wat:latest $(CURDIR)/demos/templates/wat
+	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-wat:latest \
+		wat2wasm game.wat -o ../$(WASM_TARGET)
 
 build-zig: check-docker clean ## Build game (in Zig)
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src kassany/alpine-ziglang:0.13.0 zig build-exe \
@@ -62,4 +77,4 @@ check-docker: ## Check Docker installation
 clean: ## Clean game file
 	rm -f $(WASM_TARGET) $(ZIP_TARGET)
 
-.PHONY: help run build-assemblyscript build-c build-c3 build-d build-go build-odin build-rust build-zig package check-docker clean
+.PHONY: help run build-assemblyscript build-c build-c3 build-d build-go build-nelua build-odin build-rust build-wat build-zig package check-docker clean

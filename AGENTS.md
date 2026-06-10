@@ -12,8 +12,10 @@ make build-c              # Compile game in src/ (C)
 make build-c3             # Compile game in src/ (C3)
 make build-d              # Compile game in src/ (D)
 make build-go             # Compile game in src/ (Go/TinyGo)
+make build-nelua          # Compile game in src/ (Nelua)
 make build-odin           # Compile game in src/ (Odin)
 make build-rust           # Compile game in src/ (Rust)
+make build-wat            # Compile game in src/ (WebAssembly Text)
 make build-zig            # Compile game in src/ (Zig)
 make package              # Package game as zip
 make clean                # Remove game.wasm and game.zip

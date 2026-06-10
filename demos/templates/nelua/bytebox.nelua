@@ -1,0 +1,96 @@
+--[[
+ SPDX-License-Identifier: MIT
+ Copyright (c) 2025-2026 Contributors to the bytebox-wasm project
+
+ Part of the bytebox-wasm project - https://github.com/danielspk/bytebox-wasm
+ See LICENSE file for full license details.
+]]
+
+## pragmas.nogc = true
+
+global bytebox = @record{}
+
+-- ----------------------------------------------------------------------------
+-- Console Constants
+-- ----------------------------------------------------------------------------
+
+global bytebox.SCREEN_WIDTH     <comptime> = 160
+global bytebox.SCREEN_HEIGHT    <comptime> = 120
+global bytebox.MEMORY_SIZE      <comptime> = 64 * 1024
+global bytebox.FRAMEBUFFER_SIZE <comptime> = (160 * 120) // 4
+
+-- ----------------------------------------------------------------------------
+-- Memory Addresses Constants
+-- ----------------------------------------------------------------------------
+
+global bytebox.SYSFLAGS_ADDR    <comptime> = 0x0040
+global bytebox.SEED_ADDR        <comptime> = 0x0041
+global bytebox.GAMENAME_ADDR    <comptime> = 0x0044
+global bytebox.WRAM_ADDR        <comptime> = 0xE100
+global bytebox.VIDEO_ADDR       <comptime> = 0xE900
+global bytebox.COLOR1_ADDR      <comptime> = 0xFF84
+global bytebox.COLOR2_ADDR      <comptime> = 0xFF87
+global bytebox.COLOR3_ADDR      <comptime> = 0xFF8A
+global bytebox.COLOR4_ADDR      <comptime> = 0xFF8D
+global bytebox.GAMEPAD1_ADDR    <comptime> = 0xFF94
+global bytebox.GAMEPAD2_ADDR    <comptime> = 0xFF95
+global bytebox.SFX_CH1_ADDR     <comptime> = 0xFF98
+global bytebox.SFX_CH2_ADDR     <comptime> = 0xFF9C
+global bytebox.SFX_CH3_ADDR     <comptime> = 0xFFA0
+global bytebox.SFX_CH4_ADDR     <comptime> = 0xFFA4
+global bytebox.MELODY_ATTR_ADDR <comptime> = 0xFFA8
+global bytebox.MELODY_ADDR      <comptime> = 0xFFA9
+global bytebox.MELODY_HEAD_ADDR <comptime> = 0xFFE9
+global bytebox.MELODY_TAIL_ADDR <comptime> = 0xFFEA
+
+-- ----------------------------------------------------------------------------
+-- System Flags Bits Constants
+-- ----------------------------------------------------------------------------
+
+global bytebox.HALT_FLAG      <comptime> = 0x01
+global bytebox.DUMP_WRAM_FLAG <comptime> = 0x02
+
+-- ----------------------------------------------------------------------------
+-- Gamepad Buttons Bits Constants
+-- ----------------------------------------------------------------------------
+
+global bytebox.BUTTON_2     <comptime> = 0x01
+global bytebox.BUTTON_1     <comptime> = 0x02
+global bytebox.BUTTON_RIGHT <comptime> = 0x10
+global bytebox.BUTTON_DOWN  <comptime> = 0x20
+global bytebox.BUTTON_UP    <comptime> = 0x40
+global bytebox.BUTTON_LEFT  <comptime> = 0x80
+
+-- ----------------------------------------------------------------------------
+-- Imported functions
+-- ----------------------------------------------------------------------------
+
+-- Raw host imports (resolved from the wasm "env" namespace)
+local function _peek(addr: uint16): uint8
+  <cimport, cattribute'import_name("peek")'> end
+local function _poke(addr: uint16, value: uint8): void
+  <cimport, cattribute'import_name("poke")'> end
+local function _spoke(start_addr: uint16, length: uint16, data: *[0]uint8): void
+  <cimport, cattribute'import_name("spoke")'> end
+local function _trace(str: cstring, len: cint): void
+  <cimport, cattribute'import_name("trace")'> end
+
+-- Gets the value of a memory address
+function bytebox.peek(addr: uint16): uint8
+  return _peek(addr)
+end
+
+-- Sets a value into a memory address
+function bytebox.poke(addr: uint16, value: uint8): void
+  _poke(addr, value)
+end
+
+-- Writes multiple bytes into memory
+function bytebox.spoke(start_addr: uint16, length: uint16, data: *[0]uint8): void
+  _spoke(start_addr, length, data)
+end
+
+-- Puts trace information to the console
+function bytebox.trace(str: cstring, len: cint): void
+  _trace(str, len)
+end

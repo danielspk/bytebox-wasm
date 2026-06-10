@@ -1,0 +1,68 @@
+--[[
+ SPDX-License-Identifier: MIT
+ Copyright (c) 2025-2026 Contributors to the bytebox-wasm project
+
+ Part of the bytebox-wasm project - https://github.com/danielspk/bytebox-wasm
+ See LICENSE file for full license details.
+]]
+
+require "bytebox"
+
+local player_x: uint8
+local player_y: uint8
+
+local function clear_screen(): void
+  local clear_buffer: [bytebox.FRAMEBUFFER_SIZE]uint8 = {}
+
+  bytebox.spoke(bytebox.VIDEO_ADDR, bytebox.FRAMEBUFFER_SIZE, &clear_buffer)
+end
+
+local function update_player(): void
+  local pad: uint8 = bytebox.peek(bytebox.GAMEPAD1_ADDR)
+
+  local new_x: uint8 = player_x
+
+  if (pad & bytebox.BUTTON_LEFT) ~= 0 then
+    new_x = new_x - 2
+  end
+
+  if (pad & bytebox.BUTTON_RIGHT) ~= 0 then
+    new_x = new_x + 2
+  end
+
+  if new_x < bytebox.SCREEN_WIDTH then
+    player_x = new_x
+  end
+
+  if (pad & bytebox.BUTTON_1) ~= 0 then
+    bytebox.poke(bytebox.SFX_CH1_ADDR, 0x7D)
+    bytebox.poke(bytebox.SFX_CH1_ADDR + 1, 0xC3)
+    bytebox.poke(bytebox.SFX_CH1_ADDR + 2, 0x3C)
+    bytebox.poke(bytebox.SFX_CH1_ADDR + 3, 0x87)
+  end
+
+  if (pad & bytebox.BUTTON_2) ~= 0 then
+    local address: uint16 = bytebox.COLOR4_ADDR + 2
+    local new_blue: uint8 = bytebox.peek(address) + 0x0A
+    bytebox.poke(address, new_blue)
+  end
+end
+
+local function draw_player(): void
+  for y: uint16 = 0, 3 do
+    local address: uint16 = (@uint16)(bytebox.VIDEO_ADDR + (((player_y + y) * bytebox.SCREEN_WIDTH + player_x) // 4))
+
+    bytebox.poke(address, 0xFF)
+  end
+end
+
+local function init(): void <cexport, codename'init'>
+  player_x = bytebox.SCREEN_WIDTH // 2
+  player_y = bytebox.SCREEN_HEIGHT - 20
+end
+
+local function update(): void <cexport, codename'update'>
+  clear_screen()
+  update_player()
+  draw_player()
+end
