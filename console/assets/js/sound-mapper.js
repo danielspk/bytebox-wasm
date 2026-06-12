@@ -11,7 +11,7 @@ const CONST = {
   FREQ_MIN: 20,
   FREQ_STEP: 3.84,
   DUR_STEP: 0.032,
-  MASTER_VOL: 0.5
+  MASTER_VOL: 0.5,
 };
 
 export const SoundMapper = {
@@ -20,6 +20,7 @@ export const SoundMapper = {
 
   init(memory) {
     this.memory = memory;
+    this.cleanup();
 
     for (let i = 0; i < CONST.CHANNELS; i++) {
       this.audioChannels[i] = {
@@ -28,6 +29,10 @@ export const SoundMapper = {
         isPlaying: false
       };
     }
+  },
+
+  cleanup() {
+    this.audioChannels.forEach(c => c.oscillator?.stop());
   },
 
   play() {

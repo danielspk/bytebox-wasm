@@ -13,11 +13,9 @@ static PLAYER_X: AtomicU8 = AtomicU8::new(0);
 static PLAYER_Y: AtomicU8 = AtomicU8::new(0);
 
 fn clear_screen() {
-    static mut CLEAR_BUFFER: [u8; FRAMEBUFFER_SIZE] = [0; FRAMEBUFFER_SIZE];
+    static CLEAR_BUFFER: [u8; FRAMEBUFFER_SIZE] = [0; FRAMEBUFFER_SIZE];
 
-    unsafe {
-        spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE as u16, CLEAR_BUFFER.as_ptr());
-    }
+    spoke(VIDEO_ADDR, FRAMEBUFFER_SIZE as u16, CLEAR_BUFFER.as_ptr());
 }
 
 fn update_player() {
@@ -64,14 +62,14 @@ fn draw_player() {
 }
 
 /// Initializes the game
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn init() {
     PLAYER_X.store((SCREEN_WIDTH / 2) as u8, Relaxed);
     PLAYER_Y.store((SCREEN_HEIGHT - 20) as u8, Relaxed);
 }
 
 /// Updates the game within the gameloop
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn update() {
     clear_screen();
     update_player();

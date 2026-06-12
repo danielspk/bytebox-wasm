@@ -25,7 +25,7 @@ const CONST = {
     void main() {
       gl_FragColor = texture2D(u_texture, v_texCoord);
     }
-  `
+  `,
 };
 
 export const VideoMapper = {
@@ -34,6 +34,7 @@ export const VideoMapper = {
   videoBuffer: null,
   palette: null,
   vertexBuffer: null,
+  texture: null,
   attributes: {},
   uniforms: {},
   resizeHandler: null,
@@ -152,7 +153,7 @@ export const VideoMapper = {
 
     DOM.ScreenCanvas.width = displayWidth;
     DOM.ScreenCanvas.height = displayHeight;
-    DOM.Console.style.visibility = "inherit";
+    DOM.Console.style.visibility = 'inherit';
   },
 
   compileShader(source, type) {
@@ -162,8 +163,8 @@ export const VideoMapper = {
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
       const error = this.gl.getShaderInfoLog(shader);
-      console.log('❌ shader compilation failed', error);
-      
+      console.error('❌ shader compilation failed', error);
+
       this.gl.deleteShader(shader);
 
       return null;
@@ -176,10 +177,10 @@ export const VideoMapper = {
     this.palette = this.memory.subarray(ADDR.PALETTE, ADDR.PALETTE + 12);
 
     let idx = 0;
-    
+
     for (let byteIdx = 0; byteIdx < CONST.VIDEO_SIZE; byteIdx++) {
       const byteColors = this.memory[ADDR.VIDEO + byteIdx];
-      
+
       // process four pixel with byte
       this.drawPixel(idx, (byteColors >> 6) & 0x03); idx += 4;
       this.drawPixel(idx, (byteColors >> 4) & 0x03); idx += 4;
@@ -213,6 +214,10 @@ export const VideoMapper = {
     );
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+  },
+
+  clear() {
+    this.memory.fill(0, ADDR.VIDEO, ADDR.VIDEO + CONST.VIDEO_SIZE);
   },
 
   capture() {

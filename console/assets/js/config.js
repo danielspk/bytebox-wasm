@@ -26,6 +26,7 @@ export const DOM = {
   InfoSize: document.getElementById('i-size'),
   ScreenCanvas: document.getElementById('screen-canvas'),
   MemoryViewer: document.getElementById('memory-viewer'),
+  MemoryHeader: document.getElementById('memory-header'),
   MemoryInput: document.getElementById('memory-input'),
   MemoryDisplay: document.getElementById('memory-display'),
   MemoryAddress: document.getElementById('memory-address'),

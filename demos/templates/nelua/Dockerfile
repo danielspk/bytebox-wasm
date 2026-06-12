@@ -1,4 +1,4 @@
-FROM ghcr.io/webassembly/wasi-sdk:latest
+FROM ghcr.io/webassembly/wasi-sdk:wasi-sdk-33
 
 ENV WASI_SDK_PATH=/opt/wasi-sdk
 

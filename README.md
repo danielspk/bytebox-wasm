@@ -364,6 +364,12 @@ To compile a game written in _C_, run:
 make build-c
 ```
 
+To compile a game written in _C3_, run:
+
+```sh
+make build-c3
+```
+
 To compile a game written in _D_, run:
 
 ```sh
@@ -374,6 +380,12 @@ To compile a game written in _Go_, run:
 
 ```sh
 make build-go
+```
+
+To compile a game written in _Nelua_, run:
+
+```sh
+make build-nelua
 ```
 
 To compile a game written in _Odin_, run:
@@ -392,6 +404,12 @@ To compile a game written in _Zig_, run:
 
 ```sh
 make build-zig
+```
+
+To compile a game written in _WebAssembly Text_, run:
+
+```sh
+make build-wat
 ```
 
 ### Run the Console on a Local Web Server

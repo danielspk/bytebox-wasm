@@ -64,7 +64,8 @@ pub const BUTTON_LEFT: u8 = 0x80;
 // Imported functions
 // ----------------------------------------------------------------------------
 
-extern "C" {
+#[link(wasm_import_module = "env")]
+unsafe extern "C" {
     /// Gets the value of a memory address
     #[link_name = "peek"]
     fn sys_peek(addr: u16) -> u8;

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; img-src 'self' data:; connect-src 'self' blob:;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="ByteBox - WebAssembly console">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
@@ -43,7 +44,7 @@
   </main>
 
   <aside id="memory-viewer">
-    <header class="memory-viewer-header">Memory Viewer</header>
+    <header id="memory-header" class="memory-viewer-header">Memory Viewer</header>
     <nav class="memory-viewer-shortcuts">
       <button class="shortcut-btn" data-addr="0040">Flags</button>
       <button class="shortcut-btn" data-addr="E900">Video</button>

@@ -14,6 +14,12 @@ export const MelodyMapper = {
 
   init(memory) {
     this.memory = memory;
+    this.cleanup();
+  },
+
+  cleanup() {
+    this.activeVoices.forEach(v => v.src.stop());
+    this.activeVoices.clear();
   },
 
   tick() {

@@ -8,6 +8,8 @@ export const MemoryViewer = {
   lastMemory: new Uint8Array(256),
   isRunning: false,
   animationId: null,
+  dragOffsetX: 0,
+  dragOffsetY: 0,
 
   isProtectedWrite(addr) {
     const ranges = [
@@ -39,8 +41,8 @@ export const MemoryViewer = {
 
         if (byteAddr > 0xFFFF) break;
 
-        const value = memory[byteAddr] || 0;
-        const oldValue = this.lastMemory[row * 16 + col] || 0;
+        const value = memory[byteAddr];
+        const oldValue = this.lastMemory[row * 16 + col];
 
         const hexStr = value.toString(16).toUpperCase().padStart(2, '0');
         let classes = 'memory-byte';
@@ -150,6 +152,21 @@ export const MemoryViewer = {
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
     }
+  },
+
+  grab(e) {
+    const rect = DOM.MemoryViewer.getBoundingClientRect();
+    this.dragOffsetX = e.clientX - rect.left;
+    this.dragOffsetY = e.clientY - rect.top;
+
+    DOM.MemoryHeader.setPointerCapture(e.pointerId);
+  },
+
+  drag(e) {
+    if (!DOM.MemoryHeader.hasPointerCapture(e.pointerId)) return;
+
+    DOM.MemoryViewer.style.left = `${e.clientX - this.dragOffsetX}px`;
+    DOM.MemoryViewer.style.top = `${e.clientY - this.dragOffsetY}px`;
   }
 };
 
@@ -163,6 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('keydown', stop);
     input.addEventListener('keyup', stop);
   });
+
+  DOM.MemoryHeader.addEventListener('pointerdown', (e) => MemoryViewer.grab(e));
+  DOM.MemoryHeader.addEventListener('pointermove', (e) => MemoryViewer.drag(e));
 
   DOM.MemoryDisplay.addEventListener('mousedown', (e) => {
     const span = e.target.closest('.memory-byte');

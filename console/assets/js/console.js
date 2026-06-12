@@ -17,15 +17,22 @@ const CONST = {
   GUARD_THRESHOLD: 200,     // spiral of death guard - max frame time in milliseconds
 };
 
+const STATE = {
+  LOADING: 0,
+  READY: 1,
+  RUNNING: 2,
+  CRASHED: 3,
+};
+
 const TEXT_DECODER = new TextDecoder();
 
 export const ByteBox = {
   memory: null,
   wasmModule: null,
-  isReady: false,
   frames: 0,
   lastUpdateFPS: 0,
   animationId: null,
+  state: STATE.LOADING,
 
   async init(wasmUrl) {
     this.setup();
@@ -52,15 +59,15 @@ export const ByteBox = {
   },
 
   setup() {
+    this.state = STATE.LOADING;
     this.memory = new Uint8Array(CONST.MEMORY_SIZE);
     this.memory.fill(0);
     this.wasmModule = null;
-    this.isReady = false;
     this.frames = 0;
     this.lastUpdateFPS = 0;
     this.animationId = null;
 
-    AudioBus.setup();
+    AudioBus.init();
     VideoMapper.init(this.memory);
     InputMapper.init(this.memory);
     SoundMapper.init(this.memory);
@@ -69,18 +76,18 @@ export const ByteBox = {
   },
 
   async load(wasmUrl) {
-    const response = await fetch(wasmUrl, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-
-    if (!response.ok) {
-      return this.error('❌ url no found', null);
-    }
-
-    const wasmBytes = new Uint8Array(await response.arrayBuffer());
-
     try {
+      const response = await fetch(wasmUrl, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+
+      if (!response.ok) {
+        return this.error('❌ url not found', null);
+      }
+
+      const wasmBytes = new Uint8Array(await response.arrayBuffer());
+
       const wasmModule = await WebAssembly.instantiate(wasmBytes, {
         env: {
           peek: this.peek.bind(this),
@@ -93,7 +100,11 @@ export const ByteBox = {
       this.wasmModule = wasmModule.instance;
 
       if (!this.wasmModule.exports.update) {
-        return this.error('🧩 missing export update function', null);
+        return this.error('🧩 missing update export', null);
+      }
+
+      if (!this.wasmModule.exports.memory) {
+        return this.error('🧩 missing memory export', null);
       }
 
       const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
@@ -101,26 +112,29 @@ export const ByteBox = {
 
       this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
       this.wasmModule.exports.init?.();
-      this.isReady = true;
 
-      const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24);
-      DOM.InfoName.innerHTML = String.fromCharCode(...name);
+      const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
+      DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
       DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
 
       if (wasmBytes.length > CONST.ROM_SIZE) {
-        DOM.InfoSize.style = "color: #fc0c0c";
+        DOM.InfoSize.style.color = '#fc0c0c';
       } else {
+        DOM.InfoSize.style.color = '';
+
         // emulate "game ROM" - this really has no effect
         this.memory.set(wasmBytes, ADDR.ROM);
       }
 
       console.log('🎮 ByteBox game is running');
     } catch (err) {
-      return this.error('❌ wasm no found', err);
+      return this.error('❌ wasm not found', err);
     }
   },
 
   async restart(wasmUrl) {
+    if (this.state === STATE.LOADING) return;
+
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }
@@ -129,14 +143,20 @@ export const ByteBox = {
   },
 
   start() {
-    const skipSplash = new URLSearchParams(window.location.search).has('nosplash') ;    
+    if (this.state !== STATE.LOADING) return;
+
+    const skipSplash = new URLSearchParams(window.location.search).has('nosplash');
     if (skipSplash) {
+      this.state = STATE.READY;
       this.run();
       return;
     }
 
     this.splash();
-    setTimeout(() => { this.run(); }, CONST.SPLASH_TIME);
+    setTimeout(() => {
+      this.state = STATE.READY;
+      this.run();
+    }, CONST.SPLASH_TIME);
   },
 
   splash() {
@@ -178,7 +198,9 @@ export const ByteBox = {
   },
 
   run() {
-    if (!this.isReady) return;
+    if (this.state !== STATE.READY) return;
+
+    this.state = STATE.RUNNING;
 
     let accumulator = 0;
     let lastTime = performance.now();
@@ -199,7 +221,13 @@ export const ByteBox = {
 
       while (accumulator >= CONST.GAME_INTERVAL) {
         if (!(this.memory[ADDR.SYSFLAGS] & 0x01)) {
-          this.wasmModule.exports.update();
+          try {
+            this.wasmModule.exports.update();
+          } catch (err) {
+            this.error('💥 game crashed in update()', err);
+            return;
+          }
+
           WRAMMapper.store();
           SoundMapper.play();
         }
@@ -218,20 +246,21 @@ export const ByteBox = {
   },
 
   pause() {
-    if (this.animationId) {
-      cancelAnimationFrame(this.animationId);
-      this.animationId = null;
-      
-      console.warn('⏸️ game paused');
-    }
+    if (this.state !== STATE.RUNNING) return;
+
+    cancelAnimationFrame(this.animationId);
+    this.animationId = null;
+    this.state = STATE.READY;
+
+    console.log('⏸️ game paused');
   },
 
   resume() {
-    if (!this.animationId && this.isReady) {
-      this.run();
+    if (this.state !== STATE.READY) return;
 
-      console.warn('▶️ game resumed');
-    }
+    this.run();
+
+    console.log('▶️ game resumed');
   },
 
   updateFPS(now) {
@@ -248,14 +277,18 @@ export const ByteBox = {
   },
 
   error(msg, err) {
+    this.state = STATE.CRASHED;
     this.memory.set([255, 0, 0], ADDR.PALETTE);
+
+    VideoMapper.clear();
+    VideoMapper.render();
 
     console.error(msg, err);
   },
 
   peek(addr) {
     if (addr < 0 || addr >= CONST.MEMORY_SIZE) {
-      console.warn(`⚠️ address ${ addr } is out of range`);
+      console.warn(`⚠️ address ${addr} is out of range`);
       return 0;
     }
 
@@ -264,11 +297,11 @@ export const ByteBox = {
 
   poke(addr, value) {
     if (addr < 0 || addr >= CONST.MEMORY_SIZE) {
-      console.warn(`⚠️ address ${ addr } is out of range`);
+      console.warn(`⚠️ address ${addr} is out of range`);
       return;
     }
     if (value < 0 || value > 255) {
-      console.warn(`⚠️ value ${ value } is out of range`);
+      console.warn(`⚠️ value ${value} is out of range`);
       return;
     }
 
@@ -277,16 +310,15 @@ export const ByteBox = {
 
   spoke(startAddr, len, ptr) {
     if (startAddr < 0 || startAddr >= CONST.MEMORY_SIZE) {
-      console.warn(`⚠️ start address ${ startAddr } is out of range`);
+      console.warn(`⚠️ start address ${startAddr} is out of range`);
       return;
     }
     if (startAddr + len > CONST.MEMORY_SIZE) {
-      console.warn(`⚠️ start address ${ startAddr } + ${ len } exceeds memory bounds`);
+      console.warn(`⚠️ start address ${startAddr} + ${len} exceeds memory bounds`);
       return;
     }
 
     const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
-
     this.memory.set(bytes, startAddr);
   },
 
@@ -295,7 +327,7 @@ export const ByteBox = {
 
     console.log('🔵 WASM TRACE:', TEXT_DECODER.decode(bytes));
   }
-}
+};
 
 // Initialization -------------------------------------------------------------
 
@@ -310,7 +342,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('drop', async (e) => {
-    ByteBox.restart(URL.createObjectURL(e.dataTransfer.files[0]));
+    if (!e.dataTransfer.files.length) return;
+
+    const url = URL.createObjectURL(e.dataTransfer.files[0]);
+    await ByteBox.restart(url);
+
+    URL.revokeObjectURL(url);
   });
 
   document.addEventListener('visibilitychange', () => {

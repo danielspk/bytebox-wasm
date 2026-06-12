@@ -72,7 +72,7 @@ ubyte peek(ushort addr);
 void poke(ushort addr, ubyte value);
 
 /// Writes multiple bytes into memory
-void spoke(ushort start_addr, ushort length, in ubyte* data);
+void spoke(ushort start_addr, ushort length, const(ubyte)* data);
 
 /// Puts trace information to the console
-void trace(in char* str, int len);
+void trace(const(char)* str, int len);

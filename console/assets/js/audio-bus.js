@@ -4,8 +4,8 @@ export const AudioBus = {
   audioContext: null,
   masterGain: null,
 
-  setup() {
-    const init = () => {
+  init() {
+    const setup = () => {
       if (this.audioContext) return;
 
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -15,7 +15,7 @@ export const AudioBus = {
     };
 
     ['click', 'keydown', 'mousedown', 'touchstart'].forEach(e => {
-      document.addEventListener(e, init, { once: true });
+      document.addEventListener(e, setup, { once: true });
     });
   }
 };

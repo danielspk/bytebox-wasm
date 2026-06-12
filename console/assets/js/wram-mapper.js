@@ -15,26 +15,27 @@ export const WRAMMapper = {
   sync(gameID) {
     this.gameID = `bytebox_${gameID}`;
 
-    if (localStorage.getItem(this.gameID) === null) return;
+    const values = localStorage.getItem(this.gameID);
+    if (values === null) return;
 
     try {
-      const wramArray = JSON.parse(localStorage.getItem(this.gameID));
+      const wramArray = JSON.parse(values);
       this.memory.set(wramArray.slice(0, WRAM_LENGTH), ADDR.WRAM);
     } catch (err) {
-      console.error("❌ error on sync WRAM", err);
+      console.error('❌ error on sync WRAM', err);
     }
   },
 
   store() {
     if (!((this.memory[ADDR.SYSFLAGS] >> 1) & 1)) return;
 
-    this.memory[ADDR.SYSFLAGS] = this.memory[ADDR.SYSFLAGS] & ~0x02; // auto clear bit 1
+    this.memory[ADDR.SYSFLAGS] &= ~0x02; // auto clear bit 1
 
     try {
       const wramArray = Array.from(this.memory.slice(ADDR.WRAM, ADDR.WRAM + WRAM_LENGTH));
       localStorage.setItem(this.gameID, JSON.stringify(wramArray));
     } catch (err) {
-      console.error("❌ error on store WRAM", err);
+      console.error('❌ error on store WRAM', err);
     }
-  },
+  }
 };

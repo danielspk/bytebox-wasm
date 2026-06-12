@@ -30,9 +30,8 @@ There is no test suite, linter, formatter, or typechecker. There is no `package.
 ## Architecture
 
 - **Runtime** (`console/assets/js/`): 9 ES6 modules loaded directly in the browser. No build step. Entry point is `console.js`.
-- **WASM contract**: Games must compile to pure WASM — no WASI, no runtime dependencies. `update()` export is mandatory; `init()` is optional. Imports `peek`, `poke`, `spoke`, `trace` from the `env` namespace.
+- **WASM contract**: Games must compile to pure WASM — no WASI, no runtime dependencies. `update()` and `memory` exports are mandatory; `init()` is optional. Imports `peek`, `poke`, `spoke`, `trace` from the `env` namespace.
 - **Game templates** (`demos/templates/`): Reference implementations per language. Keep in sync with runtime API when modifying.
-- **Max game size**: 56KB. Exceeding it shows a red indicator but game still runs.
 
 ## Key Memory Addresses
 
@@ -41,7 +40,7 @@ Games interact with hardware through memory-mapped I/O via `peek`/`poke`. Critic
 | Address | Purpose |
 |---|---|
 | `0x0040` | SYSFLAGS (bit 0: halt, bit 1: dump WRAM) |
-| `0x0041` | Seed (set by runtime to `Date.now() & 0xFF`) |
+| `0x0041` | Seed (0~255) |
 | `0x0044–0x005B` | Game name (ASCII, 24 bytes) |
 | `0x0100–0xE0FF` | ROM (56KB, game code) |
 | `0xE100–0xE4FF` | WRAM (1KB, persisted to localStorage) |
