@@ -1,18 +1,18 @@
 ---
 name: bytebox-wasm
-description: Use when writing ByteBox games or templates (memory map, WASM contract, video/audio/input formats) or when developing this repo's web runtime (JS modules, state machine, memory viewer).
+description: Use when writing ByteBox games or templates — the memory map, WASM contract, video/audio/input formats (FAB-4), and how to build, run, and debug a game on this web host.
 ---
 
 # ByteBox Console — Technical Reference
 
 ByteBox is a fantasy console. Games compile to pure WebAssembly (no WASI) and interact with the console exclusively through four imported functions that read/write a shared 64KB memory array.
 
-This document has two parts with a hard boundary:
+This document has two parts:
 
-- **Part 1 — The ByteBox Specification**: the contract every game and every host implements. Host-independent.
-- **Part 2 — This Host**: how the web runtime in `console/` (vanilla JS, WebGL, Web Audio) implements that contract, plus its tooling.
+- **Part 1 — The ByteBox Specification**: the contract every game and every host implements. Host-independent — this is what you program against.
+- **Part 2 — Using This Host**: how to build, run, and debug your game on the `console/` web runtime.
 
-Boundary test for any fact: *would a game ported to another host need to know this?* Yes → Part 1. No → Part 2.
+This skill is for writing ByteBox games. How the web runtime is implemented internally is not covered here — read the code in `console/assets/js/` for that.
 
 ---
 
@@ -135,7 +135,8 @@ Music uses the **FAB-4 protocol**: a 64-byte ring buffer at `0xFFA9` holding up 
 Byte 0: DELTA_HI  (high byte of delta time in ms)
 Byte 1: DELTA_LO  (low byte of delta time in ms)
          → combined: (DELTA_HI << 8) | DELTA_LO milliseconds until this event
-Byte 2: NOTE (full byte, MIDI note number 0–255; standard range 0–127)
+Byte 2: bit  7   = unused
+        bits 6-0 = NOTE (MIDI note number 0–127)
 Byte 3: bit  7   = STATUS (1=note ON, 0=note OFF)
         bits 6-4 = CHANNEL (0–7)
         bits 3-0 = VOLUME  (0–15, scaled 0.0–1.0)
@@ -186,173 +187,13 @@ Bit 0: BUTTON B
 
 ---
 
-# Part 2 — This Host: Web Runtime (`console/`)
+# Part 2 — Using This Host
 
-> This part documents ONE implementation of the contract — ~1000 lines of vanilla JavaScript using WebGL for video and the Web Audio API for sound. It changes freely along with the code; no game should depend on anything in it.
+> This part is operational: how to build, run, and debug a game on the `console/` web runtime. It is specific to this host — another host loads and runs the same game differently.
 
-## Architecture: Nine ES6 Modules
+## Building Your Game
 
-All runtime code lives in `console/assets/js/`. Each module owns one concern:
-
-| Module | File | Responsibility |
-|---|---|---|
-| Console | `console.js` | WASM instantiation, 60 FPS game loop, memory array, imports (`peek`/`poke`/`spoke`/`trace`) |
-| Config | `config.js` | Memory address constants (`ADDR`) and DOM element references (`DOM`) |
-| VideoMapper | `video-mapper.js` | WebGL pixel rendering; decodes 2-bit-per-pixel framebuffer to screen |
-| InputMapper | `input-mapper.js` | Keyboard + touch/virtual pad input mapped to two gamepad bytes |
-| SoundMapper | `sound-mapper.js` | 4 SFX channels using Web Audio oscillators |
-| MelodyMapper | `melody-mapper.js` | Music playback via FAB-4 ring buffer protocol |
-| AudioBus | `audio-bus.js` | Shared `AudioContext` and master gain node |
-| WRAMMapper | `wram-mapper.js` | Persists 1KB WRAM to `localStorage`, keyed by game ID |
-| MemoryViewer | `memory-viewer.js` | Hex memory viewer (toggle with F8), reads/writes memory via `ByteBox.getMemory()` |
-
-### Initialization order (DOMContentLoaded)
-
-```
-ByteBox.applyFrameColor()
-ByteBox.init(wasmUrl)
-  └── ByteBox.setup()                ← state: LOADING
-        ├── new Uint8Array(65536)  ← the single shared memory
-        ├── AudioBus.setup()
-        ├── VideoMapper.init(memory)
-        ├── InputMapper.init(memory)
-        ├── SoundMapper.init(memory)
-        ├── MelodyMapper.init(memory)
-        └── WRAMMapper.init(memory)
-  └── ByteBox.load(wasmUrl)
-        ├── fetch + WebAssembly.instantiate({ env: { peek, poke, spoke, trace } })
-        ├── validate exports.update / exports.memory exist
-        ├── WRAMMapper.sync(gameID)   ← restore saved state
-        ├── memory[0x0041] = (Math.random() * 256) | 0  ← seed
-        └── exports.init?.()
-  └── ByteBox.start()
-        ├── splash screen (1500ms) unless ?nosplash
-        └── state: READY → ByteBox.run() → state: RUNNING (requestAnimationFrame game loop)
-```
-
-The runtime is a 4-state machine: `LOADING` (boot, load and splash — drops ignored), `READY` (loaded, loop stopped — also reached on pause), `RUNNING` (game loop live) and `CRASHED` (terminal red screen — only exited by dropping a new `.wasm`).
-
-### Game loop (run)
-
-Uses a fixed-timestep accumulator at 16.67ms (60 FPS):
-
-```
-requestAnimationFrame(gameLoop)
-  accumulator += delta
-  while (accumulator >= 16.67ms):
-    if !(memory[0x0040] & 0x01):   ← HALT bit
-      exports.update()
-      WRAMMapper.store()           ← only writes if DUMP bit set
-      SoundMapper.play()           ← checks SFX trigger bits
-    accumulator -= 16.67ms
-  VideoMapper.render()             ← always, even when halted
-  MelodyMapper.tick()              ← always
-  updateFPS()
-```
-
-A warning logs if the accumulator exceeds 200ms (spiral-of-death guard).
-
-## Video Implementation
-
-**Rendering pipeline** (`video-mapper.js`):
-1. Read palette from `0xFF84`
-2. Iterate 4800 framebuffer bytes; extract 4 × 2-bit color indices per byte
-3. Map each index to RGBA via palette
-4. Upload 160×120 RGBA texture to WebGL via `texSubImage2D`
-5. Draw as `TRIANGLE_STRIP` with nearest-neighbor filtering (no interpolation)
-
-**Scaling:** Computed on every resize event. Two modes:
-- **Portrait / desktop:** `scale = min(floor(innerWidth×0.9 / 160), floor(innerHeight×0.65 / 120), 3)`, minimum 1
-- **Landscape mobile** (`innerWidth > innerHeight && innerHeight < 550`): `scale = max(1, floor(innerHeight / 120))`
-
-Canvas size = `160 × scale` × `120 × scale`. Visibility is set to `inherit` after first resize.
-
-## Audio Implementation
-
-**AudioBus** (`audio-bus.js`): holds the shared `AudioContext` and a `masterGain` node. Created lazily on first user interaction (browser autoplay policy). All audio nodes connect through `masterGain`.
-
-**SFX playback** (`sound-mapper.js`): each trigger creates a new `OscillatorNode` + `GainNode`. Frequency sweeps via `exponentialRampToValueAtTime`. Vibrato adds an LFO oscillator (`sine`) modulating the main frequency. Gain fades to 0.001 at end of duration. `onended` clears the status bit.
-
-**Melody playback** (`melody-mapper.js`): `tick()` is called every animation frame; it reads up to 16 entries from the ring buffer, scheduling events up to 250ms ahead on the `AudioContext` timeline. The noise channel uses a pre-generated white noise buffer (2s, looped) through a bandpass filter whose frequency/Q/decay are selected by note range (120 Hz / 800 Hz / 6000 Hz).
-
-## Input Implementation
-
-**Physical key mapping** (`input-mapper.js`):
-
-| Key | Pad | Action |
-|---|---|---|
-| Arrow Left/Up/Down/Right | 1 | Directions |
-| Z or Numpad * | 1 | Button A |
-| X or Numpad - | 1 | Button B |
-| A/W/S/D | 2 | Directions |
-| K | 2 | Button A |
-| L | 2 | Button B |
-
-Virtual pad buttons use `data-key` HTML attributes, handled via `mousedown`/`touchstart` and `mouseup`/`touchend`/`mouseleave`/`touchcancel`.
-
-## Persistence Implementation
-
-WRAM is stored in `localStorage` under the key `bytebox_<gameID>`. Game identity is derived from the first 16 bytes of the WASM binary + total byte length, base64-encoded:
-
-```js
-const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
-WRAMMapper.sync(gameID);
-```
-
-JSON parse / localStorage errors are caught and logged.
-
-## Memory Viewer (`memory-viewer.js`)
-
-Toggle with **F8**. Displays 16 rows × 16 columns = 256 bytes starting at a configurable base address (default: `0xE900` = video framebuffer).
-
-**Features:**
-- Navigate to any address by typing a 4-digit hex value
-- Click any byte to select it for editing
-- Type a hex value + Enter to write it directly to memory via `ByteBox.getMemory()`
-- Shortcut buttons for quick navigation to key memory regions
-- Resume/Halt toggle (XOR bit 0 of `0x0040`)
-- Updates every 4 animation frames (~15 FPS)
-- Changed bytes highlighted; zero bytes dimmed
-
-## URL Parameters
-
-| Parameter | Example | Effect |
-|---|---|---|
-| `color` | `?color=e74c3c` | Custom frame color (6-digit hex, no `#`) |
-| `nosplash` | `?nosplash` | Skip 1500ms splash screen at startup |
-
-## Keyboard Shortcuts
-
-| Key | Action |
-|---|---|
-| F8 | Toggle memory viewer |
-| F9 | Capture screenshot |
-
-## Loading a Game
-
-The console loads `assets/wasm/game.wasm` by default (with cache-busting `?t=<timestamp>`). Games can also be loaded by **drag-and-drop**: dropping a `.wasm` file onto the browser window calls `ByteBox.restart(objectURL)`, which cancels the current animation frame and re-runs the full init sequence. Drops are ignored while the console is in `LOADING` state (a load or the splash is in progress), and drops carrying no file (text, links) are discarded.
-
-`trace` output goes to the browser console as `🔵 WASM TRACE: <string>`.
-
-## Error Conditions
-
-All load and runtime failures converge on `error()`: palette[0] set to red `[255,0,0]`, framebuffer cleared and rendered, error logged, state set to `CRASHED` (terminal — only a drag-and-drop recovers).
-
-| Condition | Runtime behavior |
-|---|---|
-| WASM URL not found / network failure | Red screen + error log |
-| Invalid WASM binary | Red screen + error log |
-| `update` export missing | Red screen + error log |
-| `memory` export missing | Red screen + error log |
-| Game throws inside `update()` | Red screen + error log; crash is persistent |
-| `peek`/`poke` out of range | Warn + return 0 / no-op |
-| `spoke` out of bounds | Warn + no-op |
-| WRAM localStorage error | Error log, game continues |
-| Performance degradation (accumulator > 200ms) | `console.warn` |
-
-## Toolchain (Overview)
-
-Games are compiled with Docker — no local toolchain required. Supported languages and their compile targets:
+Games are compiled with **Docker — no local toolchain required**. Source lives in `src/`; the build output is always `console/assets/wasm/game.wasm`. Each language has its own `make build-<language>` target (all in the `Makefile`):
 
 | Language | Target | Key constraint |
 |---|---|---|
@@ -367,4 +208,56 @@ Games are compiled with Docker — no local toolchain required. Supported langua
 | WAT | `wat2wasm` | Hand-written WebAssembly Text, no toolchain constraints |
 | Zig | `wasm32-freestanding` | No entry, ReleaseSmall |
 
-All commands are in `Makefile`. The output is always `console/assets/wasm/game.wasm`. Games exceeding 56KB show a red size indicator in the UI but still run.
+A game over 56KB shows a red size indicator in the UI but still runs. `make package` zips the game for distribution.
+
+## Running & Loading
+
+`make run` serves the console (default port 3000; `PORT=8080 make run` to change it). On start it loads `assets/wasm/game.wasm`.
+
+You can also **drag and drop** a `.wasm` file onto the window to load it on the fly — useful for trying a build without copying it into `src/`. Drops are ignored while the console is booting or showing the splash, and non-`.wasm` drops are discarded.
+
+`trace` output appears in the browser console as `🔵 WASM TRACE: <string>`.
+
+Two URL parameters tweak startup:
+
+| Parameter | Example | Effect |
+|---|---|---|
+| `color` | `?color=e74c3c` | Custom frame color (6-digit hex, no `#`) |
+| `nosplash` | `?nosplash` | Skip the 1500ms splash screen |
+
+## Controls
+
+Part 1 defines the two gamepad bytes; this host drives them from the keyboard (and from on-screen buttons via touch or mouse):
+
+| Key | Pad | Action |
+|---|---|---|
+| Arrow Left/Up/Down/Right | 1 | Directions |
+| Z or Numpad * | 1 | Button A |
+| X or Numpad - | 1 | Button B |
+| A/W/S/D | 2 | Directions |
+| K | 2 | Button A |
+| L | 2 | Button B |
+
+## Debugging
+
+| Key | Action |
+|---|---|
+| F8 | Toggle the memory viewer |
+| F9 | Capture a screenshot |
+
+The **memory viewer** (F8) shows 256 bytes at a time as a hex grid, starting at any address you type (4 hex digits). Click a byte and type a new hex value + Enter to write it live. Shortcut buttons jump to key regions, and a Resume/Halt toggle flips bit 0 of SYSFLAGS. Use it to watch your framebuffer, inspect WRAM, or poke values while the game runs.
+
+## What Happens When a Game Fails
+
+A failed load or a crash at runtime shows a **terminal red screen** and logs the cause; the only way out is to drag-and-drop a new `.wasm`. Out-of-range memory access does not crash — it is just ignored.
+
+| Condition | What happens |
+|---|---|
+| WASM not found / network failure | Red screen + error log |
+| Invalid WASM binary | Red screen + error log |
+| `update` or `memory` export missing | Red screen + error log |
+| Game throws inside `init()` | Red screen + error log |
+| Game throws inside `update()` | Red screen + error log (permanent) |
+| `peek` out of range | Warns, returns 0 |
+| `poke` / `spoke` out of range | Warns, does nothing |
+| WRAM `localStorage` unavailable | Logged; the game keeps running |

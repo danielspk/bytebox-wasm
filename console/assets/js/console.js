@@ -111,7 +111,12 @@ export const ByteBox = {
       WRAMMapper.sync(gameID);
 
       this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
-      this.wasmModule.exports.init?.();
+
+      try {
+        this.wasmModule.exports.init?.();
+      } catch (err) {
+        return this.error('💥 game crashed in init()', err);
+      }
 
       const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
       DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
@@ -224,8 +229,7 @@ export const ByteBox = {
           try {
             this.wasmModule.exports.update();
           } catch (err) {
-            this.error('💥 game crashed in update()', err);
-            return;
+            return this.error('💥 game crashed in update()', err);
           }
 
           WRAMMapper.store();
@@ -252,12 +256,15 @@ export const ByteBox = {
     this.animationId = null;
     this.state = STATE.READY;
 
+    AudioBus.suspend();
+
     console.log('⏸️ game paused');
   },
 
   resume() {
     if (this.state !== STATE.READY) return;
 
+    AudioBus.resume();
     this.run();
 
     console.log('▶️ game resumed');
@@ -282,6 +289,9 @@ export const ByteBox = {
 
     VideoMapper.clear();
     VideoMapper.render();
+
+    SoundMapper.cleanup();
+    MelodyMapper.cleanup();
 
     console.error(msg, err);
   },

@@ -20,15 +20,13 @@ build-c: check-docker clean ## Build game (in C)
 		-ffreestanding -o $(WASM_TARGET) src/*.c
 
 build-c3: check-docker clean ## Build game (in C3)
-	@docker image inspect bytebox-c3:latest > /dev/null 2>&1 || \
-		docker build -t bytebox-c3:latest $(CURDIR)/demos/templates/c3
+	docker build -t bytebox-c3:latest $(CURDIR)/demos/templates/c3
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-c3:latest \
 		sh -c "c3c compile *.c3 --target wasm32 --use-stdlib=no --link-libc=no \
 		--memory-env=none --no-entry -Oz -o ../$(WASM_TARGET)"
 
 build-d: check-docker clean ## Build game (in D)
-	@docker image inspect bytebox-d:latest > /dev/null 2>&1 || \
-		docker build -t bytebox-d:latest $(CURDIR)/demos/templates/d
+	docker build -t bytebox-d:latest $(CURDIR)/demos/templates/d
 	docker run --rm -v $(CURDIR):/src -w /src bytebox-d:latest ldc2 \
 		-betterC -mtriple=wasm32-unknown-unknown -Oz --fvisibility=hidden \
 		-of=$(WASM_TARGET) -L--allow-undefined -L--no-entry -L--strip-all \
@@ -39,8 +37,7 @@ build-go: check-docker clean ## Build game (in Go)
 		-target=wasm-unknown -panic=trap -opt=z -scheduler=none -gc=none -no-debug -o ../$(WASM_TARGET) .
 
 build-nelua: check-docker clean ## Build game (in Nelua)
-	@docker image inspect bytebox-nelua:latest > /dev/null 2>&1 || \
-		docker build -t bytebox-nelua:latest $(CURDIR)/demos/templates/nelua
+	docker build -t bytebox-nelua:latest $(CURDIR)/demos/templates/nelua
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-nelua:latest \
 		nelua --cc="/opt/wasi-sdk/bin/clang" \
 		--cflags="--target=wasm32-unknown-unknown -Oz -ffreestanding -nostdlib" \
@@ -48,8 +45,7 @@ build-nelua: check-docker clean ## Build game (in Nelua)
 		--release --no-cache game.nelua --output ../$(WASM_TARGET)
 
 build-odin: check-docker clean ## Build game (in Odin)
-	@docker image inspect bytebox-odin:latest > /dev/null 2>&1 || \
-		docker build -t bytebox-odin:latest $(CURDIR)/demos/templates/odin
+	docker build -t bytebox-odin:latest $(CURDIR)/demos/templates/odin
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-odin:latest odin build . \
 		-target:freestanding_wasm32 -no-entry-point -o:size -out:../$(WASM_TARGET)
 
@@ -63,14 +59,12 @@ build-rust: check-docker clean ## Build game (in Rust)
 		wasm-opt -Oz -all ../$(WASM_TARGET) -o ../$(WASM_TARGET).tmp && mv ../$(WASM_TARGET).tmp ../$(WASM_TARGET)"
 
 build-wat: check-docker clean ## Build game (in WebAssembly Text)
-	@docker image inspect bytebox-wat:latest > /dev/null 2>&1 || \
-		docker build -t bytebox-wat:latest $(CURDIR)/demos/templates/wat
+	docker build -t bytebox-wat:latest $(CURDIR)/demos/templates/wat
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-wat:latest \
 		wat2wasm game.wat -o ../$(WASM_TARGET)
 
 build-zig: check-docker clean ## Build game (in Zig)
-	@docker image inspect bytebox-zig:latest > /dev/null 2>&1 || \
-		docker build -t bytebox-zig:latest $(CURDIR)/demos/templates/zig
+	docker build -t bytebox-zig:latest $(CURDIR)/demos/templates/zig
 	docker run --rm -v $(CURDIR):/workspace -w /workspace/src bytebox-zig:latest zig build-exe \
 		-target wasm32-freestanding -fno-entry -rdynamic -O ReleaseSmall -fstrip --name game game.zig && \
 	mv $(CURDIR)/src/game.wasm $(WASM_TARGET)

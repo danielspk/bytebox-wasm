@@ -17,5 +17,13 @@ export const AudioBus = {
     ['click', 'keydown', 'mousedown', 'touchstart'].forEach(e => {
       document.addEventListener(e, setup, { once: true });
     });
+  },
+
+  suspend() {
+    this.audioContext?.suspend();
+  },
+
+  resume() {
+    this.audioContext?.resume();
   }
 };

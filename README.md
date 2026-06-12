@@ -11,13 +11,17 @@
 
 **ByteBox** is a project based on the idea of a fantasy console designed for creating "old school" video games.
 
-The project aims to inspire creativity by interacting with "hardware" _(actually virtualized)_ through memory-mapped communication.
+The project aims to inspire creativity by interacting with "hardware" _(virtualized)_ through memory-mapped communication.
 
 ## Directories
 
 - **console**: contains the WASM runtime. It's the "console" that runs in a web browser.
 - **demos**: contains example games and templates from different languages to compile to **WASM**.
 - **src**: optionally contains a game's source code.
+
+## Getting Started
+
+To try the console for the first time you don't need to compile anything: copy the `game.wasm` from one of the example games in `demos/games/` into the `console/assets/wasm/` folder, or drag and drop a game onto the browser window to load it instantly.
 
 ## Platform
 
@@ -53,7 +57,7 @@ To run any of these examples, copy the template example's content into the `src/
 - 4-color RGB palette.
 - Linear framebuffer (2 bits per pixel).
 - 2 controller pads with 6 buttons each.
-- 4 audio channels.
+- 4 SFX channels + 8 melody channels.
 - Compiled games should not exceed 56KB.
 - No predefined functions for playing sounds or drawing sprites. Only memory read/write operations are available.
 - No reset button.
@@ -117,6 +121,8 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 | `0xFFEB-0xFFFF` | 21 bytes | Reserved (future use) |
 
 > The design deliberately avoids direct memory sharing with **WASM** in favor of peek/poke functions. This abstraction layer provides better encapsulation, allows for memory access logging and validation, prevents potential buffer overflows, and gives the runtime more flexibility in memory management without exposing low-level implementation details to the game code.
+
+> That said, as in any low-level system, using memory correctly is the programmer's responsibility: the console checks that addresses fall within the 64KB range, but it does **not** prevent access to a read-only address in any way. Writing to read-only regions _(pads, SFX status, melody tail, ROM, etc.)_ is allowed and may cause unexpected behavior.
 
 ### System Flags
 
@@ -250,7 +256,7 @@ Each 4-byte sound effect is structured as follows:
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │ 
 │ │ │ │ │ └─└─└ VOLUME: (0-7)
-└─└─└─└─└────── DURATION: (0-31 -> 0.03s 0.99s)
+└─└─└─└─└────── DURATION: (0-31 -> 0-0.99s)
 ```
 
 - **Byte 3**:
@@ -318,8 +324,8 @@ Each 4-byte entry represents a note event:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ └─└─└─└ NOTE (0-127)
-└─└─└─└──────── unused
+│ └─└─└─└─└─└─└ NOTE (0-127)
+└────────────── unused
 ```
 
 - **Byte 3**:
@@ -350,6 +356,13 @@ The console supports optional query parameters:
 | `nosplash` | `?nosplash` | Skip the splash screen on startup |
 
 Usage: `http://localhost:3000?color=3498db&nosplash`
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| F8 | Toggle the memory viewer |
+| F9 | Capture a screenshot |
 
 ## Useful Commands
 
@@ -430,6 +443,19 @@ This starts a local webserver on port `3000`. To start on a different port, set 
 ```sh
 PORT=8080 make run
 ```
+
+### Package a Game for Distribution
+
+Once your game is compiled, bundle the whole console into a single distributable `zip`:
+
+```sh
+make build-<lang>
+make package
+```
+
+`game.zip` is a self-contained HTML5 build: it has `index.html` at its root, the runtime, and your compiled `game.wasm`.
+
+This format also makes it easy to distribute games on platforms like itch.io.
 
 ## Inspiration
 

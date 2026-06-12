@@ -15,10 +15,10 @@ export const WRAMMapper = {
   sync(gameID) {
     this.gameID = `bytebox_${gameID}`;
 
-    const values = localStorage.getItem(this.gameID);
-    if (values === null) return;
-
     try {
+      const values = localStorage.getItem(this.gameID);
+      if (values === null) return;
+
       const wramArray = JSON.parse(values);
       this.memory.set(wramArray.slice(0, WRAM_LENGTH), ADDR.WRAM);
     } catch (err) {
@@ -27,7 +27,7 @@ export const WRAMMapper = {
   },
 
   store() {
-    if (!((this.memory[ADDR.SYSFLAGS] >> 1) & 1)) return;
+    if (!(this.memory[ADDR.SYSFLAGS] & 0x02)) return;
 
     this.memory[ADDR.SYSFLAGS] &= ~0x02; // auto clear bit 1
 

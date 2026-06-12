@@ -55,7 +55,7 @@ export const MelodyMapper = {
 
       const dHi  = this.memory[ADDR.MELODY + tail];
       const dLo  = this.memory[ADDR.MELODY + (tail + 1) % 64];
-      const note = this.memory[ADDR.MELODY + (tail + 2) % 64];
+      const note = this.memory[ADDR.MELODY + (tail + 2) % 64] & 0x7F;
       const ctrl = this.memory[ADDR.MELODY + (tail + 3) % 64];
 
       tail = (tail + 4) % 64;

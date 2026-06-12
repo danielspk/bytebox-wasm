@@ -11,13 +11,17 @@
 
 **ByteBox** es un proyecto basado en la idea de una consola de fantasía diseñada para crear videojuegos "old school".
 
-El proyecto busca inspirar la creatividad mediante la interacción con "hardware" _(en realidad virtualizado)_ a través de comunicación mapeada en memoria.
+El proyecto busca inspirar la creatividad mediante la interacción con "hardware" _(virtualizado)_ a través de comunicación mapeada en memoria.
 
 ## Directorios
 
 - **console**: contiene el runtime WASM. Es la "consola" que se ejecuta en un navegador web.
 - **demos**: contiene juegos de ejemplo y templates de distintos lenguajes para compilar a **WASM**.
 - **src**: opcionalmente contiene el código fuente de un juego.
+
+## Primeros pasos
+
+Para probar la consola por primera vez no necesitás compilar nada: copiá el `game.wasm` de uno de los juegos de ejemplo de `demos/games/` a la carpeta `console/assets/wasm/`, o arrastrá y soltá un juego sobre la ventana del navegador para cargarlo al instante.
 
 ## Plataforma
 
@@ -53,7 +57,7 @@ Para ejecutar cualquiera de estos ejemplos, copiá el contenido del template de 
 - Paleta RGB de 4 colores.
 - Framebuffer lineal (2 bits por píxel).
 - 2 controles (pads) con 6 botones cada uno.
-- 4 canales de audio.
+- 4 canales de efectos (SFX) + 8 canales de melodía.
 - Los juegos compilados no deberían superar los 56KB.
 - Sin funciones predefinidas para reproducir sonidos o dibujar sprites. Solo están disponibles operaciones de lectura/escritura en memoria.
 - Sin botón de reset.
@@ -117,6 +121,8 @@ El mapa de memoria de **ByteBox** consiste en una memoria lineal de 64KB. Opera 
 | `0xFFEB-0xFFFF` | 21 bytes | Reservado (uso futuro) |
 
 > El diseño evita deliberadamente compartir memoria directamente con **WASM** en favor de las funciones peek/poke. Esta capa de abstracción provee mejor encapsulamiento, permite el logging y la validación de accesos a memoria, previene posibles buffer overflows y le da al runtime más flexibilidad en la gestión de memoria sin exponer detalles de implementación de bajo nivel al código del juego.
+
+> No obstante, como en todo sistema de bajo nivel, el uso correcto de la memoria es responsabilidad del programador: la consola verifica que las direcciones estén dentro de los 64KB, pero **no impide de ninguna manera** el acceso a una dirección de solo lectura. Escribir en regiones de solo lectura _(pads, estado de SFX, cola de melodía, ROM, etc.)_ está permitido y puede producir comportamiento inesperado.
 
 ### Flags de Sistema
 
@@ -250,7 +256,7 @@ Cada efecto de sonido de 4 bytes se estructura de la siguiente manera:
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │ 
 │ │ │ │ │ └─└─└ VOLUMEN: (0-7)
-└─└─└─└─└────── DURACIÓN: (0-31 -> 0.03s 0.99s)
+└─└─└─└─└────── DURACIÓN: (0-31 -> 0-0.99s)
 ```
 
 - **Byte 3**:
@@ -318,8 +324,8 @@ Cada entrada de 4 bytes representa un evento de nota:
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ └─└─└─└ NOTA (0-127)
-└─└─└─└──────── sin usar
+│ └─└─└─└─└─└─└ NOTA (0-127)
+└────────────── sin usar
 ```
 
 - **Byte 3**:
@@ -350,6 +356,13 @@ La consola soporta parámetros de query opcionales:
 | `nosplash` | `?nosplash` | Omite la pantalla de splash al iniciar |
 
 Uso: `http://localhost:3000?color=3498db&nosplash`
+
+## Atajos de Teclado
+
+| Tecla | Acción |
+|-------|--------|
+| F8 | Mostrar u ocultar el visor de memoria |
+| F9 | Capturar una screenshot |
 
 ## Comandos Útiles
 
@@ -430,6 +443,19 @@ Esto inicia un servidor web local en el puerto `3000`. Para iniciar en un puerto
 ```sh
 PORT=8080 make run
 ```
+
+### Empaquetar un Juego para Distribución
+
+Una vez compilado tu juego, empaquetá toda la consola en un único `zip` distribuible:
+
+```sh
+make build-<lang>
+make package
+```
+
+`game.zip` es un build HTML5 autocontenido: tiene `index.html` en su raíz, el runtime y tu `game.wasm` compilado.
+
+Este formato facilita también la distribución de juegos en plataformas como itch.io.
 
 ## Inspiración
 
