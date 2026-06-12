@@ -2,6 +2,13 @@
 
 ![logo](console/assets/images/bytebox.png)
 
+**English** | [Español](README.es.md) | [Português](README.pt.md)
+
+[![License: MIT](https://img.shields.io/github/license/danielspk/bytebox-wasm?style=flat)](LICENSE)
+[![Version](https://img.shields.io/github/v/tag/danielspk/bytebox-wasm?sort=semver&style=flat&label=version)](https://github.com/danielspk/bytebox-wasm/tags)
+[![Games langs](https://img.shields.io/badge/games-C_%7C_Go_%7C_Odin_%7C_Zig_%7C_Rust_%7C_...-blue?style=flat)](https://github.com/danielspk/bytebox-wasm/tree/main/demos/templates)
+[![Runtime: WebAssembly](https://img.shields.io/badge/runtime-WebAssembly-654FF0?style=flat&logo=webassembly&logoColor=white)](https://webassembly.org/)
+
 **ByteBox** is a project based on the idea of a fantasy console designed for creating "old school" video games.
 
 The project aims to inspire creativity by interacting with "hardware" _(actually virtualized)_ through memory-mapped communication.
