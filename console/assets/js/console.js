@@ -107,16 +107,10 @@ export const ByteBox = {
         return this.error('🧩 missing memory export', null);
       }
 
-      const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
-      WRAMMapper.sync(gameID);
-
       this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
 
-      try {
-        this.wasmModule.exports.init?.();
-      } catch (err) {
-        return this.error('💥 game crashed in init()', err);
-      }
+      const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
+      WRAMMapper.sync(gameID);
 
       const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
       DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
@@ -131,9 +125,15 @@ export const ByteBox = {
         this.memory.set(wasmBytes, ADDR.ROM);
       }
 
+      try {
+        this.wasmModule.exports.init?.();
+      } catch (err) {
+        return this.error('💥 game crashed in init()', err);
+      }
+
       console.log('🎮 ByteBox game is running');
     } catch (err) {
-      return this.error('❌ wasm not found', err);
+      return this.error('❌ failed to load wasm', err);
     }
   },
 
