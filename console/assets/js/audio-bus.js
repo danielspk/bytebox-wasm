@@ -20,10 +20,10 @@ export const AudioBus = {
   },
 
   suspend() {
-    this.audioContext?.suspend();
+    this.audioContext?.suspend()?.catch(err => console.warn('⚠️ audio suspend failed', err));
   },
 
   resume() {
-    this.audioContext?.resume();
+    this.audioContext?.resume()?.catch(err => console.warn('⚠️ audio resume failed', err));
   }
 };
