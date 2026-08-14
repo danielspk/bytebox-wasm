@@ -265,8 +265,7 @@ Cada efecto de sonido de 4 bytes se estructura de la siguiente manera:
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
 │ │ │ │ │ │ │ └ TRIGGER: poner en 1 para iniciar la reproducción
-│ │ │ │ │ └─└── WAVEFORM: (0-3)
-│ │ │ │ └────── sin usar
+│ │ │ │ └─└─└── WAVEFORM: (0-4)
 │ └─└─└──────── VIBRATO: (0-7)
 └────────────── sin usar
 ```
@@ -277,12 +276,13 @@ Un canal no puede reproducir un nuevo sonido mientras un sonido anterior siga so
 
 ##### Waveforms
 
-4 waveforms disponibles _(2 bits)_:
+5 waveforms disponibles _(3 bits)_:
 
 - **0**: senoidal.
 - **1**: diente de sierra.
 - **2**: cuadrada.
 - **3**: triangular.
+- **4**: ruido.
 
 ### Atributos de Melodía
 

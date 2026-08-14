@@ -265,8 +265,7 @@ Each 4-byte sound effect is structured as follows:
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
 │ │ │ │ │ │ │ └ TRIGGER: set 1 to start play
-│ │ │ │ │ └─└── WAVEFORM: (0-3)
-│ │ │ │ └────── unused
+│ │ │ │ └─└─└── WAVEFORM: (0-4)
 │ └─└─└──────── VIBRATO: (0-7)
 └────────────── unused
 ```
@@ -277,12 +276,13 @@ A channel cannot play a new sound while a previous sound is still playing on tha
 
 ##### Waveforms
 
-4 available waveforms _(2 bits)_:
+5 available waveforms _(3 bits)_:
 
 - **0**: sine.
 - **1**: sawtooth.
 - **2**: square.
 - **3**: triangle.
+- **4**: noise.
 
 ### Melody Attributes
 

@@ -44,7 +44,7 @@ fn void update_player()
         bytebox::poke(bytebox::SFX_CH1_ADDR, 0x7D);
         bytebox::poke(bytebox::SFX_CH1_ADDR + 1, 0xC3);
         bytebox::poke(bytebox::SFX_CH1_ADDR + 2, 0x3C);
-        bytebox::poke(bytebox::SFX_CH1_ADDR + 3, 0x87);
+        bytebox::poke(bytebox::SFX_CH1_ADDR + 3, 0x07);
     }
 
     if ((pad & bytebox::BUTTON_2) != 0)

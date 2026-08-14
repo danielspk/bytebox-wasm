@@ -117,7 +117,7 @@
         (call $poke (global.get $SFX_CH1_ADDR) (i32.const 0x7D))
         (call $poke (i32.add (global.get $SFX_CH1_ADDR) (i32.const 1)) (i32.const 0xC3))
         (call $poke (i32.add (global.get $SFX_CH1_ADDR) (i32.const 2)) (i32.const 0x3C))
-        (call $poke (i32.add (global.get $SFX_CH1_ADDR) (i32.const 3)) (i32.const 0x87))))
+        (call $poke (i32.add (global.get $SFX_CH1_ADDR) (i32.const 3)) (i32.const 0x07))))
 
     (if (i32.and (local.get $pad) (global.get $BUTTON_2))
       (then

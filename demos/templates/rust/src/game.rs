@@ -39,7 +39,7 @@ fn update_player() {
         poke(SFX_CH1_ADDR, 0x7D);
         poke(SFX_CH1_ADDR + 1, 0xC3);
         poke(SFX_CH1_ADDR + 2, 0x3C);
-        poke(SFX_CH1_ADDR + 3, 0x87);
+        poke(SFX_CH1_ADDR + 3, 0x07);
     }
 
     if pad & BUTTON_2 != 0 {

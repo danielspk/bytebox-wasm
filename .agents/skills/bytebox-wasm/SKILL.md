@@ -118,8 +118,7 @@ Byte 2: bits 7-3 = DURATION (0–31 → 0–0.99s, step = 0.032s)
         bits 2-0 = VOLUME   (0–7, scaled to 0.0–0.5 master vol)
 Byte 3: bit  7   = unused
         bits 6-4 = VIBRATO  (0–7; LFO freq = 8 + vibrato×2 Hz, depth = 10 + vibrato×15 Hz)
-        bit  3   = unused
-        bits 2-1 = WAVEFORM (0=sine, 1=sawtooth, 2=square, 3=triangle)
+        bits 3-1 = WAVEFORM (0=sine, 1=sawtooth, 2=square, 3=triangle, 4=noise, 5-7=unused)
         bit  0   = TRIGGER  (write 1 to start; console auto-clears after reading)
 ```
 

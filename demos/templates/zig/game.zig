@@ -35,7 +35,7 @@ fn updatePlayer() void {
         bb.poke(bb.SFX_CH1_ADDR, 0x7D);
         bb.poke(bb.SFX_CH1_ADDR + 1, 0xC3);
         bb.poke(bb.SFX_CH1_ADDR + 2, 0x3C);
-        bb.poke(bb.SFX_CH1_ADDR + 3, 0x87);
+        bb.poke(bb.SFX_CH1_ADDR + 3, 0x07);
     }
     
     if (pad & bb.BUTTON_2 != 0) {
