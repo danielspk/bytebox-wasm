@@ -112,8 +112,6 @@ export const ByteBox = {
       const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
       WRAMMapper.sync(gameID);
 
-      const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
-      DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
       DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
 
       if (wasmBytes.length > CONST.ROM_SIZE) {
@@ -130,6 +128,9 @@ export const ByteBox = {
       } catch (err) {
         return this.error('💥 game crashed in init()', err);
       }
+
+      const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
+      DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
 
       console.log('🎮 ByteBox game is running');
     } catch (err) {
