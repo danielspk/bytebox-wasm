@@ -6,10 +6,10 @@
   z-index: 9999;
   display: none;
   overflow: hidden;
-  border: 3px solid var(--frame-border, #c49d00);
+  border: 3px solid var(--frame-border);
   border-radius: 12px;
   background: linear-gradient(145deg, #2c2828, #1f1e1e);
-  box-shadow: 0 0 20px var(--frame-shadow, rgba(196, 157, 0, 0.5));
+  box-shadow: 0 0 20px var(--frame-shadow);
   font-family: 'Courier New', monospace;
   font-size: 11px;
   color: #a19e9e;
@@ -17,7 +17,7 @@
 
 .memory-viewer-header {
   padding: 10px 15px;
-  background: linear-gradient(90deg, var(--frame-bg, #fccf37), var(--frame-border, #c49d00));
+  background: linear-gradient(90deg, var(--frame-bg), var(--frame-border));
   color: #2c2c2c;
   font-weight: bold;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -30,22 +30,22 @@
   flex-wrap: wrap;
   gap: 6px;
   padding: 10px 15px;
-  border-bottom: 1px solid var(--frame-border, #c49d00);
+  border-bottom: 1px solid var(--frame-border);
 }
 
 .shortcut-btn {
   padding: 5px 10px;
-  border: 1px solid var(--frame-border, #c49d00);
+  border: 1px solid var(--frame-border);
   border-radius: 4px;
   background: #2c2828;
-  color: var(--frame-bg, #fccf37);
+  color: var(--frame-bg);
   font-family: inherit;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
 
   &:hover {
-    background: var(--frame-bg, #fccf37);
+    background: var(--frame-bg);
     color: #2c2c2c;
     transform: translateY(-1px);
   }
@@ -60,16 +60,16 @@
   align-items: center;
   gap: 10px;
   padding: 10px 15px;
-  border-bottom: 1px solid var(--frame-border, #c49d00);
+  border-bottom: 1px solid var(--frame-border);
 }
 
 .input {
   width: 60px;
   padding: 6px 8px;
-  border: 1px solid var(--frame-border, #c49d00);
+  border: 1px solid var(--frame-border);
   border-radius: 4px;
   background: #1f1e1e;
-  color: var(--frame-bg, #fccf37);
+  color: var(--frame-bg);
   font-family: inherit;
   font-size: 11px;
 }
@@ -99,7 +99,7 @@
 
 .memory-addr {
   margin-right: 10px;
-  color: var(--frame-bg, #fccf37);
+  color: var(--frame-bg);
   font-weight: bold;
 }
 

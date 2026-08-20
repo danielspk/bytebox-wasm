@@ -46,7 +46,15 @@ export const VideoMapper = {
     if (this.gl) return;
 
     this.gl = DOM.ScreenCanvas.getContext('webgl');
+
+    if (!this.gl) {
+      console.error('❌ webgl context creation failed');
+
+      return;
+    }
+
     this.videoBuffer = new Uint8Array(CONST.SCREEN_WIDTH * CONST.SCREEN_HEIGHT * 4); // 19200 pixels * 4 bytes per pixel (RGBA) = 76800 bytes
+    this.videoBuffer.fill(255);                                                      // preset alpha
     this.vertexBuffer = null;
     this.attributes = {
       position: null,
@@ -153,7 +161,7 @@ export const VideoMapper = {
 
     DOM.ScreenCanvas.width = displayWidth;
     DOM.ScreenCanvas.height = displayHeight;
-    DOM.Console.style.visibility = 'inherit';
+    DOM.Console.classList.add('on');
   },
 
   compileShader(source, type) {
@@ -195,7 +203,6 @@ export const VideoMapper = {
     this.videoBuffer[idx]     = this.palette[c];     // red
     this.videoBuffer[idx + 1] = this.palette[c + 1]; // green
     this.videoBuffer[idx + 2] = this.palette[c + 2]; // blue
-    this.videoBuffer[idx + 3] = 255;                 // alpha
   },
 
   render() {
@@ -236,7 +243,7 @@ export const VideoMapper = {
       const a = document.createElement('a');
 
       a.href = url;
-      a.download = 'bytebox.png';
+      a.download = `bytebox-${Date.now()}.png`;
       a.click();
       URL.revokeObjectURL(url);
     });
@@ -245,12 +252,10 @@ export const VideoMapper = {
 
 // Initialization -------------------------------------------------------------
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'F9') {
-      VideoMapper.capture();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'F9') {
+    VideoMapper.capture();
 
-      e.preventDefault();
-    }
-  });
+    e.preventDefault();
+  }
 });

@@ -211,9 +211,9 @@ A game over 56KB shows a red size indicator in the UI but still runs. `make pack
 
 ## Running & Loading
 
-`make run` serves the console (default port 3000; `PORT=8080 make run` to change it). On start it loads `assets/wasm/game.wasm`.
+`make run` serves the console (default port 3000; `PORT=8080 make run` to change it). The console opens with a **power button** — press it to boot. The click is what unlocks the browser's audio, so the game starts with sound already available. On boot it loads `assets/wasm/game.wasm`.
 
-You can also **drag and drop** a `.wasm` file onto the window to load it on the fly — useful for trying a build without copying it into `src/`. Drops are ignored while the console is booting or showing the splash, and non-`.wasm` drops are discarded.
+You can also **drag and drop** a `.wasm` file onto the window to load it on the fly — useful for trying a build without copying it into `src/`. Drops are ignored while the console is booting or showing the splash.
 
 `trace` output appears in the browser console as `🔵 WASM TRACE: <string>`.
 
@@ -244,7 +244,7 @@ Part 1 defines the two gamepad bytes; this host drives them from the keyboard (a
 | F8 | Toggle the memory viewer |
 | F9 | Capture a screenshot |
 
-The **memory viewer** (F8) shows 256 bytes at a time as a hex grid, starting at any address you type (4 hex digits). Click a byte and type a new hex value + Enter to write it live. Shortcut buttons jump to key regions, and a Resume/Halt toggle flips bit 0 of SYSFLAGS. Use it to watch your framebuffer, inspect WRAM, or poke values while the game runs.
+The **memory viewer** (F8) shows 256 bytes at a time as a hex grid, starting at any address you type (4 hex digits). Click a byte and type a new hex value + Enter to write it live. Shortcut buttons jump to key regions (Flags, WRAM, Video, I/O), a **Halt** toggle flips bit 0 of SYSFLAGS, and **Step** advances a single frame while halted. Use it to watch your framebuffer, inspect WRAM, or poke values while the game runs.
 
 ## What Happens When a Game Fails
 

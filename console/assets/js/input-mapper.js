@@ -17,34 +17,19 @@ const KEY_MAP = {
 
 export const InputMapper = {
   memory: null,
-  keydownHandler: null,
-  keyupHandler: null,
-  virtualPadHandlers: [],
+  controller: null,
 
   init(memory) {
     this.memory = memory;
 
     this.cleanup();
+    this.controller = new AbortController();
     this.handleKeys();
     this.handleVirtualPad();
   },
 
   cleanup() {
-    if (this.keydownHandler) {
-      document.removeEventListener('keydown', this.keydownHandler);
-    }
-
-    if (this.keyupHandler) {
-      document.removeEventListener('keyup', this.keyupHandler);
-    }
-
-    this.virtualPadHandlers.forEach(({ element, event, handler }) => {
-      element.removeEventListener(event, handler);
-    });
-
-    this.keydownHandler = null;
-    this.keyupHandler = null;
-    this.virtualPadHandlers = [];
+    this.controller?.abort();
   },
 
   updateKey(code, isPressed) {
@@ -67,38 +52,29 @@ export const InputMapper = {
   },
 
   handleKeys() {
-    this.keydownHandler = (e) => {
+    const { signal } = this.controller;
+
+    document.addEventListener('keydown', (e) => {
       if (this.updateKey(e.code, true)) e.preventDefault();
-    };
+    }, { signal });
 
-    this.keyupHandler = (e) => {
+    document.addEventListener('keyup', (e) => {
       if (this.updateKey(e.code, false)) e.preventDefault();
-    };
-
-    document.addEventListener('keydown', this.keydownHandler);
-    document.addEventListener('keyup', this.keyupHandler);
+    }, { signal });
   },
 
   handleVirtualPad() {
+    const { signal } = this.controller;
+
     document.querySelectorAll('[data-key]').forEach(btn => {
       const key = btn.dataset.key;
 
       ['mousedown', 'touchstart'].forEach(event => {
-        const handler = () => {
-          this.updateKey(key, true);
-        };
-
-        btn.addEventListener(event, handler, { passive: true });
-        this.virtualPadHandlers.push({ element: btn, event, handler });
+        btn.addEventListener(event, () => this.updateKey(key, true), { passive: true, signal });
       });
 
       ['mouseup', 'touchend', 'mouseleave', 'touchcancel'].forEach(event => {
-        const handler = () => {
-          this.updateKey(key, false);
-        };
-
-        btn.addEventListener(event, handler, { passive: true });
-        this.virtualPadHandlers.push({ element: btn, event, handler });
+        btn.addEventListener(event, () => this.updateKey(key, false), { passive: true, signal });
       });
     });
   }

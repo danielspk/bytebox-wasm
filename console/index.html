@@ -6,11 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="ByteBox - WebAssembly console">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
-  <title>ByteBox - Web Assembly</title>
+  <title>ByteBox - WebAssembly</title>
   <link rel="stylesheet" href="assets/css/console.css">
   <link rel="stylesheet" href="assets/css/memory-viewer.css">
 </head>
 <body>
+  <button id="power" class="power" type="button" title="Power on">
+    <span>⏻</span>
+    <em>POWER</em>
+  </button>
+
   <main id="console" class="console">
 
     <section class="screen">
@@ -25,20 +30,20 @@
 
     <section class="gamepad">
       <div class="gamepad-dir">
-        <button class="dir-btn btn-up" data-key="ArrowUp">↑</button>
-        <button class="dir-btn btn-left" data-key="ArrowLeft">←</button>
-        <button class="dir-btn btn-right" data-key="ArrowRight">→</button>
-        <button class="dir-btn btn-down" data-key="ArrowDown">↓</button>
+        <button class="dir-btn btn-up" data-key="ArrowUp" tabindex="-1">↑</button>
+        <button class="dir-btn btn-left" data-key="ArrowLeft" tabindex="-1">←</button>
+        <button class="dir-btn btn-right" data-key="ArrowRight" tabindex="-1">→</button>
+        <button class="dir-btn btn-down" data-key="ArrowDown" tabindex="-1">↓</button>
       </div>
 
       <div class="gamepad-action">
-        <button class="action-btn btn-b" data-key="KeyX">B</button>
-        <button class="action-btn btn-a" data-key="KeyZ">A</button>
+        <button class="action-btn btn-b" data-key="KeyX" tabindex="-1">B</button>
+        <button class="action-btn btn-a" data-key="KeyZ" tabindex="-1">A</button>
       </div>
     </section>
 
     <footer class="footer">
-      <div><strong>ByteBox</strong><br>Web Assembly</div>
+      <div><strong>ByteBox</strong><br>WebAssembly</div>
     </footer>
 
   </main>
@@ -47,12 +52,12 @@
     <header id="memory-header" class="memory-viewer-header">Memory Viewer</header>
     <nav class="memory-viewer-shortcuts">
       <button class="shortcut-btn" data-addr="0040">Flags</button>
+      <button class="shortcut-btn" data-addr="E100">WRAM</button>
       <button class="shortcut-btn" data-addr="E900">Video</button>
-      <button class="shortcut-btn" data-addr="FF84">Colors</button>
-      <button class="shortcut-btn" data-addr="FF94">Pads</button>
-      <button class="shortcut-btn" data-addr="FF98">Sounds</button>
+      <button class="shortcut-btn" data-addr="FF84">I/O</button>
       <input id="memory-input" class="input input-nav" type="text" value="E900" placeholder="E900" inputmode="none">
-      <button class="shortcut-btn btn-resume" data-action="resume">Resume | Halt</button>
+      <button class="shortcut-btn btn-resume" data-action="resumeHalt">Halt</button>
+      <button class="shortcut-btn" data-action="step">Step</button>
     </nav>
     <section class="memory-viewer-controls">
       <label for="memory-address">0x</label>
@@ -63,7 +68,7 @@
     <section class="memory-viewer-display" id="memory-display"></section>
   </aside>
 
-  <script type="module" src="assets/js/console.js" defer></script>
-  <script type="module" src="assets/js/memory-viewer.js" defer></script>
+  <script type="module" src="assets/js/console.js"></script>
+  <script type="module" src="assets/js/memory-viewer.js"></script>
 </body>
 </html>

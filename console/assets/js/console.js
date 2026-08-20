@@ -48,20 +48,12 @@ export const ByteBox = {
     const color = new URLSearchParams(window.location.search).get('color');
     if (!color || !/^[0-9a-fA-F]{6}$/.test(color)) return;
 
-    const r = parseInt(color.slice(0, 2), 16);
-    const g = parseInt(color.slice(2, 4), 16);
-    const b = parseInt(color.slice(4, 6), 16);
-    const root = document.documentElement.style;
-
-    root.setProperty('--frame-bg', `#${color}`);
-    root.setProperty('--frame-border', `rgb(${r * 0.75}, ${g * 0.75}, ${b * 0.75})`);
-    root.setProperty('--frame-shadow', `rgba(${r}, ${g}, ${b}, 0.5)`);
+    document.documentElement.style.setProperty('--frame-bg', `#${color}`);
   },
 
   setup() {
     this.state = STATE.LOADING;
     this.memory = new Uint8Array(CONST.MEMORY_SIZE);
-    this.memory.fill(0);
     this.wasmModule = null;
     this.frames = 0;
     this.lastUpdateFPS = 0;
@@ -77,10 +69,7 @@ export const ByteBox = {
 
   async load(wasmUrl) {
     try {
-      const response = await fetch(wasmUrl, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      });
+      const response = await fetch(wasmUrl, { cache: 'no-store' });
 
       if (!response.ok) {
         return this.error('❌ url not found', null);
@@ -109,7 +98,7 @@ export const ByteBox = {
 
       this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
 
-      const gameID = btoa(String.fromCharCode(...wasmBytes.slice(0, 16))) + wasmBytes.length;
+      const gameID = wasmBytes.reduce((hash, byte) => Math.imul(hash ^ byte, 0x01000193), 0x811C9DC5).toString(36); // FNV-1a hash
       WRAMMapper.sync(gameID);
 
       DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
@@ -210,6 +199,7 @@ export const ByteBox = {
 
     let accumulator = 0;
     let lastTime = performance.now();
+    let degraded = false;
     this.lastUpdateFPS = lastTime;
 
     const gameLoop = (currentTime) => {
@@ -218,7 +208,13 @@ export const ByteBox = {
 
       if (accumulator > CONST.GUARD_THRESHOLD) {
         accumulator = CONST.GAME_INTERVAL;
-        console.warn('⚠️ performance degradation detected');
+
+        if (!degraded) {
+          console.warn('⚠️ performance degradation detected');
+          degraded = true;
+        }
+      } else {
+        degraded = false;
       }
 
       if (!document.hasFocus()) {
@@ -235,6 +231,8 @@ export const ByteBox = {
 
           WRAMMapper.store();
           SoundMapper.play();
+
+          this.frames++;
         }
 
         accumulator -= CONST.GAME_INTERVAL;
@@ -274,8 +272,6 @@ export const ByteBox = {
   updateFPS(now) {
     const elapsed = now - this.lastUpdateFPS;
 
-    this.frames++;
-
     if (elapsed >= 1000) {
       DOM.InfoFPS.textContent = Math.round(this.frames * 1000 / elapsed);
 
@@ -287,6 +283,7 @@ export const ByteBox = {
   error(msg, err) {
     this.state = STATE.CRASHED;
     this.memory.set([255, 0, 0], ADDR.PALETTE);
+    DOM.InfoName.textContent = 'CRASH ERROR';
 
     VideoMapper.clear();
     VideoMapper.render();
@@ -342,28 +339,30 @@ export const ByteBox = {
 
 // Initialization -------------------------------------------------------------
 
-document.addEventListener('DOMContentLoaded', () => {
-  ByteBox.applyFrameColor();
+ByteBox.applyFrameColor();
 
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
-    document.addEventListener(event, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+  document.addEventListener(event, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
   });
+});
 
-  document.addEventListener('drop', async (e) => {
-    if (!e.dataTransfer.files.length) return;
+document.addEventListener('drop', async (e) => {
+  if (!e.dataTransfer.files.length) return;
 
-    const url = URL.createObjectURL(e.dataTransfer.files[0]);
-    await ByteBox.restart(url);
+  const url = URL.createObjectURL(e.dataTransfer.files[0]);
+  await ByteBox.restart(url);
 
-    URL.revokeObjectURL(url);
-  });
+  URL.revokeObjectURL(url);
+});
 
-  document.addEventListener('visibilitychange', () => {
-    document.hidden ? ByteBox.pause() : ByteBox.resume();
-  });
+document.addEventListener('visibilitychange', () => {
+  document.hidden ? ByteBox.pause() : ByteBox.resume();
+});
+
+DOM.Power.addEventListener('click', () => {
+  DOM.Power.remove();
 
   ByteBox.init(`assets/wasm/game.wasm?t=${Date.now()}`);
-});
+}, { once: true });

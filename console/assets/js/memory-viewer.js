@@ -123,6 +123,15 @@ export const MemoryViewer = {
     memory[ADDR.SYSFLAGS] ^= 0x01;
   },
 
+  step() {
+    const memory = ByteBox.getMemory();
+
+    if (!memory || !(memory[ADDR.SYSFLAGS] & 0x01)) return;
+
+    memory[ADDR.SYSFLAGS] &= 0xFE;
+    requestAnimationFrame(() => memory[ADDR.SYSFLAGS] |= 0x01);
+  },
+
   showMemory() {
     const memory = ByteBox.getMemory();
 
@@ -130,6 +139,8 @@ export const MemoryViewer = {
 
     this.isRunning = true;
     DOM.MemoryViewer.style.display = 'block';
+
+    this.lastMemory.set(memory.subarray(this.baseAddr, this.baseAddr + this.lastMemory.length));
 
     let frameCount = 0;
 
@@ -172,46 +183,44 @@ export const MemoryViewer = {
 
 // Initialization -------------------------------------------------------------
 
-document.addEventListener('DOMContentLoaded', () => {
-  DOM.MemoryInput.addEventListener('input', (e) => MemoryViewer.inputMemoryAddr(e.target.value));
+DOM.MemoryInput.addEventListener('input', (e) => MemoryViewer.inputMemoryAddr(e.target.value));
 
-  DOM.MemoryViewer.querySelectorAll('input').forEach(input => {
-    const stop = (e) => { if (e.key.length === 1) e.stopPropagation(); };
-    input.addEventListener('keydown', stop);
-    input.addEventListener('keyup', stop);
-  });
+DOM.MemoryViewer.querySelectorAll('input').forEach(input => {
+  const stop = (e) => { if (e.key.length === 1) e.stopPropagation(); };
+  input.addEventListener('keydown', stop);
+  input.addEventListener('keyup', stop);
+});
 
-  DOM.MemoryHeader.addEventListener('pointerdown', (e) => MemoryViewer.grab(e));
-  DOM.MemoryHeader.addEventListener('pointermove', (e) => MemoryViewer.drag(e));
+DOM.MemoryHeader.addEventListener('pointerdown', (e) => MemoryViewer.grab(e));
+DOM.MemoryHeader.addEventListener('pointermove', (e) => MemoryViewer.drag(e));
 
-  DOM.MemoryDisplay.addEventListener('mousedown', (e) => {
-    const span = e.target.closest('.memory-byte');
-    if (!span || !ByteBox.getMemory()) return;
+DOM.MemoryDisplay.addEventListener('mousedown', (e) => {
+  const span = e.target.closest('.memory-byte');
+  if (!span || !ByteBox.getMemory()) return;
 
-    MemoryViewer.selectByte(Number(span.dataset.addr));
-  });
+  MemoryViewer.selectByte(Number(span.dataset.addr));
+});
 
-  DOM.MemoryValue.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') MemoryViewer.writeMemoryByte();
-  });
+DOM.MemoryValue.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') MemoryViewer.writeMemoryByte();
+});
 
-  document.querySelectorAll('.shortcut-btn[data-addr]').forEach(btn => {
-    btn.addEventListener('click', () => MemoryViewer.setMemoryAddr(btn.dataset.addr));
-  });
+document.querySelectorAll('.shortcut-btn[data-addr]').forEach(btn => {
+  btn.addEventListener('click', () => MemoryViewer.setMemoryAddr(btn.dataset.addr));
+});
 
-  document.querySelectorAll('[data-action="resume"]').forEach(btn => {
-    btn.addEventListener('click', () => MemoryViewer.resumeHalt());
-  });
+document.querySelectorAll('[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => MemoryViewer[btn.dataset.action]());
+});
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'F8' && ByteBox.getMemory()) {
-      if (!MemoryViewer.isRunning) {
-        MemoryViewer.showMemory();
-      } else {
-        MemoryViewer.hideMemory();
-      }
-
-      e.preventDefault();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'F8' && ByteBox.getMemory()) {
+    if (!MemoryViewer.isRunning) {
+      MemoryViewer.showMemory();
+    } else {
+      MemoryViewer.hideMemory();
     }
-  });
+
+    e.preventDefault();
+  }
 });

@@ -20,6 +20,7 @@ export const ADDR = {
 // DOM Elements References ----------------------------------------------------
 
 export const DOM = {
+  Power: document.getElementById('power'),
   Console: document.getElementById('console'),
   InfoFPS: document.getElementById('i-fps'),
   InfoName: document.getElementById('i-name'),
