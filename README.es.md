@@ -66,6 +66,8 @@ Para ejecutar cualquiera de estos ejemplos, copiá el contenido del template de 
 
 > Sobre la limitación de tamaño del juego: 56KB puede parecer poco, pero estas restricciones habilitan una creatividad significativa. La limitación no es bloqueante, ya que los desarrolladores jóvenes podrían beneficiarse al habilitar opciones de debugging que rápidamente exceden el límite deseado. Sin embargo, los juegos que superan este tamaño muestran un indicador rojo en pantalla 🫣.
 
+> Sobre la RAM del cartucho: el límite de 56KB es del `.wasm` compilado, no de la memoria que el juego usa en ejecución. Esa memoria vive fuera del mapa de 64KB de la consola, no tiene límite y la consola no la mide.
+
 > Sobre la ausencia de funciones gráficas: implementar movimiento de sprites personalizado, gravedad, procedimientos de parallax y características similares brinda una excelente oportunidad de aprendizaje 🧠.
 
 > Sobre la resolución de pantalla y los colores: buscamos una resolución con la clásica relación de aspecto 4:3 y medidas similares a las de la Game Boy. Asimismo, se pueden representar 4 colores distintos como en la Game Boy, pero con diferencias importantes, ya que los colores son personalizables y la consola usa un framebuffer en lugar de un sistema de tiles y atributos.

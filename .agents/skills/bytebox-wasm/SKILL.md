@@ -52,6 +52,7 @@ Bounds semantics: out-of-range `peek` warns and returns 0; out-of-range `poke`/`
 - **DUMP WRAM** (SYSFLAGS bit 1 = 1): the console persists the 1KB WRAM region, then auto-clears the bit.
 - A game that traps inside `update()` is fatally broken; the console stops it permanently.
 - Cartridges should fit in the 56KB ROM region.
+- The 56KB limit is about the compiled `.wasm`, not the memory the game uses at runtime: that memory is RAM on the cartridge, outside the console's 64KB map, unlimited and not tracked.
 
 ## Memory Map (64KB, little-endian, 8-bit)
 
