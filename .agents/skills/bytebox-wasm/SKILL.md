@@ -259,5 +259,5 @@ A failed load or a crash at runtime shows a **terminal red screen** and logs the
 | Game throws inside `init()` | Red screen + error log |
 | Game throws inside `update()` | Red screen + error log (permanent) |
 | `peek` out of range | Warns, returns 0 |
-| `poke` / `spoke` out of range | Warns, does nothing |
+| `poke` / `spoke` / `trace` out of range | Warns, does nothing |
 | WRAM `localStorage` unavailable | Logged; the game keeps running |

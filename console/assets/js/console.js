@@ -317,23 +317,22 @@ export const ByteBox = {
   },
 
   spoke(startAddr, len, ptr) {
-    if (startAddr < 0 || startAddr >= CONST.MEMORY_SIZE) {
-      console.warn(`⚠️ start address ${startAddr} is out of range`);
-      return;
+    try {
+      const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
+      this.memory.set(bytes, startAddr);
+    } catch {
+      console.warn(`⚠️ spoke(${startAddr}, ${len}, ${ptr}) is out of range`);
     }
-    if (startAddr + len > CONST.MEMORY_SIZE) {
-      console.warn(`⚠️ start address ${startAddr} + ${len} exceeds memory bounds`);
-      return;
-    }
-
-    const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
-    this.memory.set(bytes, startAddr);
   },
 
   trace(ptr, len) {
-    const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
+    try {
+      const bytes = new Uint8Array(this.wasmModule.exports.memory.buffer, ptr, len);
 
-    console.log('🔵 WASM TRACE:', TEXT_DECODER.decode(bytes));
+      console.log('🔵 WASM TRACE:', TEXT_DECODER.decode(bytes));
+    } catch {
+      console.warn(`⚠️ trace(${ptr}, ${len}) is out of range`);
+    }
   }
 };
 
