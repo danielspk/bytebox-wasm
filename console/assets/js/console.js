@@ -13,7 +13,7 @@ const CONST = {
   ROM_SIZE: 56 * 1024,      // 56KB
   GAME_INTERVAL: 1000 / 60, // game loop speed - 60 fps
   SPLASH_TIME: 1500,        // in milliseconds
-  CHIME_DELAY: 800,         // in milliseconds
+  CHIME_DELAY: 700,         // in milliseconds
   GUARD_THRESHOLD: 200,     // spiral of death guard - max frame time in milliseconds
 };
 
@@ -25,10 +25,12 @@ const STATE = {
 };
 
 const TEXT_DECODER = new TextDecoder();
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export const ByteBox = {
   memory: null,
   wasmModule: null,
+  gameSize: 0,
   frames: 0,
   lastUpdateFPS: 0,
   animationId: null,
@@ -36,7 +38,14 @@ export const ByteBox = {
 
   async init(wasmUrl) {
     this.setup();
+
     await this.load(wasmUrl);
+
+    const skipSplash = new URLSearchParams(window.location.search).has('nosplash');
+    if (!skipSplash) {
+      await this.splash();
+    }
+
     this.start();
   },
 
@@ -55,6 +64,7 @@ export const ByteBox = {
     this.state = STATE.LOADING;
     this.memory = new Uint8Array(CONST.MEMORY_SIZE);
     this.wasmModule = null;
+    this.gameSize = 0;
     this.frames = 0;
     this.lastUpdateFPS = 0;
     this.animationId = null;
@@ -65,6 +75,12 @@ export const ByteBox = {
     SoundMapper.init(this.memory);
     MelodyMapper.init(this.memory);
     WRAMMapper.init(this.memory);
+
+    this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
+
+    DOM.InfoName.textContent = '---';
+    DOM.InfoSize.textContent = '0';
+    DOM.InfoSize.style.color = '';
   },
 
   async load(wasmUrl) {
@@ -96,32 +112,15 @@ export const ByteBox = {
         return this.error('🧩 missing memory export', null);
       }
 
-      this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
+      this.gameSize = wasmBytes.length;
 
       const gameID = wasmBytes.reduce((hash, byte) => Math.imul(hash ^ byte, 0x01000193), 0x811C9DC5).toString(36); // FNV-1a hash
       WRAMMapper.sync(gameID);
 
-      DOM.InfoSize.textContent = (wasmBytes.length / 1024).toFixed(1);
-
-      if (wasmBytes.length > CONST.ROM_SIZE) {
-        DOM.InfoSize.style.color = '#fc0c0c';
-      } else {
-        DOM.InfoSize.style.color = '';
-
+      if (this.gameSize <= CONST.ROM_SIZE) {
         // emulate "game ROM" - this really has no effect
         this.memory.set(wasmBytes, ADDR.ROM);
       }
-
-      try {
-        this.wasmModule.exports.init?.();
-      } catch (err) {
-        return this.error('💥 game crashed in init()', err);
-      }
-
-      const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
-      DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
-
-      console.log('🎮 ByteBox game is running');
     } catch (err) {
       return this.error('❌ failed to load wasm', err);
     }
@@ -140,21 +139,28 @@ export const ByteBox = {
   start() {
     if (this.state !== STATE.LOADING) return;
 
-    const skipSplash = new URLSearchParams(window.location.search).has('nosplash');
-    if (skipSplash) {
-      this.state = STATE.READY;
-      this.run();
-      return;
+    try {
+      this.wasmModule.exports.init?.();
+    } catch (err) {
+      return this.error('💥 game crashed in init()', err);
     }
 
-    this.splash();
-    setTimeout(() => {
-      this.state = STATE.READY;
-      this.run();
-    }, CONST.SPLASH_TIME);
+    this.state = STATE.READY;
+
+    const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
+
+    DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
+    DOM.InfoSize.textContent = (this.gameSize / 1024).toFixed(1);
+    DOM.InfoSize.style.color = this.gameSize > CONST.ROM_SIZE ? '#fc0c0c' : '';
+
+    console.log('🎮 ByteBox game is running');
+
+    this.run();
   },
 
-  splash() {
+  async splash() {
+    if (this.state !== STATE.LOADING) return;
+
     const logo = [
       [2250, 0xFF], [2251, 0xFC], [2253, 0xF0], [2254, 0x0F], [2256, 0xFF], [2257, 0xFF], [2259, 0xFF], [2260, 0xFF],
       [2262, 0xFF], [2263, 0xFC], [2265, 0x0F], [2266, 0xF0], [2268, 0xF0], [2269, 0x0F], [2290, 0xF0], [2291, 0x0F],
@@ -175,7 +181,13 @@ export const ByteBox = {
     }
 
     VideoMapper.render();
-    setTimeout(() => this.chime(), CONST.CHIME_DELAY);
+
+    await delay(CONST.CHIME_DELAY);
+    this.chime();
+    await delay(CONST.SPLASH_TIME - CONST.CHIME_DELAY);
+
+    VideoMapper.clear();
+    VideoMapper.render();
   },
 
   chime() {
