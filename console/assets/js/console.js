@@ -78,7 +78,7 @@ export const ByteBox = {
 
     this.memory[ADDR.SEED] = (Math.random() * 256) | 0;
 
-    DOM.InfoName.textContent = '---';
+    DOM.InfoName.textContent = '';
     DOM.InfoSize.textContent = '0';
     DOM.InfoSize.style.color = '';
   },
@@ -149,7 +149,7 @@ export const ByteBox = {
 
     const name = this.memory.slice(ADDR.GAME_NAME, ADDR.GAME_NAME + 24).filter(byte => byte !== 0);
 
-    DOM.InfoName.textContent = String.fromCharCode(...name) || '---';
+    DOM.InfoName.textContent = String.fromCharCode(...name) || '';
     DOM.InfoSize.textContent = (this.gameSize / 1024).toFixed(1);
     DOM.InfoSize.style.color = this.gameSize > CONST.ROM_SIZE ? '#fc0c0c' : '';
 

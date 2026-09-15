@@ -22,48 +22,44 @@ html, body {
 
 .power {
   position: fixed;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 26px;
   border: none;
   background: none;
-  color: var(--frame-bg);
+  color: #918f8b;
   font-family: inherit;
   cursor: pointer;
   touch-action: manipulation;
 
-  & span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    border: 3px solid var(--frame-border);
-    border-radius: 50%;
-    background: #2c2828;
-    font-size: 24px;
+  & img {
+    width: 300px;
+    max-width: 70vw;
+    transition: opacity 0.2s;
   }
 
   & em {
     font-size: 11px;
     font-style: normal;
     font-weight: bold;
-    letter-spacing: 3px;
+    letter-spacing: 1px;
   }
 
-  &:hover span {
-    background: var(--frame-border);
-    color: #2c2c2c;
+  &:hover img {
+    opacity: 0.8;
   }
 
   &:focus-visible {
     outline: none;
   }
 
-  &:focus-visible span {
+  &:focus-visible img {
     outline: 2px solid var(--frame-bg);
-    outline-offset: 3px;
+    outline-offset: 6px;
   }
 }
 
@@ -74,10 +70,10 @@ html, body {
   width: fit-content;
   max-width: 95vw;
   padding: 12px;
-  border: 4px solid var(--frame-border);
-  border-radius: 12px;
+  border: 3px solid var(--frame-border);
+  border-radius: 12px 12px 60px 12px;
   background: var(--frame-bg);
-  box-shadow: 0 0 20px var(--frame-shadow);
+  box-shadow: 0 0 10px var(--frame-shadow);
   transition: opacity 0.35s ease, scale 0.35s ease, visibility 0.35s;
 
   &.on {
@@ -113,7 +109,7 @@ html, body {
 }
 
 .screen {
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   padding: 10px;
   border: 3px solid var(--frame-border);
   border-radius: 8px;
@@ -140,7 +136,7 @@ html, body {
 
 .screen-canvas {
   display: block;
-  border: 1px solid var(--frame-border);
+  border: 1px solid #232323;
   border-radius: 4px;
   background: #222;
   image-rendering: pixelated;
@@ -157,11 +153,23 @@ html, body {
 }
 
 .screen-info {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   margin-top: 10px;
-  color: #a19e9e;
+  padding: 0 4px;
+  color: #686868;
   font-size: 10px;
   font-weight: bold;
   text-align: center;
+
+  & > :first-child {
+    justify-self: start;
+  }
+
+  & > :last-child {
+    justify-self: end;
+  }
 
   @media (max-width: 600px) {
     display: none;
@@ -199,9 +207,10 @@ html, body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  width: 110px;
-  height: 110px;
+  width: 111px;
+  height: 111px;
   margin-left: 8px;
+  background: linear-gradient(#2c2828, #2c2828) center / calc(100% / 3) calc(100% / 3) no-repeat;
 
   @media (orientation: landscape) and (max-height: 550px) {
     pointer-events: auto;
@@ -214,52 +223,51 @@ html, body {
 }
 
 .dir-btn {
-  border: 2px solid var(--frame-border);
-  border-radius: 4px;
+  border: none;
   background: #2c2828;
   color: var(--frame-bg);
   font-weight: bold;
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
-  transition: opacity 0.1s, background 0.1s, color 0.1s;
+  transition: color 0.1s;
 
   &:hover {
-    opacity: 0.8;
+    color: color-mix(in srgb, var(--frame-bg) 50%, white);
   }
 
   &:active {
-    background: var(--frame-border);
-    color: #2c2c2c;
+    color: #fff;
   }
 
   &.btn-up {
     grid-column: 2;
     grid-row: 1;
+    border-radius: 3px 3px 0 0;
   }
 
   &.btn-left {
     grid-column: 1;
     grid-row: 2;
+    border-radius: 3px 0 0 3px;
   }
 
   &.btn-right {
     grid-column: 3;
     grid-row: 2;
+    border-radius: 0 3px 3px 0;
   }
 
   &.btn-down {
     grid-column: 2;
     grid-row: 3;
+    border-radius: 0 0 3px 3px;
   }
 
   @media (orientation: landscape) and (max-height: 550px) {
-    border-color: #888;
-    background: #2c2828;
     color: #888;
 
     &:active {
-      background: #555;
       color: #ccc;
     }
   }
@@ -344,7 +352,7 @@ html, body {
 }
 
 .footer {
-  margin-top: 30px;
+  margin-top: 20px;
   font-size: 12px;
   opacity: 0.7;
   text-align: center;
