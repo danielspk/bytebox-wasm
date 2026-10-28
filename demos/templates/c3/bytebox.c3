@@ -15,31 +15,44 @@ module bytebox;
 const SCREEN_WIDTH     = 160;
 const SCREEN_HEIGHT    = 120;
 const MEMORY_SIZE      = 64 * 1024;
-const FRAMEBUFFER_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT) / 4;
+const FRAMEBUFFER_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT) / 2;
 
 // ----------------------------------------------------------------------------
 // Memory Addresses Constants
 // ----------------------------------------------------------------------------
 
-const SYSFLAGS_ADDR    = 0x0040;
-const SEED_ADDR        = 0x0041;
-const GAMENAME_ADDR    = 0x0044;
-const WRAM_ADDR        = 0xE100;
-const VIDEO_ADDR       = 0xE900;
-const COLOR1_ADDR      = 0xFF84;
-const COLOR2_ADDR      = 0xFF87;
-const COLOR3_ADDR      = 0xFF8A;
-const COLOR4_ADDR      = 0xFF8D;
-const GAMEPAD1_ADDR    = 0xFF94;
-const GAMEPAD2_ADDR    = 0xFF95;
-const SFX_CH1_ADDR     = 0xFF98;
-const SFX_CH2_ADDR     = 0xFF9C;
-const SFX_CH3_ADDR     = 0xFFA0;
-const SFX_CH4_ADDR     = 0xFFA4;
-const MELODY_ATTR_ADDR = 0xFFA8;
-const MELODY_ADDR      = 0xFFA9;
-const MELODY_HEAD_ADDR = 0xFFE9;
-const MELODY_TAIL_ADDR = 0xFFEA;
+const SYSFLAGS_ADDR     = 0x0040;
+const SEED_ADDR         = 0x0041;
+const GAMENAME_ADDR     = 0x0048;
+const WRAM_ADDR         = 0xD000;
+const VIDEO_ADDR        = 0xD800;
+const COLOR1_ADDR       = 0xFF00;
+const COLOR2_ADDR       = 0xFF03;
+const COLOR3_ADDR       = 0xFF06;
+const COLOR4_ADDR       = 0xFF09;
+const COLOR5_ADDR       = 0xFF0C;
+const COLOR6_ADDR       = 0xFF0F;
+const COLOR7_ADDR       = 0xFF12;
+const COLOR8_ADDR       = 0xFF15;
+const COLOR9_ADDR       = 0xFF18;
+const COLOR10_ADDR      = 0xFF1B;
+const COLOR11_ADDR      = 0xFF1E;
+const COLOR12_ADDR      = 0xFF21;
+const COLOR13_ADDR      = 0xFF24;
+const COLOR14_ADDR      = 0xFF27;
+const COLOR15_ADDR      = 0xFF2A;
+const COLOR16_ADDR      = 0xFF2D;
+const GAMEPAD1_ADDR     = 0xFF40;
+const GAMEPAD2_ADDR     = 0xFF41;
+const SOUND_STATUS_ADDR = 0xFF5F;
+const SFX_CH1_ADDR      = 0xFF60;
+const SFX_CH2_ADDR      = 0xFF64;
+const SFX_CH3_ADDR      = 0xFF68;
+const SFX_CH4_ADDR      = 0xFF6C;
+const MELODY_ATTR_ADDR  = 0xFF7F;
+const MELODY_ADDR       = 0xFF80;
+const MELODY_HEAD_ADDR  = 0xFFC0;
+const MELODY_TAIL_ADDR  = 0xFFC1;
 
 // ----------------------------------------------------------------------------
 // System Flags Bits Constants

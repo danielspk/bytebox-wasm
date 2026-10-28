@@ -54,23 +54,23 @@ Para executar qualquer um desses exemplos, copie o conteúdo do template de exem
 - Arquitetura de 8 bits - _little endian_.
 - 64KB de memória.
 - Display de 160x120 pixels.
-- Paleta RGB de 4 cores.
-- Framebuffer linear (2 bits por pixel).
+- Paleta RGB de 16 cores.
+- Framebuffer linear (4 bits por pixel).
 - 2 controles (pads) com 6 botões cada um.
 - 4 canais de efeitos (SFX) + 8 canais de melodia.
-- Os jogos compilados não devem ultrapassar 56KB.
+- Os jogos compilados não devem ultrapassar 50KB.
 - Sem funções predefinidas para reproduzir sons ou desenhar sprites. Apenas operações de leitura/escrita em memória estão disponíveis.
 - Sem botão de reset.
 
 ### Notas sobre Decisões de Design
 
-> Sobre a limitação de tamanho do jogo: 56KB pode parecer pouco, mas essas restrições habilitam uma criatividade significativa. A limitação não é bloqueante, já que desenvolvedores jovens podem se beneficiar ao habilitar opções de debugging que rapidamente ultrapassam o limite desejado. No entanto, os jogos que ultrapassam esse tamanho exibem um indicador vermelho na tela 🫣.
+> Sobre a limitação de tamanho do jogo: 50KB pode parecer pouco, mas essas restrições habilitam uma criatividade significativa. A limitação não é bloqueante, já que desenvolvedores jovens podem se beneficiar ao habilitar opções de debugging que rapidamente ultrapassam o limite desejado. No entanto, os jogos que ultrapassam esse tamanho exibem um indicador vermelho na tela 🫣.
 
-> Sobre a RAM do cartucho: o limite de 56KB é do `.wasm` compilado, não da memória que o jogo usa em execução. Essa memória vive fora do mapa de 64KB do console, não tem limite e o console não a mede.
+> Sobre a RAM do cartucho: o limite de 50KB é do `.wasm` compilado, não da memória que o jogo usa em execução. Essa memória vive fora do mapa de 64KB do console, não tem limite e o console não a mede.
 
 > Sobre a ausência de funções gráficas: implementar movimento de sprites personalizado, gravidade, procedimentos de parallax e recursos similares oferece uma excelente oportunidade de aprendizado 🧠.
 
-> Sobre a resolução de tela e as cores: buscamos uma resolução com a clássica proporção 4:3 e medidas similares às do Game Boy. Da mesma forma, é possível representar 4 cores distintas como no Game Boy, mas com diferenças importantes, já que as cores são personalizáveis e o console usa um framebuffer em vez de um sistema de tiles e atributos.
+> Sobre a resolução de tela e as cores: buscamos uma resolução com a clássica proporção 4:3 e medidas similares às do Game Boy. Da mesma forma, é possível representar 16 cores personalizáveis e o console usa um framebuffer em vez de um clássico sistema de tiles e atributos.
 
 > Sobre os controles (pads): ter apenas dois botões principais é uma das limitações mais importantes e deliberadas. Restam algumas dúvidas sobre essa decisão, mas felizmente há 2 bits disponíveis caso seja necessário reconsiderá-la no futuro.
 
@@ -100,27 +100,31 @@ O mapa de memória do **ByteBox** consiste em uma memória linear de 64KB. Opera
 
 | Faixa | Tamanho | Descrição |
 |-------|---------|-----------|
-| `0x0000-0x003F` | 64 bytes | Reservado (uso futuro) |
+| `0x0000-0x003F` | 64 bytes | Reservado para vetores de interrupção Z80/8080 (uso futuro) |
 | `0x0040` | 1 byte | Flags de sistema |
 | `0x0041` | 1 byte | Semente para números aleatórios |
-| `0x0042-0x0043` | 2 bytes | Reservado (uso futuro) |
-| `0x0044-0x005B` | 24 bytes | Nome do jogo |
-| `0x005C-0x00FF` | 164 bytes | Reservado (uso futuro) |
-| `0x0100-0xE0FF` | 57.344 bytes | ROM do jogo |
-| `0xE100-0xE4FF` | 1.024 bytes | RAM de escrita |
-| `0xE500-0xE8FF` | 1.024 bytes | Reservado para RAM + Stack (uso futuro) |
-| `0xE900-0xFBBF` | 4.800 bytes | Framebuffer de vídeo |
-| `0xFBC0-0xFF83` | 964 bytes | Reservado (uso futuro) |
-| `0xFF84-0xFF8F` | 12 bytes | Paleta de cores |
-| `0xFF90-0xFF93` | 4 bytes | Reservado (uso futuro) |
-| `0xFF94-0xFF95` | 2 bytes | Controles (pads) |
-| `0xFF96` | 1 byte | Reservado (uso futuro) |
-| `0xFF97` | 1 byte | Status dos canais SFX |
-| `0xFF98-0xFFA7` | 16 bytes | Canais SFX |
-| `0xFFA8` | 1 byte | Atributos de melodia |
-| `0xFFA9-0xFFE8` | 64 bytes | Ring buffer de melodia |
-| `0xFFE9-0xFFEA` | 2 bytes | Ponteiros de melodia |
-| `0xFFEB-0xFFFF` | 21 bytes | Reservado (uso futuro) |
+| `0x0042-0x0047` | 6 bytes | Reservado (uso futuro) |
+| `0x0048-0x005F` | 24 bytes | Nome do jogo |
+| `0x0060-0x00FF` | 160 bytes | Reservado (uso futuro) |
+| `0x0100-0x01FF` | 256 bytes | Reservado para Stack (uso futuro) |
+| `0x0200-0xC9FF` | 51.200 bytes | ROM do jogo |
+| `0xCA00-0xCFFF` | 1.536 bytes | Reservado (uso futuro) |
+| `0xD000-0xD3FF` | 1.024 bytes | RAM de escrita |
+| `0xD400-0xD7FF` | 1.024 bytes | Reservado para RAM (uso futuro) |
+| `0xD800-0xFD7F` | 9.600 bytes | Framebuffer de vídeo |
+| `0xFD80-0xFEFF` | 384 bytes | Reservado (uso futuro) |
+| `0xFF00-0xFF2F` | 48 bytes | Paleta de cores |
+| `0xFF30-0xFF3F` | 16 bytes | Reservado (uso futuro) |
+| `0xFF40-0xFF41` | 2 bytes | Controles (pads) |
+| `0xFF42-0xFF5E` | 29 bytes | Reservado (uso futuro) |
+| `0xFF5F` | 1 byte | Status dos canais SFX |
+| `0xFF60-0xFF6F` | 16 bytes | Canais SFX |
+| `0xFF70-0xFF7E` | 15 bytes | Reservado (uso futuro) |
+| `0xFF7F` | 1 byte | Atributos de melodia |
+| `0xFF80-0xFFBF` | 64 bytes | Ring buffer de melodia |
+| `0xFFC0-0xFFC1` | 2 bytes | Ponteiros de melodia |
+| `0xFFC2-0xFFF7` | 54 bytes | Reservado (uso futuro) |
+| `0xFFF8-0xFFFF` | 8 bytes | Reservado para vetores de interrupção 6502 (uso futuro) |
 
 > O design evita deliberadamente compartilhar memória diretamente com **WASM** em favor das funções peek/poke. Essa camada de abstração fornece melhor encapsulamento, permite o logging e a validação de acessos à memória, previne possíveis buffer overflows e dá ao runtime mais flexibilidade na gestão de memória sem expor detalhes de implementação de baixo nível ao código do jogo.
 
@@ -147,47 +151,57 @@ O endereço `0x0041` _(1 byte)_ define um valor pseudoaleatório. Isso é útil 
 
 ### Nome do Jogo
 
-Os endereços de `0x0044` a `0x005B` _(24 bytes)_ armazenam o nome do jogo em ASCII.
+Os endereços de `0x0048` a `0x005F` _(24 bytes)_ armazenam o nome do jogo em ASCII.
 
 ### ROM do Jogo
 
-Os endereços de `0x0100` a `0xE0FF` _(57344 bytes)_ armazenam a ROM somente leitura do jogo.
+Os endereços de `0x0200` a `0xC9FF` _(51200 bytes)_ armazenam a ROM somente leitura do jogo.
 
 ### WRAM
 
-Os endereços de `0xE100` a `0xE4FF` _(1024 bytes)_ armazenam a RAM de escrita.
+Os endereços de `0xD000` a `0xD3FF` _(1024 bytes)_ armazenam a RAM de escrita.
 
 Essa memória pode ser despejada no cartucho do jogo _(ver flags de sistema)_. O console a recarrega automaticamente quando você inicia o jogo.
 
 ### Framebuffer de Vídeo
 
-Os endereços de `0xE900` a `0xFBBF` _(4800 bytes)_ armazenam o framebuffer de vídeo linear. A resolução de tela é de 160px por 120px e cada byte do framebuffer representa 4 pixels _(2 bits por pixel)_.
+Os endereços de `0xD800` a `0xFD7F` _(9600 bytes)_ armazenam o framebuffer de vídeo linear. A resolução de tela é de 160px por 120px e cada byte do framebuffer representa 2 pixels _(4 bits por pixel)_.
 
 Dentro de cada byte, os pixels são armazenados em ordem **MSB first**:
 
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ │ │ └─└ PIXEL 4
-│ │ │ │ └─└──── PIXEL 3
-│ │ └─└──────── PIXEL 2
-└─└──────────── PIXEL 1
+│ │ │ │ └─└─└─└ PIXEL 2
+└─└─└─└──────── PIXEL 1
 ```
 
 ### Paleta de Cores
 
-Os endereços de `0xFF84` a `0xFF8F` _(12 bytes)_ definem os valores RGB da paleta de cores. Cada cor usa 3 bytes para representar os valores de _vermelho_, _verde_ e _azul_.
+Os endereços de `0xFF00` a `0xFF2F` _(48 bytes)_ definem os valores RGB da paleta de cores. Cada cor usa 3 bytes para representar os valores de _vermelho_, _verde_ e _azul_.
 
 A paleta de cores padrão é:
 
 - **Cor 1**: RGB(15, 15, 27)
-- **Cor 2**: RGB(86, 90, 117)
-- **Cor 3**: RGB(198, 183, 190)
-- **Cor 4**: RGB(250, 251, 246)
+- **Cor 2**: RGB(140, 143, 174)
+- **Cor 3**: RGB(88, 69, 99)
+- **Cor 4**: RGB(62, 33, 55)
+- **Cor 5**: RGB(154, 99, 72)
+- **Cor 6**: RGB(215, 155, 125)
+- **Cor 7**: RGB(245, 237, 186)
+- **Cor 8**: RGB(192, 199, 65)
+- **Cor 9**: RGB(100, 125, 52)
+- **Cor 10**: RGB(228, 148, 58)
+- **Cor 11**: RGB(157, 48, 59)
+- **Cor 12**: RGB(210, 100, 113)
+- **Cor 13**: RGB(112, 55, 127)
+- **Cor 14**: RGB(126, 196, 193)
+- **Cor 15**: RGB(52, 133, 157)
+- **Cor 16**: RGB(23, 67, 75)
 
 ### Controles (Pads)
 
-Os endereços `0xFF94` e `0xFF95` _(2 bytes)_ fornecem acesso somente leitura aos controles (joysticks) 1 e 2 respectivamente. Representação de bits:
+Os endereços `0xFF40` e `0xFF41` _(2 bytes)_ fornecem acesso somente leitura aos controles (joysticks) 1 e 2 respectivamente. Representação de bits:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -214,7 +228,7 @@ Teclas dos controles:
 
 ### Status dos Canais de Efeitos Sonoros
 
-O endereço `0xFF97` _(1 byte)_ fornece o status somente leitura de todos os canais de som. Representação de bits:
+O endereço `0xFF5F` _(1 byte)_ fornece o status somente leitura de todos os canais de som. Representação de bits:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -230,7 +244,7 @@ Bit em 1 = canal reproduzindo, bit em 0 = canal livre.
 
 ### Canais de Efeitos Sonoros
 
-Os endereços de `0xFF98` a `0xFFA7` _(16 bytes)_ gerenciam os 4 canais de efeitos sonoros disponíveis. Cada canal usa 4 bytes para a geração de efeitos sonoros.
+Os endereços de `0xFF60` a `0xFF6F` _(16 bytes)_ gerenciam os 4 canais de efeitos sonoros disponíveis. Cada canal usa 4 bytes para a geração de efeitos sonoros.
 
 #### Estrutura de Dados
 
@@ -288,7 +302,7 @@ Um canal não pode reproduzir um novo som enquanto um som anterior continuar toc
 
 ### Atributos de Melodia
 
-O endereço `0xFFA8` _(1 byte)_ define o volume master do áudio de melodia. Representação de bits:
+O endereço `0xFF7F` _(1 byte)_ define o volume master do áudio de melodia. Representação de bits:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -299,7 +313,7 @@ O endereço `0xFFA8` _(1 byte)_ define o volume master do áudio de melodia. Rep
 
 ### Buffer de Melodia
 
-Os endereços de `0xFFA9` a `0xFFE8` _(64 bytes)_ armazenam o ring buffer do áudio de melodia.
+Os endereços de `0xFF80` a `0xFFBF` _(64 bytes)_ armazenam o ring buffer do áudio de melodia.
 
 #### Protocolo FAB-4
 
@@ -342,11 +356,11 @@ Cada entrada de 4 bytes representa um evento de nota:
 
 ### Ponteiros de Melodia
 
-O endereço `0xFFE9` _(1 byte)_ define a cabeça _(produtor)_ do ring buffer do áudio de melodia.
+O endereço `0xFFC0` _(1 byte)_ define a cabeça _(produtor)_ do ring buffer do áudio de melodia.
 
-O endereço `0xFFEA` _(1 byte)_ fornece acesso somente leitura à cauda _(consumidor)_ do ring buffer do áudio de melodia.
+O endereço `0xFFC1` _(1 byte)_ fornece acesso somente leitura à cauda _(consumidor)_ do ring buffer do áudio de melodia.
 
-Ambos os endereços implementam um padrão _produtor-consumidor_: escreva em `0xFFE9` para enfileirar novas entradas de melodia; a APU avança `0xFFEA` conforme as consome.
+Ambos os endereços implementam um padrão _produtor-consumidor_: escreva em `0xFFC0` para enfileirar novas entradas de melodia; a APU avança `0xFFC1` conforme as consome.
 
 ## Parâmetros de URL
 

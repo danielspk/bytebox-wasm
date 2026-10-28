@@ -35,7 +35,7 @@ void update_player()
         new_x += 2;
     }
 
-    if (new_x < SCREEN_WIDTH) {
+    if (new_x < SCREEN_WIDTH - 2) {
         player_x = new_x;
     }
 
@@ -47,19 +47,20 @@ void update_player()
     }
 
     if (pad & BUTTON_2) {
-        ushort address = cast(ushort)(COLOR4_ADDR + 2);
-        ubyte new_blue = cast(ubyte)(peek(address) + 0x0A);
+        ushort address = cast(ushort)(COLOR7_ADDR + 1);
+        ubyte new_color = cast(ubyte)(peek(address) + 0x0A);
 
-        poke(address, new_blue);
+        poke(address, new_color);
     }
 }
 
 void draw_player()
 {
     for (int y = 0; y < 4; y++) {
-        int address = VIDEO_ADDR + (((cast(int)player_y + y) * SCREEN_WIDTH) + cast(int)player_x) / 4;
+        int address = VIDEO_ADDR + (((cast(int)player_y + y) * SCREEN_WIDTH) + cast(int)player_x) / 2;
 
-        poke(cast(ushort)address, 0xFF);
+        poke(cast(ushort)address, 0x66);
+        poke(cast(ushort)(address + 1), 0x66);
     }
 }
 

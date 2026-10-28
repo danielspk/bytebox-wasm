@@ -15,7 +15,7 @@ package main
 const (
 	SCREEN_WIDTH     = 160
 	SCREEN_HEIGHT    = 120
-	FRAMEBUFFER_SIZE = 160 * 120 / 4
+	FRAMEBUFFER_SIZE = 160 * 120 / 2
 )
 
 // ----------------------------------------------------------------------------
@@ -23,25 +23,38 @@ const (
 // ----------------------------------------------------------------------------
 
 const (
-	SYSFLAGS_ADDR    uint32 = 0x0040
-	SEED_ADDR        uint32 = 0x0041
-	GAMENAME_ADDR    uint32 = 0x0044
-	WRAM_ADDR        uint32 = 0xE100
-	VIDEO_ADDR       uint32 = 0xE900
-	COLOR1_ADDR      uint32 = 0xFF84
-	COLOR2_ADDR      uint32 = 0xFF87
-	COLOR3_ADDR      uint32 = 0xFF8A
-	COLOR4_ADDR      uint32 = 0xFF8D
-	GAMEPAD1_ADDR    uint32 = 0xFF94
-	GAMEPAD2_ADDR    uint32 = 0xFF95
-	SFX_CH1_ADDR     uint32 = 0xFF98
-	SFX_CH2_ADDR     uint32 = 0xFF9C
-	SFX_CH3_ADDR     uint32 = 0xFFA0
-	SFX_CH4_ADDR     uint32 = 0xFFA4
-	MELODY_ATTR_ADDR uint32 = 0xFFA8
-	MELODY_ADDR      uint32 = 0xFFA9
-	MELODY_HEAD_ADDR uint32 = 0xFFE9
-	MELODY_TAIL_ADDR uint32 = 0xFFEA
+	SYSFLAGS_ADDR     uint32 = 0x0040
+	SEED_ADDR         uint32 = 0x0041
+	GAMENAME_ADDR     uint32 = 0x0048
+	WRAM_ADDR         uint32 = 0xD000
+	VIDEO_ADDR        uint32 = 0xD800
+	COLOR1_ADDR       uint32 = 0xFF00
+	COLOR2_ADDR       uint32 = 0xFF03
+	COLOR3_ADDR       uint32 = 0xFF06
+	COLOR4_ADDR       uint32 = 0xFF09
+	COLOR5_ADDR       uint32 = 0xFF0C
+	COLOR6_ADDR       uint32 = 0xFF0F
+	COLOR7_ADDR       uint32 = 0xFF12
+	COLOR8_ADDR       uint32 = 0xFF15
+	COLOR9_ADDR       uint32 = 0xFF18
+	COLOR10_ADDR      uint32 = 0xFF1B
+	COLOR11_ADDR      uint32 = 0xFF1E
+	COLOR12_ADDR      uint32 = 0xFF21
+	COLOR13_ADDR      uint32 = 0xFF24
+	COLOR14_ADDR      uint32 = 0xFF27
+	COLOR15_ADDR      uint32 = 0xFF2A
+	COLOR16_ADDR      uint32 = 0xFF2D
+	GAMEPAD1_ADDR     uint32 = 0xFF40
+	GAMEPAD2_ADDR     uint32 = 0xFF41
+	SOUND_STATUS_ADDR uint32 = 0xFF5F
+	SFX_CH1_ADDR      uint32 = 0xFF60
+	SFX_CH2_ADDR      uint32 = 0xFF64
+	SFX_CH3_ADDR      uint32 = 0xFF68
+	SFX_CH4_ADDR      uint32 = 0xFF6C
+	MELODY_ATTR_ADDR  uint32 = 0xFF7F
+	MELODY_ADDR       uint32 = 0xFF80
+	MELODY_HEAD_ADDR  uint32 = 0xFFC0
+	MELODY_TAIL_ADDR  uint32 = 0xFFC1
 )
 
 // ----------------------------------------------------------------------------

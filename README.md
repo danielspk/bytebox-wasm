@@ -54,23 +54,23 @@ To run any of these examples, copy the template example's content into the `src/
 - 8-bit architecture - _little endian_.
 - 64KB of memory.
 - 160x120 pixel display.
-- 4-color RGB palette.
-- Linear framebuffer (2 bits per pixel).
+- 16-color RGB palette.
+- Linear framebuffer (4 bits per pixel).
 - 2 controller pads with 6 buttons each.
 - 4 SFX channels + 8 melody channels.
-- Compiled games should not exceed 56KB.
+- Compiled games should not exceed 50KB.
 - No predefined functions for playing sounds or drawing sprites. Only memory read/write operations are available.
 - No reset button.
 
 ### Notes on Design Decisions
 
-> About the game size limitation: 56KB might seem small, but these constraints enable significant creativity. The limitation is not blocking since young developers might benefit from enabling debugging options that quickly exceed the desired limit. However, games exceeding this size display a red indicator on the screen 🫣.
+> About the game size limitation: 50KB might seem small, but these constraints enable significant creativity. The limitation is not blocking since young developers might benefit from enabling debugging options that quickly exceed the desired limit. However, games exceeding this size display a red indicator on the screen 🫣.
 
-> About the cartridge RAM: the 56KB limit is about the compiled `.wasm`, not the memory the game uses at runtime. That memory lives outside the console's 64KB map, has no limit, and the console does not track it.
+> About the cartridge RAM: the 50KB limit is about the compiled `.wasm`, not the memory the game uses at runtime. That memory lives outside the console's 64KB map, has no limit, and the console does not track it.
 
 > About the absence of graphics functions: implementing custom sprite movement, gravity, parallax procedures, and similar features provides an excellent learning opportunity 🧠.
 
-> About screen resolution and colors: we are looking for a resolution with a classic 4:3 aspect ratio and measurements similar to those of the Game Boy. Likewise, 4 different colors can be represented as in the Game Boy but with important differences since the colors are customizable and the console uses a framebuffer instead of a system of tiles and attributes.
+> About screen resolution and colors: we are looking for a resolution with a classic 4:3 aspect ratio and measurements similar to those of the Game Boy. Likewise, 16 customizable colors can be represented and the console uses a framebuffer instead of a classic system of tiles and attributes.
 
 > About the controller pads: having only two main buttons is one of the most important and deliberate limitations. Some doubts remain about this decision, but fortunately 2 bits are available in case reconsideration becomes necessary in the future.
 
@@ -100,27 +100,31 @@ The **WASM** interaction _API_ is minimal and consists of 2 exportable functions
 
 | Range | Size | Description |
 |-------|------|-------------|
-| `0x0000-0x003F` | 64 bytes | Reserved (future use) |
+| `0x0000-0x003F` | 64 bytes | Reserved for Z80/8080 interrupt vectors (future use) |
 | `0x0040` | 1 byte | System flags |
 | `0x0041` | 1 byte | Seed for random numbers |
-| `0x0042-0x0043` | 2 bytes | Reserved (future use) |
-| `0x0044-0x005B` | 24 bytes | Game name |
-| `0x005C-0x00FF` | 164 bytes | Reserved (future use) |
-| `0x0100-0xE0FF` | 57,344 bytes | Game ROM |
-| `0xE100-0xE4FF` | 1,024 bytes | Write RAM |
-| `0xE500-0xE8FF` | 1,024 bytes | Reserved for RAM + Stack (future use) |
-| `0xE900-0xFBBF` | 4,800 bytes | Video framebuffer |
-| `0xFBC0-0xFF83` | 964 bytes | Reserved (future use) |
-| `0xFF84-0xFF8F` | 12 bytes | Color palette |
-| `0xFF90-0xFF93` | 4 bytes | Reserved (future use) |
-| `0xFF94-0xFF95` | 2 bytes | Controller pads |
-| `0xFF96` | 1 byte | Reserved (future use) |
-| `0xFF97` | 1 byte | SFX channel status |
-| `0xFF98-0xFFA7` | 16 bytes | SFX channels |
-| `0xFFA8` | 1 byte | Melody attributes |
-| `0xFFA9-0xFFE8` | 64 bytes | Melody ring buffer |
-| `0xFFE9-0xFFEA` | 2 bytes | Melody pointers |
-| `0xFFEB-0xFFFF` | 21 bytes | Reserved (future use) |
+| `0x0042-0x0047` | 6 bytes | Reserved (future use) |
+| `0x0048-0x005F` | 24 bytes | Game name |
+| `0x0060-0x00FF` | 160 bytes | Reserved (future use) |
+| `0x0100-0x01FF` | 256 bytes | Reserved for Stack (future use) |
+| `0x0200-0xC9FF` | 51,200 bytes | Game ROM |
+| `0xCA00-0xCFFF` | 1,536 bytes | Reserved (future use) |
+| `0xD000-0xD3FF` | 1,024 bytes | Write RAM |
+| `0xD400-0xD7FF` | 1,024 bytes | Reserved for RAM (future use) |
+| `0xD800-0xFD7F` | 9,600 bytes | Video framebuffer |
+| `0xFD80-0xFEFF` | 384 bytes | Reserved (future use) |
+| `0xFF00-0xFF2F` | 48 bytes | Color palette |
+| `0xFF30-0xFF3F` | 16 bytes | Reserved (future use) |
+| `0xFF40-0xFF41` | 2 bytes | Controller pads |
+| `0xFF42-0xFF5E` | 29 bytes | Reserved (future use) |
+| `0xFF5F` | 1 byte | SFX channel status |
+| `0xFF60-0xFF6F` | 16 bytes | SFX channels |
+| `0xFF70-0xFF7E` | 15 bytes | Reserved (future use) |
+| `0xFF7F` | 1 byte | Melody attributes |
+| `0xFF80-0xFFBF` | 64 bytes | Melody ring buffer |
+| `0xFFC0-0xFFC1` | 2 bytes | Melody pointers |
+| `0xFFC2-0xFFF7` | 54 bytes | Reserved (future use) |
+| `0xFFF8-0xFFFF` | 8 bytes | Reserved for 6502 interrupt vectors (future use) |
 
 > The design deliberately avoids direct memory sharing with **WASM** in favor of peek/poke functions. This abstraction layer provides better encapsulation, allows for memory access logging and validation, prevents potential buffer overflows, and gives the runtime more flexibility in memory management without exposing low-level implementation details to the game code.
 
@@ -147,47 +151,57 @@ Address `0x0041` _(1 byte)_ sets a pseudo-random value. This is useful for gener
 
 ### Game Name
 
-Addresses from `0x0044` to `0x005B` _(24 bytes)_ store the ASCII game name.
+Addresses from `0x0048` to `0x005F` _(24 bytes)_ store the ASCII game name.
 
 ### ROM Game
 
-Addresses from `0x0100` to `0xE0FF` _(57344 bytes)_ stores the read-only ROM game.
+Addresses from `0x0200` to `0xC9FF` _(51200 bytes)_ stores the read-only ROM game.
 
 ### WRAM
 
-Addresses from `0xE100` to `0xE4FF` _(1024 bytes)_ stores writable RAM.
+Addresses from `0xD000` to `0xD3FF` _(1024 bytes)_ stores writable RAM.
 
 This memory can be dumped into the game cartridge _(see system flags)_. The console automatically reloads it when you start the game.
 
 ### Video Framebuffer
 
-Addresses from `0xE900` to `0xFBBF` _(4800 bytes)_ stores the linear video framebuffer. Screen resolution is 160px by 120px and each framebuffer byte represents 4 pixels _(2 bits per pixel)_.
+Addresses from `0xD800` to `0xFD7F` _(9600 bytes)_ stores the linear video framebuffer. Screen resolution is 160px by 120px and each framebuffer byte represents 2 pixels _(4 bits per pixel)_.
 
 Within each byte, pixels are stored in **MSB first** order:
 
 ```txt
 7 6 5 4 3 2 1 0
 │ │ │ │ │ │ │ │
-│ │ │ │ │ │ └─└ PIXEL 4
-│ │ │ │ └─└──── PIXEL 3
-│ │ └─└──────── PIXEL 2
-└─└──────────── PIXEL 1
+│ │ │ │ └─└─└─└ PIXEL 2
+└─└─└─└──────── PIXEL 1
 ```
 
 ### Color Palette
 
-Addresses from `0xFF84` to `0xFF8F` _(12 bytes)_ set the RGB values of the color palette. Each color uses 3 bytes to represent the _red_, _green_ and _blue_ values.
+Addresses from `0xFF00` to `0xFF2F` _(48 bytes)_ set the RGB values of the color palette. Each color uses 3 bytes to represent the _red_, _green_ and _blue_ values.
 
 The default color palette is:
 
 - **Color 1**: RGB(15, 15, 27)
-- **Color 2**: RGB(86, 90, 117)
-- **Color 3**: RGB(198, 183, 190)
-- **Color 4**: RGB(250, 251, 246)
+- **Color 2**: RGB(140, 143, 174)
+- **Color 3**: RGB(88, 69, 99)
+- **Color 4**: RGB(62, 33, 55)
+- **Color 5**: RGB(154, 99, 72)
+- **Color 6**: RGB(215, 155, 125)
+- **Color 7**: RGB(245, 237, 186)
+- **Color 8**: RGB(192, 199, 65)
+- **Color 9**: RGB(100, 125, 52)
+- **Color 10**: RGB(228, 148, 58)
+- **Color 11**: RGB(157, 48, 59)
+- **Color 12**: RGB(210, 100, 113)
+- **Color 13**: RGB(112, 55, 127)
+- **Color 14**: RGB(126, 196, 193)
+- **Color 15**: RGB(52, 133, 157)
+- **Color 16**: RGB(23, 67, 75)
 
 ### Controller Pads
 
-Addresses `0xFF94` and `0xFF95` _(2 bytes)_ provide read-only access to controller pads _(joystick)_ 1 and 2 respectively. Bit representation:
+Addresses `0xFF40` and `0xFF41` _(2 bytes)_ provide read-only access to controller pads _(joystick)_ 1 and 2 respectively. Bit representation:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -214,7 +228,7 @@ Controller keys:
 
 ### Sound Effects Channel Status
 
-Address `0xFF97` _(1 byte)_ provides read-only status of all sound channels. Bit representation:
+Address `0xFF5F` _(1 byte)_ provides read-only status of all sound channels. Bit representation:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -230,7 +244,7 @@ Bit 1 = channel playing, bit 0 = channel free.
 
 ### Sound Effects Channels
 
-Addresses from `0xFF98` to `0xFFA7` _(16 bytes)_ handle the 4 available sound effects channels. Each channel uses 4 bytes for sound effect generation.
+Addresses from `0xFF60` to `0xFF6F` _(16 bytes)_ handle the 4 available sound effects channels. Each channel uses 4 bytes for sound effect generation.
 
 #### Data Structure
 
@@ -288,7 +302,7 @@ A channel cannot play a new sound while a previous sound is still playing on tha
 
 ### Melody Attributes
 
-Address `0xFFA8` _(1 byte)_ sets the master volume for the melody audio. Bit representation:
+Address `0xFF7F` _(1 byte)_ sets the master volume for the melody audio. Bit representation:
 
 ```txt
 7 6 5 4 3 2 1 0
@@ -299,7 +313,7 @@ Address `0xFFA8` _(1 byte)_ sets the master volume for the melody audio. Bit rep
 
 ### Melody Buffer
 
-Addresses from `0xFFA9` to `0xFFE8` _(64 bytes)_ store the melody audio ring buffer.
+Addresses from `0xFF80` to `0xFFBF` _(64 bytes)_ store the melody audio ring buffer.
 
 #### FAB-4 Protocol
 
@@ -342,11 +356,11 @@ Each 4-byte entry represents a note event:
 
 ### Melody Pointers
 
-Address `0xFFE9` _(1 byte)_ sets the head _(producer)_ of the melody audio ring buffer.
+Address `0xFFC0` _(1 byte)_ sets the head _(producer)_ of the melody audio ring buffer.
 
-Address `0xFFEA` _(1 byte)_ provides read-only access to the tail _(consumer)_ of the melody audio ring buffer.
+Address `0xFFC1` _(1 byte)_ provides read-only access to the tail _(consumer)_ of the melody audio ring buffer.
 
-Both addresses implement a _producer-consumer_ pattern: write to `0xFFE9` to queue new melody entries; the APU advances `0xFFEA` as it consumes them.
+Both addresses implement a _producer-consumer_ pattern: write to `0xFFC0` to queue new melody entries; the APU advances `0xFFC1` as it consumes them.
 
 ## URL Parameters
 

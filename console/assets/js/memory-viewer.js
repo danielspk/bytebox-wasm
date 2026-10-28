@@ -13,10 +13,10 @@ export const MemoryViewer = {
 
   isProtectedWrite(addr) {
     const ranges = [
-      [0x0100, 0xE0FF], // ROM
-      [0xFF94, 0xFF95], // gamepads
-      [0xFF97, 0xFF97], // sound status
-      [0xFFEA, 0xFFEA]  // melody tail
+      [0x0200, 0xC9FF], // ROM
+      [0xFF40, 0xFF41], // gamepads
+      [0xFF5F, 0xFF5F], // sound status
+      [0xFFC1, 0xFFC1]  // melody tail
     ];
 
     return ranges.some(([start, end]) => addr >= start && addr <= end);

@@ -51,35 +51,39 @@ Bounds semantics: out-of-range `peek` warns and returns 0; out-of-range `poke`/`
 - **HALT** (SYSFLAGS bit 0 = 1): `update()` stops being called; rendering and melody playback continue.
 - **DUMP WRAM** (SYSFLAGS bit 1 = 1): the console persists the 1KB WRAM region, then auto-clears the bit.
 - A game that traps inside `update()` is fatally broken; the console stops it permanently.
-- Cartridges should fit in the 56KB ROM region.
-- The 56KB limit is about the compiled `.wasm`, not the memory the game uses at runtime: that memory is RAM on the cartridge, outside the console's 64KB map, unlimited and not tracked.
+- Cartridges should fit in the 50KB ROM region.
+- The 50KB limit is about the compiled `.wasm`, not the memory the game uses at runtime: that memory is RAM on the cartridge, outside the console's 64KB map, unlimited and not tracked.
 
 ## Memory Map (64KB, little-endian, 8-bit)
 
 | Address | Size | Name | Notes |
 |---|---|---|---|
-| `0x0000–0x003F` | 64 B | Reserved | Future use |
+| `0x0000–0x003F` | 64 B | Reserved | Future interrupt vectors (Z80/8080) |
 | `0x0040` | 1 B | SYSFLAGS | Bit 0: HALT/RESUME; Bit 1: DUMP WRAM |
 | `0x0041` | 1 B | SEED | Set to a random byte at load |
-| `0x0042–0x0043` | 2 B | Reserved | Future use |
-| `0x0044–0x005B` | 24 B | GAME_NAME | ASCII, read by the host to display the game name |
-| `0x005C–0x00FF` | 164 B | Reserved | Future use |
-| `0x0100–0xE0FF` | 57,344 B | ROM | Game WASM bytes copied here (if ≤56KB) |
-| `0xE100–0xE4FF` | 1,024 B | WRAM | Persistent save area |
-| `0xE500–0xE8FF` | 1,024 B | Reserved | Future RAM + Stack (6502/Z80/8080) |
-| `0xE900–0xFBBF` | 4,800 B | VIDEO | Linear framebuffer, 2bpp, 160×120 |
-| `0xFBC0–0xFF83` | 964 B | Reserved | Future use |
-| `0xFF84–0xFF8F` | 12 B | PALETTE | 4 × RGB (3 bytes each) |
-| `0xFF90–0xFF93` | 4 B | Reserved | Future use |
-| `0xFF94–0xFF95` | 2 B | GAMEPAD | Pad 1 (0xFF94), Pad 2 (0xFF95) |
-| `0xFF96` | 1 B | Reserved | Future use |
-| `0xFF97` | 1 B | SOUND_STATUS | Read-only: bits 0–3 = SFX channel playing |
-| `0xFF98–0xFFA7` | 16 B | SOUND_SFX | 4 channels × 4 bytes |
-| `0xFFA8` | 1 B | MELODY_ATTR | Bits 0–3: melody master volume (0–15) |
-| `0xFFA9–0xFFE8` | 64 B | MELODY | FAB-4 ring buffer (16 entries × 4 bytes) |
-| `0xFFE9` | 1 B | MELODY_HEAD | Producer pointer (game writes) |
-| `0xFFEA` | 1 B | MELODY_TAIL | Consumer pointer (console advances, read-only) |
-| `0xFFEB–0xFFFF` | 21 B | Reserved | Future use |
+| `0x0042–0x0047` | 6 B | Reserved | Future use |
+| `0x0048–0x005F` | 24 B | GAME_NAME | ASCII, read by the host to display the game name |
+| `0x0060–0x00FF` | 160 B | Reserved | Future use |
+| `0x0100–0x01FF` | 256 B | Reserved | Future Stack (6502/Z80/8080) |
+| `0x0200–0xC9FF` | 51,200 B | ROM | Game WASM bytes copied here (if ≤50KB) |
+| `0xCA00–0xCFFF` | 1,536 B | Reserved | Future use |
+| `0xD000–0xD3FF` | 1,024 B | WRAM | Persistent save area |
+| `0xD400–0xD7FF` | 1,024 B | Reserved | Future RAM (6502/Z80/8080) |
+| `0xD800–0xFD7F` | 9,600 B | VIDEO | Linear framebuffer, 4bpp, 160×120 |
+| `0xFD80–0xFEFF` | 384 B | Reserved | Future use |
+| `0xFF00–0xFF2F` | 48 B | PALETTE | 16 × RGB (3 bytes each) |
+| `0xFF30–0xFF3F` | 16 B | Reserved | Future use |
+| `0xFF40–0xFF41` | 2 B | GAMEPAD | Pad 1 (0xFF40), Pad 2 (0xFF41) |
+| `0xFF42–0xFF5E` | 29 B | Reserved | Future use |
+| `0xFF5F` | 1 B | SOUND_STATUS | Read-only: bits 0–3 = SFX channel playing |
+| `0xFF60–0xFF6F` | 16 B | SOUND_SFX | 4 channels × 4 bytes |
+| `0xFF70–0xFF7E` | 15 B | Reserved | Future use |
+| `0xFF7F` | 1 B | MELODY_ATTR | Bits 0–3: melody master volume (0–15) |
+| `0xFF80–0xFFBF` | 64 B | MELODY | FAB-4 ring buffer (16 entries × 4 bytes) |
+| `0xFFC0` | 1 B | MELODY_HEAD | Producer pointer (game writes) |
+| `0xFFC1` | 1 B | MELODY_TAIL | Consumer pointer (console advances, read-only) |
+| `0xFFC2–0xFFF7` | 54 B | Reserved | Future use |
+| `0xFFF8–0xFFFF` | 8 B | Reserved | Future interrupt vectors (6502) |
 
 ### SYSFLAGS (0x0040)
 
@@ -91,24 +95,34 @@ Bit 7 6 5 4 3 2 1 0
 
 ## Video
 
-- **Framebuffer:** `0xE900–0xFBBF`, 4800 bytes
-- **Resolution:** 160×120 pixels, 2 bits per pixel → 4 pixels per byte
+- **Framebuffer:** `0xD800–0xFD7F`, 9600 bytes
+- **Resolution:** 160×120 pixels, 4 bits per pixel → 2 pixels per byte
 - **Bit order within each byte (MSB first):**
   ```
-  Bits 7-6: pixel 1 (leftmost)
-  Bits 5-4: pixel 2
-  Bits 3-2: pixel 3
-  Bits 1-0: pixel 4 (rightmost)
+  Bits 7-4: pixel 1 (leftmost)
+  Bits 3-0: pixel 2 (rightmost)
   ```
-- **Palette:** `0xFF84–0xFF8F`, 4 colors × 3 bytes RGB, re-read every frame. Default:
-  - Color 0: `#0F0F1B` (chinese black)
-  - Color 1: `#565A75` (black coral)
-  - Color 2: `#C6B7BE` (pale silver)
-  - Color 3: `#FAFBF6` (milk)
+- **Palette:** `0xFF00–0xFF2F`, 16 colors × 3 bytes RGB, re-read every frame. Default:
+  - Color 0: `#0F0F1B`
+  - Color 1: `#8C8FAE`
+  - Color 2: `#584563`
+  - Color 3: `#3E2137`
+  - Color 4: `#9A6348`
+  - Color 5: `#D79B7D`
+  - Color 6: `#F5EDBA`
+  - Color 7: `#C0C741`
+  - Color 8: `#647D34`
+  - Color 9: `#E4943A`
+  - Color 10: `#9D303B`
+  - Color 11: `#D26471`
+  - Color 12: `#70377F`
+  - Color 13: `#7EC4C1`
+  - Color 14: `#34859D`
+  - Color 15: `#17434B`
 
 ## Audio — SFX
 
-**4 independent channels.** Each channel = 4 bytes at `0xFF98 + (channel × 4)`.
+**4 independent channels.** Each channel = 4 bytes at `0xFF60 + (channel × 4)`.
 
 **Channel register layout:**
 
@@ -123,11 +137,11 @@ Byte 3: bit  7   = unused
         bit  0   = TRIGGER  (write 1 to start; console auto-clears after reading)
 ```
 
-**Channel status (`0xFF97`):** Bit N = 1 while channel N is playing. Cannot re-trigger a playing channel.
+**Channel status (`0xFF5F`):** Bit N = 1 while channel N is playing. Cannot re-trigger a playing channel.
 
 ## Audio — Melody (FAB-4 protocol)
 
-Music uses the **FAB-4 protocol**: a 64-byte ring buffer at `0xFFA9` holding up to 16 entries of 4 bytes each. Producer-consumer pattern: the game writes entries and advances HEAD (`0xFFE9`); the console consumes entries and advances TAIL (`0xFFEA`), scheduling a short window (~250ms) ahead.
+Music uses the **FAB-4 protocol**: a 64-byte ring buffer at `0xFF80` holding up to 16 entries of 4 bytes each. Producer-consumer pattern: the game writes entries and advances HEAD (`0xFFC0`); the console consumes entries and advances TAIL (`0xFFC1`), scheduling a short window (~250ms) ahead.
 
 **Entry format (4 bytes):**
 
@@ -142,7 +156,7 @@ Byte 3: bit  7   = STATUS (1=note ON, 0=note OFF)
         bits 3-0 = VOLUME  (0–15, scaled 0.0–1.0)
 ```
 
-**Master volume:** low nibble of MELODY_ATTR (`0xFFA8`), 0–15.
+**Master volume:** low nibble of MELODY_ATTR (`0xFF7F`), 0–15.
 
 **Note frequency formula:** `440 × 2^((note - 69) / 12)` (standard MIDI pitch).
 
@@ -166,7 +180,7 @@ Byte 3: bit  7   = STATUS (1=note ON, 0=note OFF)
 
 ## Input
 
-Two gamepads at `0xFF94` (pad 1) and `0xFF95` (pad 2). Each byte is bit-mapped:
+Two gamepads at `0xFF40` (pad 1) and `0xFF41` (pad 2). Each byte is bit-mapped:
 
 ```
 Bit 7: LEFT
@@ -181,7 +195,7 @@ Bit 0: BUTTON B
 
 ## Persistence — WRAM
 
-- **WRAM region:** `0xE100–0xE4FF` (1024 bytes), keyed per game.
+- **WRAM region:** `0xD000–0xD3FF` (1024 bytes), keyed per game.
 - **Load:** restored by the console at game load, before `init()`.
 - **Save trigger:** the game sets bit 1 of SYSFLAGS; the console persists the 1024 bytes, then auto-clears the bit.
 
@@ -208,7 +222,7 @@ Games are compiled with **Docker — no local toolchain required**. Source lives
 | WAT | `wat2wasm` | Hand-written WebAssembly Text, no toolchain constraints |
 | Zig | `wasm32-freestanding` | No entry, ReleaseSmall |
 
-A game over 56KB shows a red size indicator in the UI but still runs. `make package` zips the game for distribution.
+A game over 50KB shows a red size indicator in the UI but still runs. `make package` zips the game for distribution.
 
 ## Running & Loading
 

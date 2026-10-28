@@ -27,7 +27,7 @@ update_player :: proc "c" () {
         new_x += 2
     }
 
-    if u32(new_x) < SCREEN_WIDTH {
+    if u32(new_x) < SCREEN_WIDTH - 2 {
         player_x = new_x
     }
 
@@ -39,18 +39,19 @@ update_player :: proc "c" () {
     }
 
     if pad & u32(BUTTON_2) != 0 {
-        address  := COLOR4_ADDR + 2
-        new_blue := (peek(address) + 0x0A) & 0xFF
+        address   := COLOR7_ADDR + 1
+        new_color := (peek(address) + 0x0A) & 0xFF
 
-        poke(address, new_blue)
+        poke(address, new_color)
     }
 }
 
 draw_player :: proc "c" () {
     for y := u32(0); y < 4; y += 1 {
-        address := VIDEO_ADDR + ((u32(player_y) + y) * SCREEN_WIDTH + u32(player_x)) / 4
+        address := VIDEO_ADDR + ((u32(player_y) + y) * SCREEN_WIDTH + u32(player_x)) / 2
 
-        poke(address, 0xFF)
+        poke(address, 0x66)
+        poke(address + 1, 0x66)
     }
 }
 

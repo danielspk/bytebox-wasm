@@ -41,17 +41,17 @@ Games interact with hardware through memory-mapped I/O via `peek`/`poke`. Critic
 |---|---|
 | `0x0040` | SYSFLAGS (bit 0: halt, bit 1: dump WRAM) |
 | `0x0041` | Seed (0~255) |
-| `0x0044–0x005B` | Game name (ASCII, 24 bytes) |
-| `0x0100–0xE0FF` | ROM (56KB, game code) |
-| `0xE100–0xE4FF` | WRAM (1KB, persisted to localStorage) |
-| `0xE900–0xFBBF` | Video framebuffer (160×120, 2bpp, MSB-first) |
-| `0xFF84–0xFF8F` | Color palette (4×RGB) |
-| `0xFF94–0xFF95` | Controller pads (read-only) |
-| `0xFF97` | SOUND_STATUS (SFX channel bit flags) |
-| `0xFF98–0xFFA7` | SFX channels (4×4 bytes) |
-| `0xFFA8` | MELODY_ATTR (volume/attributes, low nibble) |
-| `0xFFA9–0xFFE8` | Melody ring buffer (FAB-4 protocol) |
-| `0xFFE9–0xFFEA` | Melody head/tail pointers |
+| `0x0048–0x005F` | Game name (ASCII, 24 bytes) |
+| `0x0200–0xC9FF` | ROM (50KB, game code) |
+| `0xD000–0xD3FF` | WRAM (1KB, persisted to localStorage) |
+| `0xD800–0xFD7F` | Video framebuffer (160×120, 4bpp, MSB-first) |
+| `0xFF00–0xFF2F` | Color palette (16×RGB) |
+| `0xFF40–0xFF41` | Controller pads (read-only) |
+| `0xFF5F` | SOUND_STATUS (SFX channel bit flags) |
+| `0xFF60–0xFF6F` | SFX channels (4×4 bytes) |
+| `0xFF7F` | MELODY_ATTR (volume/attributes, low nibble) |
+| `0xFF80–0xFFBF` | Melody ring buffer (FAB-4 protocol) |
+| `0xFFC0–0xFFC1` | Melody head/tail pointers |
 
 ## Deep Technical Reference
 

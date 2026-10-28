@@ -11,7 +11,7 @@
 pub const SCREEN_WIDTH: u16 = 160;
 pub const SCREEN_HEIGHT: u16 = 120;
 pub const MEMORY_SIZE: u32 = 64 * 1024;
-pub const FRAMEBUFFER_SIZE: u16 = (SCREEN_WIDTH * SCREEN_HEIGHT) / 4;
+pub const FRAMEBUFFER_SIZE: u16 = (SCREEN_WIDTH * SCREEN_HEIGHT) / 2;
 
 // ----------------------------------------------------------------------------
 // Memory Addresses Constants
@@ -19,23 +19,36 @@ pub const FRAMEBUFFER_SIZE: u16 = (SCREEN_WIDTH * SCREEN_HEIGHT) / 4;
 
 pub const SYSFLAGS_ADDR: u16 = 0x0040;
 pub const SEED_ADDR: u16 = 0x0041;
-pub const GAMENAME_ADDR: u16 = 0x0044;
-pub const WRAM_ADDR: u16 = 0xE100;
-pub const VIDEO_ADDR: u16 = 0xE900;
-pub const COLOR1_ADDR: u16 = 0xFF84;
-pub const COLOR2_ADDR: u16 = 0xFF87;
-pub const COLOR3_ADDR: u16 = 0xFF8A;
-pub const COLOR4_ADDR: u16 = 0xFF8D;
-pub const GAMEPAD1_ADDR: u16 = 0xFF94;
-pub const GAMEPAD2_ADDR: u16 = 0xFF95;
-pub const SFX_CH1_ADDR: u16 = 0xFF98;
-pub const SFX_CH2_ADDR: u16 = 0xFF9C;
-pub const SFX_CH3_ADDR: u16 = 0xFFA0;
-pub const SFX_CH4_ADDR: u16 = 0xFFA4;
-pub const MELODY_ATTR_ADDR: u16 = 0xFFA8;
-pub const MELODY_ADDR: u16 = 0xFFA9;
-pub const MELODY_HEAD_ADDR: u16 = 0xFFE9;
-pub const MELODY_TAIL_ADDR: u16 = 0xFFEA;
+pub const GAMENAME_ADDR: u16 = 0x0048;
+pub const WRAM_ADDR: u16 = 0xD000;
+pub const VIDEO_ADDR: u16 = 0xD800;
+pub const COLOR1_ADDR: u16 = 0xFF00;
+pub const COLOR2_ADDR: u16 = 0xFF03;
+pub const COLOR3_ADDR: u16 = 0xFF06;
+pub const COLOR4_ADDR: u16 = 0xFF09;
+pub const COLOR5_ADDR: u16 = 0xFF0C;
+pub const COLOR6_ADDR: u16 = 0xFF0F;
+pub const COLOR7_ADDR: u16 = 0xFF12;
+pub const COLOR8_ADDR: u16 = 0xFF15;
+pub const COLOR9_ADDR: u16 = 0xFF18;
+pub const COLOR10_ADDR: u16 = 0xFF1B;
+pub const COLOR11_ADDR: u16 = 0xFF1E;
+pub const COLOR12_ADDR: u16 = 0xFF21;
+pub const COLOR13_ADDR: u16 = 0xFF24;
+pub const COLOR14_ADDR: u16 = 0xFF27;
+pub const COLOR15_ADDR: u16 = 0xFF2A;
+pub const COLOR16_ADDR: u16 = 0xFF2D;
+pub const GAMEPAD1_ADDR: u16 = 0xFF40;
+pub const GAMEPAD2_ADDR: u16 = 0xFF41;
+pub const SOUND_STATUS_ADDR: u16 = 0xFF5F;
+pub const SFX_CH1_ADDR: u16 = 0xFF60;
+pub const SFX_CH2_ADDR: u16 = 0xFF64;
+pub const SFX_CH3_ADDR: u16 = 0xFF68;
+pub const SFX_CH4_ADDR: u16 = 0xFF6C;
+pub const MELODY_ATTR_ADDR: u16 = 0xFF7F;
+pub const MELODY_ADDR: u16 = 0xFF80;
+pub const MELODY_HEAD_ADDR: u16 = 0xFFC0;
+pub const MELODY_TAIL_ADDR: u16 = 0xFFC1;
 
 // ----------------------------------------------------------------------------
 // System Flags Bits Constants

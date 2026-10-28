@@ -31,7 +31,7 @@ fn update_player() {
         new_x = new_x.wrapping_add(2);
     }
 
-    if (new_x as u16) < SCREEN_WIDTH {
+    if (new_x as u16) < SCREEN_WIDTH - 2 {
         PLAYER_X.store(new_x, Relaxed);
     }
 
@@ -43,10 +43,10 @@ fn update_player() {
     }
 
     if pad & BUTTON_2 != 0 {
-        let address = COLOR4_ADDR + 2;
-        let new_blue = peek(address).wrapping_add(0x0A);
+        let address = COLOR7_ADDR + 1;
+        let new_color = peek(address).wrapping_add(0x0A);
         
-        poke(address, new_blue);
+        poke(address, new_color);
     }
 }
 
@@ -55,9 +55,10 @@ fn draw_player() {
     let player_y = PLAYER_Y.load(Relaxed) as u16;
 
     for y in 0..4u16 {
-        let address = VIDEO_ADDR + ((player_y + y) * SCREEN_WIDTH + player_x) / 4;
-        
-        poke(address, 0xFF);
+        let address = VIDEO_ADDR + ((player_y + y) * SCREEN_WIDTH + player_x) / 2;
+
+        poke(address, 0x66);
+        poke(address + 1, 0x66);
     }
 }
 

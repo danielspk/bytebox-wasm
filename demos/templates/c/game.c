@@ -33,7 +33,7 @@ void update_player(void)
         new_x += 2;
     }
 
-    if (new_x < SCREEN_WIDTH) {
+    if (new_x < SCREEN_WIDTH - 2) {
         player_x = new_x;
     }
 
@@ -45,19 +45,20 @@ void update_player(void)
     }
 
     if (pad & BUTTON_2) {
-        const uint16_t address = COLOR4_ADDR + 2;
-        const uint8_t new_blue = peek(address) + 0x0A;
+        const uint16_t address = COLOR7_ADDR + 1;
+        const uint8_t new_color = peek(address) + 0x0A;
 
-        poke(address, new_blue);
+        poke(address, new_color);
     }
 }
 
 void draw_player(void)
 {
     for (int y = 0; y < 4; y++) {
-        const int address = VIDEO_ADDR + (((player_y + y) * SCREEN_WIDTH) + player_x) / 4;
-        
-        poke(address, 0xFF);
+        const int address = VIDEO_ADDR + (((player_y + y) * SCREEN_WIDTH) + player_x) / 2;
+
+        poke(address, 0x66);
+        poke(address + 1, 0x66);
     }
 }
 

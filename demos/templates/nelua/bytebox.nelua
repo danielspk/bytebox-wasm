@@ -17,31 +17,44 @@ global bytebox = @record{}
 global bytebox.SCREEN_WIDTH     <comptime> = 160
 global bytebox.SCREEN_HEIGHT    <comptime> = 120
 global bytebox.MEMORY_SIZE      <comptime> = 64 * 1024
-global bytebox.FRAMEBUFFER_SIZE <comptime> = (160 * 120) // 4
+global bytebox.FRAMEBUFFER_SIZE <comptime> = (160 * 120) // 2
 
 -- ----------------------------------------------------------------------------
 -- Memory Addresses Constants
 -- ----------------------------------------------------------------------------
 
-global bytebox.SYSFLAGS_ADDR    <comptime> = 0x0040
-global bytebox.SEED_ADDR        <comptime> = 0x0041
-global bytebox.GAMENAME_ADDR    <comptime> = 0x0044
-global bytebox.WRAM_ADDR        <comptime> = 0xE100
-global bytebox.VIDEO_ADDR       <comptime> = 0xE900
-global bytebox.COLOR1_ADDR      <comptime> = 0xFF84
-global bytebox.COLOR2_ADDR      <comptime> = 0xFF87
-global bytebox.COLOR3_ADDR      <comptime> = 0xFF8A
-global bytebox.COLOR4_ADDR      <comptime> = 0xFF8D
-global bytebox.GAMEPAD1_ADDR    <comptime> = 0xFF94
-global bytebox.GAMEPAD2_ADDR    <comptime> = 0xFF95
-global bytebox.SFX_CH1_ADDR     <comptime> = 0xFF98
-global bytebox.SFX_CH2_ADDR     <comptime> = 0xFF9C
-global bytebox.SFX_CH3_ADDR     <comptime> = 0xFFA0
-global bytebox.SFX_CH4_ADDR     <comptime> = 0xFFA4
-global bytebox.MELODY_ATTR_ADDR <comptime> = 0xFFA8
-global bytebox.MELODY_ADDR      <comptime> = 0xFFA9
-global bytebox.MELODY_HEAD_ADDR <comptime> = 0xFFE9
-global bytebox.MELODY_TAIL_ADDR <comptime> = 0xFFEA
+global bytebox.SYSFLAGS_ADDR     <comptime> = 0x0040
+global bytebox.SEED_ADDR         <comptime> = 0x0041
+global bytebox.GAMENAME_ADDR     <comptime> = 0x0048
+global bytebox.WRAM_ADDR         <comptime> = 0xD000
+global bytebox.VIDEO_ADDR        <comptime> = 0xD800
+global bytebox.COLOR1_ADDR       <comptime> = 0xFF00
+global bytebox.COLOR2_ADDR       <comptime> = 0xFF03
+global bytebox.COLOR3_ADDR       <comptime> = 0xFF06
+global bytebox.COLOR4_ADDR       <comptime> = 0xFF09
+global bytebox.COLOR5_ADDR       <comptime> = 0xFF0C
+global bytebox.COLOR6_ADDR       <comptime> = 0xFF0F
+global bytebox.COLOR7_ADDR       <comptime> = 0xFF12
+global bytebox.COLOR8_ADDR       <comptime> = 0xFF15
+global bytebox.COLOR9_ADDR       <comptime> = 0xFF18
+global bytebox.COLOR10_ADDR      <comptime> = 0xFF1B
+global bytebox.COLOR11_ADDR      <comptime> = 0xFF1E
+global bytebox.COLOR12_ADDR      <comptime> = 0xFF21
+global bytebox.COLOR13_ADDR      <comptime> = 0xFF24
+global bytebox.COLOR14_ADDR      <comptime> = 0xFF27
+global bytebox.COLOR15_ADDR      <comptime> = 0xFF2A
+global bytebox.COLOR16_ADDR      <comptime> = 0xFF2D
+global bytebox.GAMEPAD1_ADDR     <comptime> = 0xFF40
+global bytebox.GAMEPAD2_ADDR     <comptime> = 0xFF41
+global bytebox.SOUND_STATUS_ADDR <comptime> = 0xFF5F
+global bytebox.SFX_CH1_ADDR      <comptime> = 0xFF60
+global bytebox.SFX_CH2_ADDR      <comptime> = 0xFF64
+global bytebox.SFX_CH3_ADDR      <comptime> = 0xFF68
+global bytebox.SFX_CH4_ADDR      <comptime> = 0xFF6C
+global bytebox.MELODY_ATTR_ADDR  <comptime> = 0xFF7F
+global bytebox.MELODY_ADDR       <comptime> = 0xFF80
+global bytebox.MELODY_HEAD_ADDR  <comptime> = 0xFFC0
+global bytebox.MELODY_TAIL_ADDR  <comptime> = 0xFFC1
 
 -- ----------------------------------------------------------------------------
 -- System Flags Bits Constants

@@ -15,7 +15,7 @@ module bytebox;
 enum SCREEN_WIDTH = 160;
 enum SCREEN_HEIGHT = 120;
 enum MEMORY_SIZE = 64 * 1024;
-enum FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT / 4;
+enum FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT / 2;
 
 // ----------------------------------------------------------------------------
 // Memory Addresses Constants
@@ -23,23 +23,36 @@ enum FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT / 4;
 
 enum SYSFLAGS_ADDR = 0x0040;
 enum SEED_ADDR = 0x0041;
-enum GAMENAME_ADDR = 0x0044;
-enum WRAM_ADDR = 0xE100;
-enum VIDEO_ADDR = 0xE900;
-enum COLOR1_ADDR = 0xFF84;
-enum COLOR2_ADDR = 0xFF87;
-enum COLOR3_ADDR = 0xFF8A;
-enum COLOR4_ADDR = 0xFF8D;
-enum GAMEPAD1_ADDR = 0xFF94;
-enum GAMEPAD2_ADDR = 0xFF95;
-enum SFX_CH1_ADDR = 0xFF98;
-enum SFX_CH2_ADDR = 0xFF9C;
-enum SFX_CH3_ADDR = 0xFFA0;
-enum SFX_CH4_ADDR = 0xFFA4;
-enum MELODY_ATTR_ADDR = 0xFFA8;
-enum MELODY_ADDR = 0xFFA9;
-enum MELODY_HEAD_ADDR = 0xFFE9;
-enum MELODY_TAIL_ADDR = 0xFFEA;
+enum GAMENAME_ADDR = 0x0048;
+enum WRAM_ADDR = 0xD000;
+enum VIDEO_ADDR = 0xD800;
+enum COLOR1_ADDR = 0xFF00;
+enum COLOR2_ADDR = 0xFF03;
+enum COLOR3_ADDR = 0xFF06;
+enum COLOR4_ADDR = 0xFF09;
+enum COLOR5_ADDR = 0xFF0C;
+enum COLOR6_ADDR = 0xFF0F;
+enum COLOR7_ADDR = 0xFF12;
+enum COLOR8_ADDR = 0xFF15;
+enum COLOR9_ADDR = 0xFF18;
+enum COLOR10_ADDR = 0xFF1B;
+enum COLOR11_ADDR = 0xFF1E;
+enum COLOR12_ADDR = 0xFF21;
+enum COLOR13_ADDR = 0xFF24;
+enum COLOR14_ADDR = 0xFF27;
+enum COLOR15_ADDR = 0xFF2A;
+enum COLOR16_ADDR = 0xFF2D;
+enum GAMEPAD1_ADDR = 0xFF40;
+enum GAMEPAD2_ADDR = 0xFF41;
+enum SOUND_STATUS_ADDR = 0xFF5F;
+enum SFX_CH1_ADDR = 0xFF60;
+enum SFX_CH2_ADDR = 0xFF64;
+enum SFX_CH3_ADDR = 0xFF68;
+enum SFX_CH4_ADDR = 0xFF6C;
+enum MELODY_ATTR_ADDR = 0xFF7F;
+enum MELODY_ADDR = 0xFF80;
+enum MELODY_HEAD_ADDR = 0xFFC0;
+enum MELODY_TAIL_ADDR = 0xFFC1;
 
 // ----------------------------------------------------------------------------
 // System Flags Bits Constants

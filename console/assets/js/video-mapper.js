@@ -5,7 +5,7 @@ import { ADDR, DOM } from './config.js';
 const CONST = {
   SCREEN_WIDTH: 160,
   SCREEN_HEIGHT: 120,
-  VIDEO_SIZE: (160 * 120) / 4,
+  VIDEO_SIZE: (160 * 120) / 2,
   CAPTURE_SCALE: 8,
 
   VERTEX_SHADER_SOURCE: `
@@ -112,13 +112,25 @@ export const VideoMapper = {
 
   setupColors() {
     const colors = [
-      [15, 15, 27],     // #0F0F1B chinese black
-      [86, 90, 117],    // #565A75 black coral
-      [198, 183, 190],  // #C6B7BE pale silver
-      [250, 251, 246]   // #FAFBF6 milk
+      [15, 15, 27],     // #0F0F1B
+      [140, 143, 174],  // #8C8FAE
+      [88, 69, 99],     // #584563
+      [62, 33, 55],     // #3E2137
+      [154, 99, 72],    // #9A6348
+      [215, 155, 125],  // #D79B7D
+      [245, 237, 186],  // #F5EDBA
+      [192, 199, 65],   // #C0C741
+      [100, 125, 52],   // #647D34
+      [228, 148, 58],   // #E4943A
+      [157, 48, 59],    // #9D303B
+      [210, 100, 113],  // #D26471
+      [112, 55, 127],   // #70377F
+      [126, 196, 193],  // #7EC4C1
+      [52, 133, 157],   // #34859D
+      [23, 67, 75]      // #17434B
     ];
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 16; i++) {
       for (let j = 0; j < 3; j++) {
         this.memory[ADDR.PALETTE + (i * 3 + j)] = colors[i][j];
       }
@@ -182,18 +194,16 @@ export const VideoMapper = {
   },
 
   updateVideoBuffer() {
-    this.palette = this.memory.subarray(ADDR.PALETTE, ADDR.PALETTE + 12);
+    this.palette = this.memory.subarray(ADDR.PALETTE, ADDR.PALETTE + 48);
 
     let idx = 0;
 
     for (let byteIdx = 0; byteIdx < CONST.VIDEO_SIZE; byteIdx++) {
       const byteColors = this.memory[ADDR.VIDEO + byteIdx];
 
-      // process four pixel with byte
-      this.drawPixel(idx, (byteColors >> 6) & 0x03); idx += 4;
-      this.drawPixel(idx, (byteColors >> 4) & 0x03); idx += 4;
-      this.drawPixel(idx, (byteColors >> 2) & 0x03); idx += 4;
-      this.drawPixel(idx, byteColors & 0x03);        idx += 4;
+      // process two pixel with byte
+      this.drawPixel(idx, (byteColors >> 4) & 0x0F); idx += 4;
+      this.drawPixel(idx, byteColors & 0x0F);        idx += 4;
     }
   },
 

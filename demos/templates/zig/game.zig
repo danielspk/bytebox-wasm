@@ -27,7 +27,7 @@ fn updatePlayer() void {
         new_x +%= 2;
     }
     
-    if (new_x < bb.SCREEN_WIDTH) {
+    if (new_x < bb.SCREEN_WIDTH - 2) {
         player_x = new_x;
     }
     
@@ -39,17 +39,18 @@ fn updatePlayer() void {
     }
     
     if (pad & bb.BUTTON_2 != 0) {
-        const address = bb.COLOR4_ADDR + 2;
-        const new_blue = bb.peek(address) +% 0x0A;
-        bb.poke(address, new_blue);
+        const address = bb.COLOR7_ADDR + 1;
+        const new_color = bb.peek(address) +% 0x0A;
+        bb.poke(address, new_color);
     }
 }
 
 fn drawPlayer() void {
     var y: u8 = 0;
     while (y < 4) : (y += 1) {
-        const address = bb.VIDEO_ADDR + (((@as(u16, player_y) + @as(u16, y)) * bb.SCREEN_WIDTH) + @as(u16, player_x)) / 4;
-        bb.poke(address, 0xFF);
+        const address = bb.VIDEO_ADDR + (((@as(u16, player_y) + @as(u16, y)) * bb.SCREEN_WIDTH) + @as(u16, player_x)) / 2;
+        bb.poke(address, 0x66);
+        bb.poke(address + 1, 0x66);
     }
 }
 

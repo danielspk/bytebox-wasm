@@ -30,7 +30,7 @@ local function update_player(): void
     new_x = new_x + 2
   end
 
-  if new_x < bytebox.SCREEN_WIDTH then
+  if new_x < bytebox.SCREEN_WIDTH - 2 then
     player_x = new_x
   end
 
@@ -42,17 +42,18 @@ local function update_player(): void
   end
 
   if (pad & bytebox.BUTTON_2) ~= 0 then
-    local address: uint16 = bytebox.COLOR4_ADDR + 2
-    local new_blue: uint8 = bytebox.peek(address) + 0x0A
-    bytebox.poke(address, new_blue)
+    local address: uint16 = bytebox.COLOR7_ADDR + 1
+    local new_color: uint8 = bytebox.peek(address) + 0x0A
+    bytebox.poke(address, new_color)
   end
 end
 
 local function draw_player(): void
   for y: uint16 = 0, 3 do
-    local address: uint16 = (@uint16)(bytebox.VIDEO_ADDR + (((player_y + y) * bytebox.SCREEN_WIDTH + player_x) // 4))
+    local address: uint16 = (@uint16)(bytebox.VIDEO_ADDR + (((player_y + y) * bytebox.SCREEN_WIDTH + player_x) // 2))
 
-    bytebox.poke(address, 0xFF)
+    bytebox.poke(address, 0x66)
+    bytebox.poke(address + 1, 0x66)
   end
 end
 

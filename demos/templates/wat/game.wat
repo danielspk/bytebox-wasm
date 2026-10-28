@@ -36,31 +36,44 @@
   (global $SCREEN_WIDTH     i32 (i32.const 160))
   (global $SCREEN_HEIGHT    i32 (i32.const 120))
   (global $MEMORY_SIZE      i32 (i32.const 0x10000))
-  (global $FRAMEBUFFER_SIZE i32 (i32.const 4800))
+  (global $FRAMEBUFFER_SIZE i32 (i32.const 9600))
 
   ;; --------------------------------------------------------------------------
   ;; Memory Addresses Constants
   ;; --------------------------------------------------------------------------
 
-  (global $SYSFLAGS_ADDR    i32 (i32.const 0x0040))
-  (global $SEED_ADDR        i32 (i32.const 0x0041))
-  (global $GAMENAME_ADDR    i32 (i32.const 0x0044))
-  (global $WRAM_ADDR        i32 (i32.const 0xE100))
-  (global $VIDEO_ADDR       i32 (i32.const 0xE900))
-  (global $COLOR1_ADDR      i32 (i32.const 0xFF84))
-  (global $COLOR2_ADDR      i32 (i32.const 0xFF87))
-  (global $COLOR3_ADDR      i32 (i32.const 0xFF8A))
-  (global $COLOR4_ADDR      i32 (i32.const 0xFF8D))
-  (global $GAMEPAD1_ADDR    i32 (i32.const 0xFF94))
-  (global $GAMEPAD2_ADDR    i32 (i32.const 0xFF95))
-  (global $SFX_CH1_ADDR     i32 (i32.const 0xFF98))
-  (global $SFX_CH2_ADDR     i32 (i32.const 0xFF9C))
-  (global $SFX_CH3_ADDR     i32 (i32.const 0xFFA0))
-  (global $SFX_CH4_ADDR     i32 (i32.const 0xFFA4))
-  (global $MELODY_ATTR_ADDR i32 (i32.const 0xFFA8))
-  (global $MELODY_ADDR      i32 (i32.const 0xFFA9))
-  (global $MELODY_HEAD_ADDR i32 (i32.const 0xFFE9))
-  (global $MELODY_TAIL_ADDR i32 (i32.const 0xFFEA))
+  (global $SYSFLAGS_ADDR     i32 (i32.const 0x0040))
+  (global $SEED_ADDR         i32 (i32.const 0x0041))
+  (global $GAMENAME_ADDR     i32 (i32.const 0x0048))
+  (global $WRAM_ADDR         i32 (i32.const 0xD000))
+  (global $VIDEO_ADDR        i32 (i32.const 0xD800))
+  (global $COLOR1_ADDR       i32 (i32.const 0xFF00))
+  (global $COLOR2_ADDR       i32 (i32.const 0xFF03))
+  (global $COLOR3_ADDR       i32 (i32.const 0xFF06))
+  (global $COLOR4_ADDR       i32 (i32.const 0xFF09))
+  (global $COLOR5_ADDR       i32 (i32.const 0xFF0C))
+  (global $COLOR6_ADDR       i32 (i32.const 0xFF0F))
+  (global $COLOR7_ADDR       i32 (i32.const 0xFF12))
+  (global $COLOR8_ADDR       i32 (i32.const 0xFF15))
+  (global $COLOR9_ADDR       i32 (i32.const 0xFF18))
+  (global $COLOR10_ADDR      i32 (i32.const 0xFF1B))
+  (global $COLOR11_ADDR      i32 (i32.const 0xFF1E))
+  (global $COLOR12_ADDR      i32 (i32.const 0xFF21))
+  (global $COLOR13_ADDR      i32 (i32.const 0xFF24))
+  (global $COLOR14_ADDR      i32 (i32.const 0xFF27))
+  (global $COLOR15_ADDR      i32 (i32.const 0xFF2A))
+  (global $COLOR16_ADDR      i32 (i32.const 0xFF2D))
+  (global $GAMEPAD1_ADDR     i32 (i32.const 0xFF40))
+  (global $GAMEPAD2_ADDR     i32 (i32.const 0xFF41))
+  (global $SOUND_STATUS_ADDR i32 (i32.const 0xFF5F))
+  (global $SFX_CH1_ADDR      i32 (i32.const 0xFF60))
+  (global $SFX_CH2_ADDR      i32 (i32.const 0xFF64))
+  (global $SFX_CH3_ADDR      i32 (i32.const 0xFF68))
+  (global $SFX_CH4_ADDR      i32 (i32.const 0xFF6C))
+  (global $MELODY_ATTR_ADDR  i32 (i32.const 0xFF7F))
+  (global $MELODY_ADDR       i32 (i32.const 0xFF80))
+  (global $MELODY_HEAD_ADDR  i32 (i32.const 0xFFC0))
+  (global $MELODY_TAIL_ADDR  i32 (i32.const 0xFFC1))
 
   ;; --------------------------------------------------------------------------
   ;; System Flags Bits Constants
@@ -109,7 +122,7 @@
 
     (local.set $new_x (i32.and (local.get $new_x) (i32.const 0xFF)))
 
-    (if (i32.lt_u (local.get $new_x) (global.get $SCREEN_WIDTH))
+    (if (i32.lt_u (local.get $new_x) (i32.sub (global.get $SCREEN_WIDTH) (i32.const 2)))
       (then (global.set $player_x (local.get $new_x))))
 
     (if (i32.and (local.get $pad) (global.get $BUTTON_1))
@@ -121,7 +134,7 @@
 
     (if (i32.and (local.get $pad) (global.get $BUTTON_2))
       (then
-        (local.set $address (i32.add (global.get $COLOR4_ADDR) (i32.const 2)))
+        (local.set $address (i32.add (global.get $COLOR7_ADDR) (i32.const 1)))
         (call $poke
           (local.get $address)
           (i32.and
@@ -144,8 +157,9 @@
                   (i32.add (global.get $player_y) (local.get $y))
                   (global.get $SCREEN_WIDTH))
                 (global.get $player_x))
-              (i32.const 4))))
-        (call $poke (local.get $address) (i32.const 0xFF))
+              (i32.const 2))))
+        (call $poke (local.get $address) (i32.const 0x66))
+        (call $poke (i32.add (local.get $address) (i32.const 1)) (i32.const 0x66))
         (local.set $y (i32.add (local.get $y) (i32.const 1)))
         (br $loop))))
 

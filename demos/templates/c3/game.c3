@@ -34,7 +34,7 @@ fn void update_player()
         new_x += 2;
     }
 
-    if (new_x < bytebox::SCREEN_WIDTH)
+    if (new_x < bytebox::SCREEN_WIDTH - 2)
     {
         player_x = new_x;
     }
@@ -49,10 +49,10 @@ fn void update_player()
 
     if ((pad & bytebox::BUTTON_2) != 0)
     {
-        ushort address = bytebox::COLOR4_ADDR + 2;
-        char new_blue = bytebox::peek(address) + 0x0A;
+        ushort address = bytebox::COLOR7_ADDR + 1;
+        char new_color = bytebox::peek(address) + 0x0A;
 
-        bytebox::poke(address, new_blue);
+        bytebox::poke(address, new_color);
     }
 }
 
@@ -60,9 +60,10 @@ fn void draw_player()
 {
     for (ushort y = 0; y < 4; y++)
     {
-        ushort address = (ushort)(bytebox::VIDEO_ADDR + (((player_y + y) * bytebox::SCREEN_WIDTH + player_x) / 4));
+        ushort address = (ushort)(bytebox::VIDEO_ADDR + (((player_y + y) * bytebox::SCREEN_WIDTH + player_x) / 2));
 
-        bytebox::poke(address, 0xFF);
+        bytebox::poke(address, 0x66);
+        bytebox::poke(address + 1, 0x66);
     }
 }
 

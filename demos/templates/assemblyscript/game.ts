@@ -4,7 +4,7 @@
 // Part of the bytebox-wasm project - https://github.com/danielspk/bytebox-wasm
 // See LICENSE file for full license details.
 
-import { SCREEN_WIDTH, SCREEN_HEIGHT, FRAMEBUFFER_SIZE, VIDEO_ADDR, GAMEPAD1_ADDR, SFX_CH1_ADDR, COLOR4_ADDR, BUTTON_1, BUTTON_2, BUTTON_LEFT, BUTTON_RIGHT, peek, poke, spoke } from "./bytebox";
+import { SCREEN_WIDTH, SCREEN_HEIGHT, FRAMEBUFFER_SIZE, VIDEO_ADDR, GAMEPAD1_ADDR, SFX_CH1_ADDR, COLOR7_ADDR, BUTTON_1, BUTTON_2, BUTTON_LEFT, BUTTON_RIGHT, peek, poke, spoke } from "./bytebox";
 
 var playerX: u8 = 0;
 var playerY: u8 = 0;
@@ -26,7 +26,7 @@ function updatePlayer(): void {
         newX = <u8>(newX + 2);
     }
 
-    if (newX < SCREEN_WIDTH) {
+    if (newX < SCREEN_WIDTH - 2) {
         playerX = newX;
     }
 
@@ -38,16 +38,17 @@ function updatePlayer(): void {
     }
 
     if (pad & BUTTON_2) {
-        const address = COLOR4_ADDR + 2;
-        const newBlue = <u8>((peek(address) + 0x0A) & 0xFF);
-        poke(address, newBlue);
+        const address = COLOR7_ADDR + 1;
+        const newColor = <u8>((peek(address) + 0x0A) & 0xFF);
+        poke(address, newColor);
     }
 }
 
 function drawPlayer(): void {
     for (let y: u16 = 0; y < 4; y++) {
-        const address = VIDEO_ADDR + ((<u16>playerY + y) * <u16>SCREEN_WIDTH + <u16>playerX) / 4;
-        poke(address, 0xFF);
+        const address = VIDEO_ADDR + ((<u16>playerY + y) * <u16>SCREEN_WIDTH + <u16>playerX) / 2;
+        poke(address, 0x66);
+        poke(address + 1, 0x66);
     }
 }
 
